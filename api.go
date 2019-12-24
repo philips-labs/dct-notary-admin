@@ -8,6 +8,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"go.uber.org/zap"
+
+	"github.com/philips-labs/dct-notary-admin/targets"
 )
 
 func configureAPI(l *zap.Logger) *chi.Mux {
@@ -26,6 +28,7 @@ func configureAPI(l *zap.Logger) *chi.Mux {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("pong\n"))
 	})
+	targets.RegisterRoutes(r)
 
 	logRoutes(r, l)
 
