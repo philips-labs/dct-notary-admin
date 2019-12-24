@@ -10,6 +10,11 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	//ContentTypePlainText holds HTTP Content-Type text/plain
+	ContentTypePlainText = "text/plain; charset=utf-8"
+)
+
 // Server provides a http.Server with graceful shutdown.
 type Server struct {
 	l *zap.Logger
@@ -20,7 +25,8 @@ type Server struct {
 //
 // The server implements a graceful shutdown and utilizes zap.Logger to log Requests.
 func NewServer(listenAddr string, l *zap.Logger) *Server {
-	r := newAPI(l)
+	l.Info("Configuring server")
+	r := configureAPI(l)
 
 	errorLog, _ := zap.NewStdLogAt(l, zap.ErrorLevel)
 	srv := http.Server{
@@ -47,33 +53,6 @@ func (srv *Server) Start() {
 	}()
 	srv.l.Info("Server is ready to handle requests", zap.String("addr", srv.Addr))
 	srv.gracefullShutdown()
-}
-
-func newAPI(l *zap.Logger) *http.ServeMux {
-	r := http.NewServeMux()
-
-	r.Handle("/", zapLogger(l)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})))
-
-	return r
-}
-
-func zapLogger(l *zap.Logger) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			t1 := time.Now()
-			defer func() {
-				l.Info("Served",
-					zap.String("proto", r.Proto),
-					zap.String("path", r.URL.Path),
-					zap.Duration("lat", time.Since(t1)),
-				)
-			}()
-
-			next.ServeHTTP(w, r)
-		})
-	}
 }
 
 func (srv *Server) gracefullShutdown() {
