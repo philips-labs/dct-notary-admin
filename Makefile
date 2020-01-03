@@ -33,3 +33,17 @@ coverage-html: coverage
 build: download
 	@echo Building binary
 	@go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o bin/dctna .
+
+.PHONY: certs
+certs:
+	@echo Create SSL certificates
+	@mkdir -p certs
+	@openssl req \
+       -newkey rsa:2048 -nodes -keyout certs/server.key \
+	   -subj "/C=NL/O=Philips Labs/CN=localhost:8086" \
+       -new -out certs/server.csr
+	@openssl x509 \
+       -signkey certs/server.key \
+       -in certs/server.csr \
+       -req -days 365 -out certs/server.crt
+	openssl x509 -text -noout -in certs/server.crt

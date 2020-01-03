@@ -17,3 +17,6 @@
 # binary builds
 bin/
 dct-notary-admin
+
+# certs
+certs/

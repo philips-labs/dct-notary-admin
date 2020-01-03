@@ -43,3 +43,23 @@ make coverage-html
 
 [cmake-3.16.2-win64-x64.msi]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-win64-x64.msi "Download cmake-3.16.2-win64-x64.msi"
 [cmake-3.16.2-darwin-x86_64.dmg]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Darwin-x86_64.dmg "Download cmake-3.16.2-Darwin-x86_64.dmg"
+
+## Run
+
+To run the server TLS certificates are required to serve the endpoints using HTTP/2.
+
+```bash
+make certs
+```
+
+Now you can start the server as following:
+
+```bash
+bin/dctna
+```
+
+Or via the Make shorthand which also builds the solution.
+
+```bash
+make run
+```
