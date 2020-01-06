@@ -14,6 +14,7 @@ import (
 const (
 	NotImplementedResponse = "{\"status\":\"Not implemented.\"}\n"
 	TargetsResponse        = "[{\"id\":\"b45192be4389bac3f49f8feeee2aefc478b36cab1c9f56574d7e29e452fc0185\",\"gun\":\"docker.io/marcofranssen/openjdk\"},{\"id\":\"b635efeddff59751e8b6b59abb45383555103d702e7d3f46fbaaa9a8ac144ab8\",\"gun\":\"docker.io/marcofranssen/whalesay\"},{\"id\":\"d22b2a4c0651b833f0b1a536068c5ba8588041abe7d058aab95fffc5b78c98bd\",\"gun\":\"docker.io/marcofranssen/nginx\"}]\n"
+	WhalesayResponse       = "{\"id\":\"b635efeddff59751e8b6b59abb45383555103d702e7d3f46fbaaa9a8ac144ab8\",\"gun\":\"docker.io/marcofranssen/whalesay\"}\n"
 )
 
 func createRouter() *chi.Mux {
@@ -43,14 +44,14 @@ func TestGetTarget(t *testing.T) {
 	assert := assert.New(t)
 	router := createRouter()
 
-	req, err := http.NewRequest(http.MethodGet, "/targets/1234", nil)
+	req, err := http.NewRequest(http.MethodGet, "/targets/b635efe", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
 	router.ServeHTTP(rr, req)
 
-	assert.Equal(http.StatusNotImplemented, rr.Code, "Invalid status code")
-	assert.Equal(NotImplementedResponse, rr.Body.String(), "Invalid response text")
+	assert.Equal(http.StatusOK, rr.Code, "Invalid status code")
+	assert.Equal(WhalesayResponse, rr.Body.String(), "Invalid response")
 }
 
 func TestCreateTarget(t *testing.T) {

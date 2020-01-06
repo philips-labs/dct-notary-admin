@@ -1,7 +1,9 @@
 package targets
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -35,8 +37,25 @@ func createTargets(w http.ResponseWriter, r *http.Request) {
 }
 
 func getTarget(w http.ResponseWriter, r *http.Request) {
-	if err := render.Render(w, r, e.ErrNotImplemented); err != nil {
+	id := chi.URLParam(r, "target")
+	if len(id) < 7 {
+		m := fmt.Errorf("you must provide at least 7 characters of the id")
+		if err := render.Render(w, r, e.ErrInvalidRequest(m)); err != nil {
+			render.Render(w, r, e.ErrRender(err))
+		}
+		return
+	}
+	targets, err := listNotaryTargets()
+	if err != nil {
 		render.Render(w, r, e.ErrRender(err))
+		return
+	}
+	for _, t := range targets {
+		if strings.HasPrefix(t.Path, id) {
+			if err := render.Render(w, r, NewTargetResponse(t)); err != nil {
+				render.Render(w, r, e.ErrRender(err))
+			}
+		}
 	}
 }
 
