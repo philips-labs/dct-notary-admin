@@ -26,13 +26,13 @@ type Server struct {
 // NewServer creates a Server serving application endpoints
 //
 // The server implements a graceful shutdown and utilizes zap.Logger to log Requests.
-func NewServer(listenAddr, listenAddrTLS string, l *zap.Logger) *Server {
+func NewServer(c *Config, l *zap.Logger) *Server {
 	l.Info("Configuring server")
-	r := configureAPI(l)
+	r := configureAPI(c, l)
 
 	errorLog, _ := zap.NewStdLogAt(l, zap.ErrorLevel)
 	srvRedirectTLS := http.Server{
-		Addr: listenAddr,
+		Addr: c.ListenAddr,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			host, _, _ := net.SplitHostPort(r.Host)
 			u := r.URL
@@ -46,7 +46,7 @@ func NewServer(listenAddr, listenAddrTLS string, l *zap.Logger) *Server {
 		IdleTimeout:  15 * time.Second,
 	}
 	srv := http.Server{
-		Addr:         listenAddrTLS,
+		Addr:         c.ListenAddrTLS,
 		Handler:      r,
 		ErrorLog:     errorLog,
 		ReadTimeout:  5 * time.Second,

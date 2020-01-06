@@ -17,6 +17,10 @@ type registeredRoute struct {
 	route  string
 }
 
+func newTestConfig() *Config {
+	return &Config{NotaryConfigFile: "./notary-config.json"}
+}
+
 func TestRoutes(t *testing.T) {
 	assert := assert.New(t)
 	expectedRoutes := []registeredRoute{
@@ -28,7 +32,7 @@ func TestRoutes(t *testing.T) {
 		{http.MethodDelete, "/targets/{target}"},
 	}
 
-	router := configureAPI(zap.NewNop())
+	router := configureAPI(newTestConfig(), zap.NewNop())
 
 	routes := make([]registeredRoute, 0)
 	err := chi.Walk(router, func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
@@ -44,7 +48,7 @@ func TestRoutes(t *testing.T) {
 
 func TestGetRoot(t *testing.T) {
 	assert := assert.New(t)
-	router := configureAPI(zap.NewNop())
+	router := configureAPI(newTestConfig(), zap.NewNop())
 
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
 	assert.NoError(err, "Failed to create request")
@@ -58,7 +62,7 @@ func TestGetRoot(t *testing.T) {
 
 func TestGetPing(t *testing.T) {
 	assert := assert.New(t)
-	router := configureAPI(zap.NewNop())
+	router := configureAPI(newTestConfig(), zap.NewNop())
 
 	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
 	assert.NoError(err, "Failed to create request")

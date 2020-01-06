@@ -5,6 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/philips-labs/dct-notary-admin/notary"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
@@ -21,8 +23,9 @@ func createRouter() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Recoverer)
+	tr := NewTargetsResource(notary.NewService("../notary-config.json"))
 
-	RegisterRoutes(r)
+	tr.RegisterRoutes(r)
 	return r
 }
 

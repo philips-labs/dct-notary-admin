@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/philips-labs/dct-notary-admin/notary"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"go.uber.org/zap"
@@ -12,7 +14,7 @@ import (
 	"github.com/philips-labs/dct-notary-admin/targets"
 )
 
-func configureAPI(l *zap.Logger) *chi.Mux {
+func configureAPI(c *Config, l *zap.Logger) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -28,7 +30,9 @@ func configureAPI(l *zap.Logger) *chi.Mux {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("pong\n"))
 	})
-	targets.RegisterRoutes(r)
+	notaryService := notary.NewService(c.NotaryConfigFile)
+	tr := targets.NewTargetsResource(notaryService)
+	tr.RegisterRoutes(r)
 
 	logRoutes(r, l)
 

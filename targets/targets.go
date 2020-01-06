@@ -6,25 +6,35 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/philips-labs/dct-notary-admin/notary"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
 	e "github.com/philips-labs/dct-notary-admin/errors"
 )
 
-// RegisterRoutes registers the API routes
-func RegisterRoutes(r chi.Router) {
-	r.Get("/targets", listTargets)
-	r.Post("/targets", createTargets)
-	r.Get("/targets/{target}", getTarget)
-	r.Delete("/targets/{target}", deleteTarget)
+type TargetsResource struct {
+	notary *notary.Service
 }
 
-func listTargets(w http.ResponseWriter, r *http.Request) {
+func NewTargetsResource(service *notary.Service) *TargetsResource {
+	return &TargetsResource{service}
+}
+
+// RegisterRoutes registers the API routes
+func (tr *TargetsResource) RegisterRoutes(r chi.Router) {
+	r.Get("/targets", tr.listTargets)
+	r.Post("/targets", tr.createTargets)
+	r.Get("/targets/{target}", tr.getTarget)
+	r.Delete("/targets/{target}", tr.deleteTarget)
+}
+
+func (tr *TargetsResource) listTargets(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
-	targets, err := listNotaryTargets(ctx)
+	targets, err := tr.notary.ListTargets(ctx)
 	if err != nil {
 		render.Render(w, r, e.ErrRender(err))
 		return
@@ -34,13 +44,13 @@ func listTargets(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func createTargets(w http.ResponseWriter, r *http.Request) {
+func (tr *TargetsResource) createTargets(w http.ResponseWriter, r *http.Request) {
 	if err := render.Render(w, r, e.ErrNotImplemented); err != nil {
 		render.Render(w, r, e.ErrRender(err))
 	}
 }
 
-func getTarget(w http.ResponseWriter, r *http.Request) {
+func (tr *TargetsResource) getTarget(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "target")
 	if len(id) < 7 {
 		m := fmt.Errorf("you must provide at least 7 characters of the id")
@@ -53,7 +63,7 @@ func getTarget(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
-	targets, err := listNotaryTargets(ctx)
+	targets, err := tr.notary.ListTargets(ctx)
 	if err != nil {
 		render.Render(w, r, e.ErrRender(err))
 		return
@@ -67,7 +77,7 @@ func getTarget(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteTarget(w http.ResponseWriter, r *http.Request) {
+func (tr *TargetsResource) deleteTarget(w http.ResponseWriter, r *http.Request) {
 	if err := render.Render(w, r, e.ErrNotImplemented); err != nil {
 		render.Render(w, r, e.ErrRender(err))
 	}

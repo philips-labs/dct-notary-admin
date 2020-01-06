@@ -3,7 +3,7 @@ all: build test
 
 .PHONY: run
 run: build
-	@bin/dctna
+	@bin/dctna -notary-config-file ./notary-config.json
 
 .PHONY: download
 download:

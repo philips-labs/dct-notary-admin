@@ -1,4 +1,4 @@
-package targets
+package notary
 
 import (
 	"context"
@@ -73,15 +73,15 @@ Fw==
 func TestParsePrivateKeys(t *testing.T) {
 	assert := assert.New(t)
 
-	expected := []Target{
-		Target{Path: "b34192be4389bac3f49f8feeee2aefc478b36cab1c9f56574d7e29e452fc0185", Gun: "docker.io/marcofranssen/openjdk"},
-		Target{Path: "b624efeddff59751e8b6b59abb45383555103d702e7d3f46fbaaa9a8ac144ab8", Gun: "docker.io/marcofranssen/whalesay"},
-		Target{Path: "d11b2a4c0651b833f0b1a536068c5ba8588041abe7d058aab95fffc5b78c98bd", Gun: "docker.io/marcofranssen/nginx"},
+	expected := []Key{
+		Key{Path: "b34192be4389bac3f49f8feeee2aefc478b36cab1c9f56574d7e29e452fc0185", Gun: "docker.io/marcofranssen/openjdk"},
+		Key{Path: "b624efeddff59751e8b6b59abb45383555103d702e7d3f46fbaaa9a8ac144ab8", Gun: "docker.io/marcofranssen/whalesay"},
+		Key{Path: "d11b2a4c0651b833f0b1a536068c5ba8588041abe7d058aab95fffc5b78c98bd", Gun: "docker.io/marcofranssen/nginx"},
 	}
 
 	reader := ioutil.NopCloser(strings.NewReader(certificates))
 
-	targetChan := make(chan Target)
+	targetChan := make(chan Key)
 	errChan := make(chan error, 1)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
