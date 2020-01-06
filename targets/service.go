@@ -3,6 +3,7 @@ package targets
 import (
 	"context"
 	"encoding/pem"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os/exec"
@@ -65,7 +66,7 @@ func getPathAndGun(block *pem.Block) (string, string) {
 func listNotaryTargets(ctx context.Context) ([]Target, error) {
 	targetChan, errChan, err := streamNotaryTargets(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to run notary command: %w", err)
 	}
 
 	targets, err := getTargets(targetChan, errChan)
