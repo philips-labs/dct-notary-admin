@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os/exec"
+	"strings"
 )
 
 // Key holds Path and GUN to keys
@@ -23,6 +24,26 @@ type Service struct {
 // NewService creates a new notary service object
 func NewService(configFile string) *Service {
 	return &Service{configFile}
+}
+
+// GetTarget retrieves a target by its path/id
+func (s *Service) GetTarget(ctx context.Context, path string) (*Key, error) {
+	targets, err := s.ListTargets(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(path) < 7 {
+		return nil, fmt.Errorf("you must provide at least 7 characters of the path")
+	}
+
+	for _, t := range targets {
+		if strings.HasPrefix(t.Path, path) {
+			return &t, nil
+		}
+	}
+
+	return nil, nil
 }
 
 // ListTargets lists all the notary target keys

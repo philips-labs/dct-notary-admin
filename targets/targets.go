@@ -2,9 +2,7 @@ package targets
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/philips-labs/dct-notary-admin/notary"
 
@@ -52,27 +50,25 @@ func (tr *TargetsResource) createTargets(w http.ResponseWriter, r *http.Request)
 
 func (tr *TargetsResource) getTarget(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "target")
-	if len(id) < 7 {
-		m := fmt.Errorf("you must provide at least 7 characters of the id")
-		if err := render.Render(w, r, e.ErrInvalidRequest(m)); err != nil {
+
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	target, err := tr.notary.GetTarget(ctx, id)
+	if err != nil {
+		if err := render.Render(w, r, e.ErrInvalidRequest(err)); err != nil {
 			render.Render(w, r, e.ErrRender(err))
 		}
 		return
 	}
 
-	ctx, cancel := context.WithCancel(r.Context())
-	defer cancel()
-
-	targets, err := tr.notary.ListTargets(ctx)
-	if err != nil {
-		render.Render(w, r, e.ErrRender(err))
-		return
-	}
-	for _, t := range targets {
-		if strings.HasPrefix(t.Path, id) {
-			if err := render.Render(w, r, NewTargetResponse(t)); err != nil {
-				render.Render(w, r, e.ErrRender(err))
-			}
+	if target == nil {
+		if err := render.Render(w, r, e.ErrNotFound); err != nil {
+			render.Render(w, r, e.ErrRender(err))
+		}
+	} else {
+		if err := render.Render(w, r, NewTargetResponse(*target)); err != nil {
+			render.Render(w, r, e.ErrRender(err))
 		}
 	}
 }

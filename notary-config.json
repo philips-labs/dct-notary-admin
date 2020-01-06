@@ -1,0 +1,6 @@
+{
+    "trust_dir": "~/.dctna/trust",
+    "remote_server": {
+        "url": "https://localhost:4443"
+    }
+}
