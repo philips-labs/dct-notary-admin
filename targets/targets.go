@@ -1,6 +1,7 @@
 package targets
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -20,7 +21,10 @@ func RegisterRoutes(r chi.Router) {
 }
 
 func listTargets(w http.ResponseWriter, r *http.Request) {
-	targets, err := listNotaryTargets()
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	targets, err := listNotaryTargets(ctx)
 	if err != nil {
 		render.Render(w, r, e.ErrRender(err))
 		return
@@ -45,7 +49,11 @@ func getTarget(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	targets, err := listNotaryTargets()
+
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	targets, err := listNotaryTargets(ctx)
 	if err != nil {
 		render.Render(w, r, e.ErrRender(err))
 		return
