@@ -1,3 +1,5 @@
+export GOPRIVATE := github.com/philips-labs/*
+
 .PHONY: all
 all: build test
 
