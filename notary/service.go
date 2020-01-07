@@ -28,13 +28,13 @@ func NewService(configFile string) *Service {
 
 // GetTarget retrieves a target by its path/id
 func (s *Service) GetTarget(ctx context.Context, path string) (*Key, error) {
+	if len(path) < 7 {
+		return nil, fmt.Errorf("you must provide at least 7 characters of the path: %w", ErrInvalidID)
+	}
+
 	targets, err := s.ListTargets(ctx)
 	if err != nil {
 		return nil, err
-	}
-
-	if len(path) < 7 {
-		return nil, fmt.Errorf("you must provide at least 7 characters of the path")
 	}
 
 	for _, t := range targets {
@@ -43,7 +43,7 @@ func (s *Service) GetTarget(ctx context.Context, path string) (*Key, error) {
 		}
 	}
 
-	return nil, nil
+	return nil, ErrItemNotFound(path)
 }
 
 // ListTargets lists all the notary target keys

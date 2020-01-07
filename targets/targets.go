@@ -2,6 +2,7 @@ package targets
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/philips-labs/dct-notary-admin/notary"
@@ -52,7 +53,11 @@ func (tr *TargetsResource) getTarget(w http.ResponseWriter, r *http.Request) {
 
 	target, err := tr.notary.GetTarget(ctx, id)
 	if err != nil {
-		respond(w, r, e.ErrInvalidRequest(err))
+		if errors.Is(err, notary.ErrNotFound) {
+			respond(w, r, e.ErrNotFound)
+		} else {
+			respond(w, r, e.ErrInvalidRequest(err))
+		}
 		return
 	}
 

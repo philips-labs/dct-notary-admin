@@ -16,7 +16,7 @@ import (
 const (
 	NotImplementedResponse = "{\"status\":\"Not implemented.\"}\n"
 	NotFoundResponse       = "{\"status\":\"Resource not found.\"}\n"
-	InvalidIDResponse      = "{\"status\":\"Invalid request.\",\"error\":\"you must provide at least 7 characters of the path\"}\n"
+	InvalidIDResponse      = "{\"status\":\"Invalid request.\",\"error\":\"you must provide at least 7 characters of the path: invalid id\"}\n"
 	EmptyResponse          = "[]\n"
 )
 
