@@ -34,18 +34,14 @@ func (tr *TargetsResource) listTargets(w http.ResponseWriter, r *http.Request) {
 
 	targets, err := tr.notary.ListTargets(ctx)
 	if err != nil {
-		render.Render(w, r, e.ErrRender(err))
+		respond(w, r, e.ErrRender(err))
 		return
 	}
-	if err := render.RenderList(w, r, NewTargetListResponse(targets)); err != nil {
-		render.Render(w, r, e.ErrRender(err))
-	}
+	respondList(w, r, NewTargetListResponse(targets))
 }
 
 func (tr *TargetsResource) createTargets(w http.ResponseWriter, r *http.Request) {
-	if err := render.Render(w, r, e.ErrNotImplemented); err != nil {
-		render.Render(w, r, e.ErrRender(err))
-	}
+	respond(w, r, e.ErrNotImplemented)
 }
 
 func (tr *TargetsResource) getTarget(w http.ResponseWriter, r *http.Request) {
@@ -56,25 +52,29 @@ func (tr *TargetsResource) getTarget(w http.ResponseWriter, r *http.Request) {
 
 	target, err := tr.notary.GetTarget(ctx, id)
 	if err != nil {
-		if err := render.Render(w, r, e.ErrInvalidRequest(err)); err != nil {
-			render.Render(w, r, e.ErrRender(err))
-		}
+		respond(w, r, e.ErrInvalidRequest(err))
 		return
 	}
 
 	if target == nil {
-		if err := render.Render(w, r, e.ErrNotFound); err != nil {
-			render.Render(w, r, e.ErrRender(err))
-		}
+		respond(w, r, e.ErrNotFound)
 	} else {
-		if err := render.Render(w, r, NewTargetResponse(*target)); err != nil {
-			render.Render(w, r, e.ErrRender(err))
-		}
+		respond(w, r, NewTargetResponse(*target))
 	}
 }
 
 func (tr *TargetsResource) deleteTarget(w http.ResponseWriter, r *http.Request) {
-	if err := render.Render(w, r, e.ErrNotImplemented); err != nil {
+	respond(w, r, e.ErrNotImplemented)
+}
+
+func respond(w http.ResponseWriter, r *http.Request, renderer render.Renderer) {
+	if err := render.Render(w, r, renderer); err != nil {
+		render.Render(w, r, e.ErrRender(err))
+	}
+}
+
+func respondList(w http.ResponseWriter, r *http.Request, renderers []render.Renderer) {
+	if err := render.RenderList(w, r, renderers); err != nil {
 		render.Render(w, r, e.ErrRender(err))
 	}
 }
