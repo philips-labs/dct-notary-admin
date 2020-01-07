@@ -53,7 +53,7 @@ func (s *Service) ListTargets(ctx context.Context) ([]Key, error) {
 		return nil, fmt.Errorf("failed to run notary command: %w", err)
 	}
 
-	targets, err := getTargets(targetChan, errChan)
+	targets, err := getKeys(targetChan, errChan)
 
 	return targets, err
 }
@@ -81,27 +81,26 @@ func processPrivateKeys(ctx context.Context, reader io.ReadCloser, stream chan<-
 		return
 	}
 
-	go func() {
-		defer close(stream)
-		defer reader.Close()
-		for {
-			block, rest := pem.Decode(data)
-			if len(data) == 0 {
-				return
-			}
-			if block != nil && isTarget(block) {
-				path, gun := getPathAndGun(block)
-				if path != "" && gun != "" {
-					select {
-					case stream <- Key{Path: path, Gun: gun}:
-					case <-ctx.Done():
-						return
-					}
+	defer close(stream)
+	defer reader.Close()
+	for {
+		block, rest := pem.Decode(data)
+		if len(data) == 0 {
+			return
+		}
+		if block != nil && isTarget(block) {
+			path, gun := getPathAndGun(block)
+			if path != "" && gun != "" {
+				select {
+				case stream <- Key{Path: path, Gun: gun}:
+				case <-ctx.Done():
+					return
 				}
 			}
-			data = rest
 		}
-	}()
+		data = rest
+	}
+
 }
 
 func isTarget(block *pem.Block) bool {
@@ -113,7 +112,7 @@ func getPathAndGun(block *pem.Block) (string, string) {
 	return block.Headers["path"], block.Headers["gun"]
 }
 
-func getTargets(targetChan <-chan Key, errChan <-chan error) ([]Key, error) {
+func getKeys(targetChan <-chan Key, errChan <-chan error) ([]Key, error) {
 	targets := make([]Key, 0)
 	for {
 		select {
@@ -122,8 +121,10 @@ func getTargets(targetChan <-chan Key, errChan <-chan error) ([]Key, error) {
 				return targets, nil
 			}
 			targets = append(targets, target)
-		case err := <-errChan:
-			return nil, err
+		case err, open := <-errChan:
+			if !open {
+				return targets, err
+			}
 		}
 	}
 }

@@ -42,8 +42,7 @@ func TestRoutes(t *testing.T) {
 	})
 
 	assert.NoError(err, "Failed to walk handlers")
-	assert.Equalf(len(expectedRoutes), len(routes), "Expected %v routes, but got %v", len(expectedRoutes), len(routes))
-	assert.Subset(routes, expectedRoutes)
+	assert.ElementsMatch(expectedRoutes, routes)
 }
 
 func TestGetRoot(t *testing.T) {

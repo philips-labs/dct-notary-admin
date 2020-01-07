@@ -87,7 +87,7 @@ func TestParsePrivateKeys(t *testing.T) {
 	defer cancel()
 	go processPrivateKeys(ctx, reader, targetChan, errChan)
 
-	targets, err := getTargets(targetChan, errChan)
+	targets, err := getKeys(targetChan, errChan)
 
 	assert.NoError(err)
 	assert.ElementsMatch(expected, targets)
