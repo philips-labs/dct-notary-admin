@@ -6,6 +6,15 @@ It allows you to create new **Target** certificates for your Docker repositories
 
 This way the certificates can be stored in a secured environment where backups are managed.
 
+## API endpoints
+
+| HTTP Method | URL                                               | description                                    |
+| ----------- | ------------------------------------------------- | ---------------------------------------------- |
+| GET         | [](https://localhost:8443/ping)                   | return pong                                    |
+| GET         | [](https://localhost:8443/targets)                | retrieves all target keys                      |
+| GET         | [](https://localhost:8443/targets/{id})           | retrieves a single target key                  |
+| GET         | [](https://localhost:8443/targets/{id}/delegates) | retrieves all delegate keys for a given target |
+
 ## Prerequisites
 
 For a easier development workflow it is recommended to install **CMake**.
