@@ -34,7 +34,7 @@ func TestRoutes(t *testing.T) {
 		{http.MethodGet, "/targets"},
 		{http.MethodPost, "/targets"},
 		{http.MethodGet, "/targets/{target}"},
-		{http.MethodDelete, "/targets/{target}"},
+		{http.MethodGet, "/targets/{target}/delegates"},
 	}
 
 	router, err := bootstrapAPI()

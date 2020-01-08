@@ -8,24 +8,24 @@ import (
 	"github.com/go-chi/render"
 )
 
-type TargetResponse struct {
+type KeyResponse struct {
 	*notary.Key
 }
 
-func NewTargetResponse(target notary.Key) *TargetResponse {
-	return &TargetResponse{&target}
+func NewKeyResponse(target notary.Key) *KeyResponse {
+	return &KeyResponse{&target}
 }
 
-func (t *TargetResponse) Render(w http.ResponseWriter, r *http.Request) error {
+func (t *KeyResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	// preprocessing possible here
 	return nil
 }
 
-func NewTargetListResponse(targets []notary.Key) []render.Renderer {
+func NewKeyListResponse(targets []notary.Key) []render.Renderer {
 	list := make([]render.Renderer, len(targets))
 
 	for i, t := range targets {
-		list[i] = NewTargetResponse(t)
+		list[i] = NewKeyResponse(t)
 	}
 
 	return list

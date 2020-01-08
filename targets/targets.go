@@ -26,7 +26,7 @@ func (tr *TargetsResource) RegisterRoutes(r chi.Router) {
 	r.Get("/targets", tr.listTargets)
 	r.Post("/targets", tr.createTargets)
 	r.Get("/targets/{target}", tr.getTarget)
-	r.Delete("/targets/{target}", tr.deleteTarget)
+	r.Get("/targets/{target}/delegates", tr.listDelegates)
 }
 
 func (tr *TargetsResource) listTargets(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +38,7 @@ func (tr *TargetsResource) listTargets(w http.ResponseWriter, r *http.Request) {
 		respond(w, r, e.ErrRender(err))
 		return
 	}
-	respondList(w, r, NewTargetListResponse(targets))
+	respondList(w, r, NewKeyListResponse(targets))
 }
 
 func (tr *TargetsResource) createTargets(w http.ResponseWriter, r *http.Request) {
@@ -64,12 +64,27 @@ func (tr *TargetsResource) getTarget(w http.ResponseWriter, r *http.Request) {
 	if target == nil {
 		respond(w, r, e.ErrNotFound)
 	} else {
-		respond(w, r, NewTargetResponse(*target))
+		respond(w, r, NewKeyResponse(*target))
 	}
 }
 
-func (tr *TargetsResource) deleteTarget(w http.ResponseWriter, r *http.Request) {
-	respond(w, r, e.ErrNotImplemented)
+func (tr *TargetsResource) listDelegates(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "target")
+
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	delegates, err := tr.notary.ListDelegates(ctx, id)
+	if err != nil {
+		respond(w, r, e.ErrRender(err))
+		return
+	}
+
+	response := make([]notary.Key, 0)
+	for _, v := range delegates {
+		response = append(response, v...)
+	}
+	respondList(w, r, NewKeyListResponse(response))
 }
 
 func respond(w http.ResponseWriter, r *http.Request, renderer render.Renderer) {

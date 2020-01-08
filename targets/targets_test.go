@@ -87,16 +87,16 @@ func TestCreateTarget(t *testing.T) {
 	assert.Equal(NotImplementedResponse, rr.Body.String(), "Invalid response text")
 }
 
-func TestDeleteTarget(t *testing.T) {
+func TestListTargetDelegates(t *testing.T) {
 	assert := assert.New(t)
 	router := createRouter()
 
-	req, err := http.NewRequest(http.MethodDelete, "/targets/1234", nil)
+	req, err := http.NewRequest(http.MethodGet, "/targets/d22b2a4/delegates", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
 	router.ServeHTTP(rr, req)
 
-	assert.Equal(http.StatusNotImplemented, rr.Code, "Invalid status code")
-	assert.Equal(NotImplementedResponse, rr.Body.String(), "Invalid response text")
+	assert.Equal(http.StatusOK, rr.Code, "Invalid status code")
+	assert.Equal(EmptyResponse, rr.Body.String(), "Invalid response text")
 }
