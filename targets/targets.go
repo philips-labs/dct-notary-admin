@@ -13,23 +13,25 @@ import (
 	e "github.com/philips-labs/dct-notary-admin/errors"
 )
 
-type TargetsResource struct {
+// Resource holds api endpoints for the /targets urls
+type Resource struct {
 	notary *notary.Service
 }
 
-func NewTargetsResource(service *notary.Service) *TargetsResource {
-	return &TargetsResource{service}
+// NewResource create a new instance of Resource
+func NewResource(service *notary.Service) *Resource {
+	return &Resource{service}
 }
 
 // RegisterRoutes registers the API routes
-func (tr *TargetsResource) RegisterRoutes(r chi.Router) {
+func (tr *Resource) RegisterRoutes(r chi.Router) {
 	r.Get("/targets", tr.listTargets)
 	r.Post("/targets", tr.createTargets)
 	r.Get("/targets/{target}", tr.getTarget)
 	r.Get("/targets/{target}/delegates", tr.listDelegates)
 }
 
-func (tr *TargetsResource) listTargets(w http.ResponseWriter, r *http.Request) {
+func (tr *Resource) listTargets(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
@@ -41,11 +43,11 @@ func (tr *TargetsResource) listTargets(w http.ResponseWriter, r *http.Request) {
 	respondList(w, r, NewKeyListResponse(targets))
 }
 
-func (tr *TargetsResource) createTargets(w http.ResponseWriter, r *http.Request) {
+func (tr *Resource) createTargets(w http.ResponseWriter, r *http.Request) {
 	respond(w, r, e.ErrNotImplemented)
 }
 
-func (tr *TargetsResource) getTarget(w http.ResponseWriter, r *http.Request) {
+func (tr *Resource) getTarget(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "target")
 
 	ctx, cancel := context.WithCancel(r.Context())
@@ -68,7 +70,7 @@ func (tr *TargetsResource) getTarget(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (tr *TargetsResource) listDelegates(w http.ResponseWriter, r *http.Request) {
+func (tr *Resource) listDelegates(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "target")
 
 	ctx, cancel := context.WithCancel(r.Context())
