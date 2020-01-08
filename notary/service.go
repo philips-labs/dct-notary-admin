@@ -2,129 +2,108 @@ package notary
 
 import (
 	"context"
-	"encoding/pem"
+	"encoding/json"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"os/exec"
-	"strings"
+	"os"
+
+	"github.com/mitchellh/go-homedir"
+	"github.com/theupdateframework/notary/trustmanager"
 )
 
 // Key holds Path and GUN to keys
 type Key struct {
-	Path string `json:"id"`
-	Gun  string `json:"gun"`
+	ID   string `json:"id"`
+	GUN  string `json:"gun"`
+	Role string `json:"role"`
 }
 
 // Service notary service exposes notary operations
 type Service struct {
+	config     *notaryConfig
 	configFile string
 }
 
-// NewService creates a new notary service object
-func NewService(configFile string) *Service {
-	return &Service{configFile}
+type notaryConfig struct {
+	TrustDir     string `json:"trust_dir"`
+	RemoteServer struct {
+		URL string `json:"url"`
+	} `json:"remote_server"`
 }
 
-// GetTarget retrieves a target by its path/id
-func (s *Service) GetTarget(ctx context.Context, path string) (*Key, error) {
-	if len(path) < 7 {
-		return nil, fmt.Errorf("you must provide at least 7 characters of the path: %w", ErrInvalidID)
+// NewService creates a new notary service object
+func NewService(configFile string) (*Service, error) {
+	config, err := getConfig(configFile)
+	if err != nil {
+		return nil, err
 	}
+	return &Service{config, configFile}, nil
+}
 
-	targets, err := s.ListTargets(ctx)
+func getConfig(configFile string) (*notaryConfig, error) {
+	var config notaryConfig
+	f, err := os.Open(configFile)
+	if err != nil {
+		return nil, fmt.Errorf("could not open config file: %w", err)
+	}
+	defer f.Close()
+	err = json.NewDecoder(f).Decode(&config)
+	if err != nil {
+		return nil, fmt.Errorf("could not read config file: %w", err)
+	}
+	expandedTrustDir, err := homedir.Expand(config.TrustDir)
+	config.TrustDir = expandedTrustDir
+	return &config, nil
+}
+
+func (s *Service) StreamKeys(ctx context.Context) (<-chan Key, error) {
+	keysChan := make(chan Key, 2)
+	fileKeyStore, err := trustmanager.NewKeyFileStore(s.config.TrustDir, getPassphraseRetriever())
 	if err != nil {
 		return nil, err
 	}
 
-	for _, t := range targets {
-		if strings.HasPrefix(t.Path, path) {
-			return &t, nil
+	go func() {
+		defer close(keysChan)
+		keys := fileKeyStore.ListKeys()
+		for keyID, keyInfo := range keys {
+			keysChan <- Key{ID: keyID, Role: keyInfo.Role.String(), GUN: keyInfo.Gun.String()}
 		}
-	}
+	}()
 
-	return nil, ErrItemNotFound(path)
+	return keysChan, nil
 }
 
 // ListTargets lists all the notary target keys
 func (s *Service) ListTargets(ctx context.Context) ([]Key, error) {
-	targetChan, errChan, err := s.StreamTargets(ctx)
+	keysChan, err := s.StreamKeys(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to run notary command: %w", err)
+		return nil, fmt.Errorf("failed to retrieve keys: %w", err)
 	}
+	targetChan := Reduce(ctx, keysChan, TargetsFilter)
 
-	targets, err := getKeys(targetChan, errChan)
-
-	return targets, err
-}
-
-// StreamTargets streams all the notary target keys on a channel
-func (s *Service) StreamTargets(ctx context.Context) (<-chan Key, <-chan error, error) {
-	cmd := exec.Command("notary", "-c", s.configFile, "key", "export")
-	pipeReader, pipeWriter := io.Pipe()
-	defer pipeWriter.Close()
-
-	cmd.Stdout = pipeWriter
-	cmd.Stderr = pipeWriter
-	targetChan := make(chan Key)
-	errorChan := make(chan error, 1)
-
-	go processPrivateKeys(ctx, pipeReader, targetChan, errorChan)
-
-	return targetChan, errorChan, cmd.Run()
-}
-
-func processPrivateKeys(ctx context.Context, reader io.ReadCloser, stream chan<- Key, errChan chan<- error) {
-	data, err := ioutil.ReadAll(reader)
-	if err != nil {
-		errChan <- err
-		return
-	}
-
-	defer close(stream)
-	defer reader.Close()
-	for {
-		block, rest := pem.Decode(data)
-		if len(data) == 0 {
-			return
-		}
-		if block != nil && isTarget(block) {
-			path, gun := getPathAndGun(block)
-			if path != "" && gun != "" {
-				select {
-				case stream <- Key{Path: path, Gun: gun}:
-				case <-ctx.Done():
-					return
-				}
-			}
-		}
-		data = rest
-	}
-
-}
-
-func isTarget(block *pem.Block) bool {
-	role, ok := block.Headers["role"]
-	return ok && role == "targets"
-}
-
-func getPathAndGun(block *pem.Block) (string, string) {
-	return block.Headers["path"], block.Headers["gun"]
-}
-
-func getKeys(targetChan <-chan Key, errChan <-chan error) ([]Key, error) {
 	targets := make([]Key, 0)
-	for {
-		select {
-		case target, open := <-targetChan:
-			if !open {
-				return targets, nil
-			}
-			targets = append(targets, target)
-		case err, open := <-errChan:
-			if !open {
-				return targets, err
-			}
-		}
+	for target := range targetChan {
+		targets = append(targets, target)
 	}
+
+	return targets, nil
+}
+
+// GetTarget retrieves a target by its path/id
+func (s *Service) GetTarget(ctx context.Context, id string) (*Key, error) {
+	if len(id) < 7 {
+		return nil, fmt.Errorf("you must provide at least 7 characters of the path: %w", ErrInvalidID)
+	}
+
+	keysChan, err := s.StreamKeys(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve keys: %w", err)
+	}
+	targetChan := Reduce(ctx, keysChan, IDFilter(id))
+
+	target, open := <-targetChan
+	if !open {
+		return nil, nil
+	}
+	return &target, nil
 }

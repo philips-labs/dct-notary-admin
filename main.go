@@ -8,6 +8,8 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"github.com/mitchellh/go-homedir"
+
+	"github.com/philips-labs/dct-notary-admin/notary"
 )
 
 var (
@@ -33,10 +35,17 @@ func main() {
 		logger.Fatal("failed to expand home directory", zap.Error(err))
 	}
 
-	server := NewServer(&Config{
+	config := &Config{
 		ListenAddr:       listenAddr,
 		ListenAddrTLS:    listenAddrTLS,
 		NotaryConfigFile: expandedNotaryConfigFile,
-	}, logger)
+	}
+
+	n, err := notary.NewService(config.NotaryConfigFile)
+	if err != nil {
+		logger.Fatal("failed to create notary service", zap.Error(err))
+	}
+
+	server := NewServer(config, n, logger)
 	server.Start()
 }

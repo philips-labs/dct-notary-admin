@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi"
+	"github.com/philips-labs/dct-notary-admin/notary"
 	"github.com/stretchr/testify/assert"
 
 	"go.uber.org/zap"
@@ -17,8 +18,12 @@ type registeredRoute struct {
 	route  string
 }
 
-func newTestConfig() *Config {
-	return &Config{NotaryConfigFile: "./notary-config.json"}
+func bootstrapAPI() (*chi.Mux, error) {
+	n, err := notary.NewService("./notary-config.json")
+	if err != nil {
+		return nil, err
+	}
+	return configureAPI(n, zap.NewNop()), nil
 }
 
 func TestRoutes(t *testing.T) {
@@ -32,10 +37,11 @@ func TestRoutes(t *testing.T) {
 		{http.MethodDelete, "/targets/{target}"},
 	}
 
-	router := configureAPI(newTestConfig(), zap.NewNop())
+	router, err := bootstrapAPI()
+	assert.NoError(err)
 
 	routes := make([]registeredRoute, 0)
-	err := chi.Walk(router, func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+	err = chi.Walk(router, func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
 		route = strings.Replace(route, "/*/", "/", -1)
 		routes = append(routes, registeredRoute{method, route})
 		return nil
@@ -47,7 +53,8 @@ func TestRoutes(t *testing.T) {
 
 func TestGetRoot(t *testing.T) {
 	assert := assert.New(t)
-	router := configureAPI(newTestConfig(), zap.NewNop())
+	router, err := bootstrapAPI()
+	assert.NoError(err)
 
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
 	assert.NoError(err, "Failed to create request")
@@ -61,7 +68,8 @@ func TestGetRoot(t *testing.T) {
 
 func TestGetPing(t *testing.T) {
 	assert := assert.New(t)
-	router := configureAPI(newTestConfig(), zap.NewNop())
+	router, err := bootstrapAPI()
+	assert.NoError(err)
 
 	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
 	assert.NoError(err, "Failed to create request")

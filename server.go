@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"go.uber.org/zap"
+
+	"github.com/philips-labs/dct-notary-admin/notary"
 )
 
 const (
@@ -26,9 +28,9 @@ type Server struct {
 // NewServer creates a Server serving application endpoints
 //
 // The server implements a graceful shutdown and utilizes zap.Logger to log Requests.
-func NewServer(c *Config, l *zap.Logger) *Server {
+func NewServer(c *Config, n *notary.Service, l *zap.Logger) *Server {
 	l.Info("Configuring server")
-	r := configureAPI(c, l)
+	r := configureAPI(n, l)
 
 	errorLog, _ := zap.NewStdLogAt(l, zap.ErrorLevel)
 	srvRedirectTLS := http.Server{

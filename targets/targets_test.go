@@ -24,7 +24,8 @@ func createRouter() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Recoverer)
-	tr := NewTargetsResource(notary.NewService("../notary-config.json"))
+	n, _ := notary.NewService("../notary-config.json")
+	tr := NewTargetsResource(n)
 
 	tr.RegisterRoutes(r)
 	return r

@@ -14,7 +14,7 @@ import (
 	"github.com/philips-labs/dct-notary-admin/targets"
 )
 
-func configureAPI(c *Config, l *zap.Logger) *chi.Mux {
+func configureAPI(n *notary.Service, l *zap.Logger) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -30,8 +30,7 @@ func configureAPI(c *Config, l *zap.Logger) *chi.Mux {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("pong\n"))
 	})
-	notaryService := notary.NewService(c.NotaryConfigFile)
-	tr := targets.NewTargetsResource(notaryService)
+	tr := targets.NewTargetsResource(n)
 	tr.RegisterRoutes(r)
 
 	logRoutes(r, l)
