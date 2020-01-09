@@ -24,6 +24,12 @@ For a easier development workflow it is recommended to install **CMake**.
 | Windows  | `choco install -y cmake` | [cmake-3.16.2-win64-x64.msi][]     |
 | MacOSX   | `brew install cmake`     | [cmake-3.16.2-Darwin-x86_64.dmg][] |
 
+### Accept Self signed certs in Google Chrome
+
+For Google Chrome to accept the selfsigned certificates please enable the option `allow-insecure-localhost` by navigating to [](chrome://flags/#allow-insecure-localhost) in your address bar.
+
+To only allow for the current certificate that is blocked type `thisisunsafe` with focus on the `Your connection is not private` page, the page will autorefresh once the full phrase is typed. In older versions of chrome you had to type `badidea` or `danger`.
+
 ## Build
 
 ```bash
@@ -55,20 +61,18 @@ make coverage-html
 
 ## Run
 
-To run the server TLS certificates are required to serve the endpoints using HTTP/2.
-
-```bash
-make certs
-```
-
 Now you can start the server as following:
 
 ```bash
 bin/dctna
 ```
 
+> **NOTE:** you can pass the sandbox `notary-config.json` as following. `bin/dctna -notary-config-file ./notary-config.json`.
+
 Or via the Make shorthand which also builds the solution.
 
 ```bash
 make run
 ```
+
+> **NOTE:** via make we will also use our sandboxed `notary-config.json` automatically to prevent you from messing arround with your current notary (Production) settings.

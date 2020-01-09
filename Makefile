@@ -42,7 +42,7 @@ certs:
 	@mkdir -p certs
 	@openssl req \
        -newkey rsa:2048 -nodes -keyout certs/server.key \
-	   -subj "/C=NL/O=Philips Labs/CN=localhost:8086" \
+	   -subj "/C=NL/O=Philips Labs/CN=localhost:8443" \
        -new -out certs/server.csr
 	@openssl x509 \
        -signkey certs/server.key \
