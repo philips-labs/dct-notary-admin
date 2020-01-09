@@ -125,12 +125,8 @@ func (s *Service) GetTarget(ctx context.Context, id string) (*Key, error) {
 	return &target, nil
 }
 
-func (s *Service) ListDelegates(ctx context.Context, id string) (map[string][]Key, error) {
+func (s *Service) ListDelegates(ctx context.Context, target *Key) (map[string][]Key, error) {
 	var delegates map[string][]Key
-	target, err := s.GetTarget(ctx, id)
-	if err != nil {
-		return nil, err
-	}
 	if target == nil {
 		return delegates, nil
 	}

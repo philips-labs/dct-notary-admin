@@ -76,7 +76,16 @@ func (tr *Resource) listDelegates(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
-	delegates, err := tr.notary.ListDelegates(ctx, id)
+	target, err := tr.notary.GetTarget(ctx, id)
+	if err != nil {
+		respond(w, r, e.ErrRender(err))
+		return
+	}
+	if target == nil {
+		respond(w, r, e.ErrNotFound)
+		return
+	}
+	delegates, err := tr.notary.ListDelegates(ctx, target)
 	if err != nil {
 		respond(w, r, e.ErrRender(err))
 		return

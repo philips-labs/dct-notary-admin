@@ -48,7 +48,7 @@ func TestListDelegates(t *testing.T) {
 	for _, target := range expectedTargets {
 		t.Run(target.GUN, func(tt *testing.T) {
 			assert := assert.New(tt)
-			delegates, err := s.ListDelegates(ctx, target.ID[:7])
+			delegates, err := s.ListDelegates(ctx, &target)
 			assert.NoError(err)
 			assert.Len(delegates, 1)
 			assert.Len(delegates[expectedSigner.Role], 1)

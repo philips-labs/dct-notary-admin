@@ -97,6 +97,6 @@ func TestListTargetDelegates(t *testing.T) {
 	rr := httptest.NewRecorder()
 	router.ServeHTTP(rr, req)
 
-	assert.Equal(http.StatusOK, rr.Code, "Invalid status code")
-	assert.Equal(EmptyResponse, rr.Body.String(), "Invalid response text")
+	assert.Equal(http.StatusNotFound, rr.Code, "Invalid status code")
+	assert.Equal(NotFoundResponse, rr.Body.String(), "Invalid response text")
 }
