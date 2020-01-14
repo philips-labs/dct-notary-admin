@@ -1,6 +1,7 @@
 {
-    "trust_dir": "~/.dctna/trust",
+    "trust_dir": "~/.docker/trust",
     "remote_server": {
-        "url": "https://localhost:4443"
+        "url": "https://localhost:4443",
+        "skipTLSVerify": true
     }
 }
