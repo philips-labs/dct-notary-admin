@@ -26,7 +26,7 @@ var (
 // Key holds Path and GUN to keys
 type Key struct {
 	ID   string `json:"id"`
-	GUN  string `json:"gun"`
+	GUN  string `json:"gun,omitempty"`
 	Role string `json:"role"`
 }
 
