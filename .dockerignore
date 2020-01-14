@@ -1,0 +1,9 @@
+.git
+.vscode
+.github
+.gitignore
+bin
+Makefile
+Dockerfile
+docker-compose.yml
+*.out

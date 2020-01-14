@@ -1,0 +1,19 @@
+version: "2.0"
+services:
+  dctna:
+    image: dctna
+    build: .
+    networks:
+      - sig
+    ports:
+      - "8086:8086"
+      - "8443:8443"
+    volumes:
+      - dct_data:/root/.docker/trust
+
+volumes:
+  dct_data:
+    external: false
+networks:
+  sig:
+    external: false
