@@ -34,11 +34,11 @@ To only allow for the current certificate that is blocked type `thisisunsafe` wi
 
 To run in an isolated environment to do some testing you should run the sandbox. The sandbox connects to a notary server and registry in the docker-compose setup.
 
-Cloning the notary sandbox.
+Initializing the notary git submodule.
 
 ```bash
-mkdir -p ~/code/priv
-git clone -b feature/sandbox git@github.com:marcofranssen/notary.git ~/code/priv/notary
+git submodule init
+git submodule update
 ```
 
 Run the sandbox
