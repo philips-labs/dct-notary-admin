@@ -4,12 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/philips-labs/dct-notary-admin/notary"
-
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
-	e "github.com/philips-labs/dct-notary-admin/errors"
+	e "github.com/philips-labs/dct-notary-admin/lib/errors"
+	"github.com/philips-labs/dct-notary-admin/lib/notary"
 )
 
 // Resource holds api endpoints for the /targets urls
