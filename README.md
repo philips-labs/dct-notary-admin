@@ -30,7 +30,42 @@ For Google Chrome to accept the selfsigned certificates please enable the option
 
 To only allow for the current certificate that is blocked type `thisisunsafe` with focus on the `Your connection is not private` page, the page will autorefresh once the full phrase is typed. In older versions of chrome you had to type `badidea` or `danger`.
 
-## Build
+## Run the sandbox
+
+To run in an isolated environment to do some testing you should run the sandbox. The sandbox connects to a notary server and registry in the docker-compose setup.
+
+Cloning the notary sandbox.
+
+```bash
+mkdir -p ~/code/priv
+git clone -b feature/sandbox git@github.com:marcofranssen/notary.git ~/code/priv/notary
+```
+
+Run the sandbox
+
+```bash
+make run-sandbox
+```
+
+Too provision the notary sandbox with some signed images you can use the `bootstrap-sandbox` make target.
+
+```bash
+make bootstrap-sandbox
+```
+
+To play with the notary and docker trust cli you can open the shell for the sandbox. [Signing docker images using docker content trust](https://marcofranssen.nl/signing-docker-images-using-docker-content-trust/)
+
+```bash
+docker-compose -f ~/code/priv/notary/docker-compose.sandbox.yml -f docker-compose.yml exec sandbox sh
+```
+
+Too shutdown the sandbox you can run the `stop-sandbox` make target.
+
+```bash
+make stop-sandbox
+```
+
+## Build binary
 
 ```bash
 make build
