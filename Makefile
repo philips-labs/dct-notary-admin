@@ -1,6 +1,6 @@
 export GOPRIVATE := github.com/philips-labs/*
 
-NOTARY_REPO ?= $${HOME}/code/priv/notary
+NOTARY_REPO ?= $(CURDIR)/notary
 SANDBOX_COMPOSE ?= $(NOTARY_REPO)/docker-compose.sandbox.yml
 
 .PHONY: all
@@ -12,8 +12,8 @@ run: build
 
 .PHONY: build-sandbox
 build-sandbox:
-	@docker-compose -f $(SANDBOX_COMPOSE) build
-	@docker-compose -f docker-compose.yml build
+	@(cd $(NOTARY_REPO) ; make cross ; docker-compose build)
+	@docker-compose build
 
 .PHONY: clean-dangling-images
 clean-dangling-images:
