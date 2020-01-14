@@ -1,11 +1,46 @@
 export GOPRIVATE := github.com/philips-labs/*
 
+NOTARY_REPO ?= $${HOME}/code/priv/notary
+SANDBOX_COMPOSE ?= $(NOTARY_REPO)/docker-compose.sandbox.yml
+
 .PHONY: all
 all: build test
 
 .PHONY: run
 run: build
 	@bin/dctna -notary-config-file ./notary-config.json
+
+.PHONY: build-sandbox
+build-sandbox:
+	@docker-compose -f $(SANDBOX_COMPOSE) build
+	@docker-compose -f docker-compose.yml build
+
+.PHONY: clean-dangling-images
+clean-dangling-images:
+	@docker rmi $$(docker images -qf dangling=true)
+
+.PHONY: run-sandbox
+run-sandbox: build-sandbox
+	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml up -d
+	@echo
+	@echo Too get logs:
+	@echo "  make sandbox-logs"
+	@echo
+	@echo Too enter the sandbox:
+	@echo "  docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml exec sandbox sh"
+
+.PHONY: bootstrap-sandbox
+bootstrap-sandbox:
+	@docker cp bootstrap-sandbox.sh notary_sandbox_1:/root/
+	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml exec sandbox ./bootstrap-sandbox.sh
+
+.PHONY: sandbox-logs
+sandbox-logs:
+	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml logs -f
+
+.PHONY: sandbox-logs
+stop-sandbox:
+	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml down
 
 .PHONY: download
 download:
