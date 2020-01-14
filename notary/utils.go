@@ -38,9 +38,11 @@ func getPassphraseRetriever() notary.PassRetriever {
 type KeyFilter func(Key) bool
 
 var (
+	// TargetsFilter filters all keys by role equals targets
 	TargetsFilter KeyFilter = func(k Key) bool { return k.Role == "targets" }
 )
 
+// IDFilter filters the keys by the given id
 func IDFilter(id string) KeyFilter {
 	return KeyFilter(func(k Key) bool { return strings.HasPrefix(k.ID, id) })
 }

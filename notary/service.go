@@ -72,6 +72,7 @@ func getConfig(configFile string) (*notaryConfig, error) {
 	return &config, nil
 }
 
+// StreamKeys returns a Stream of Key
 func (s *Service) StreamKeys(ctx context.Context) (<-chan Key, error) {
 	keysChan := make(chan Key, 2)
 	fileKeyStore, err := trustmanager.NewKeyFileStore(s.config.TrustDir, getPassphraseRetriever())
@@ -125,6 +126,7 @@ func (s *Service) GetTarget(ctx context.Context, id string) (*Key, error) {
 	return &target, nil
 }
 
+// ListDelegates returns delegate keys for the given target
 func (s *Service) ListDelegates(ctx context.Context, target *Key) (map[string][]Key, error) {
 	var delegates map[string][]Key
 	if target == nil {
