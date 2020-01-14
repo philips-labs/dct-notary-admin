@@ -1,17 +1,17 @@
-package main
+package lib
 
 import (
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/philips-labs/dct-notary-admin/notary"
+	"github.com/philips-labs/dct-notary-admin/lib/notary"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"go.uber.org/zap"
 
-	"github.com/philips-labs/dct-notary-admin/targets"
+	"github.com/philips-labs/dct-notary-admin/lib/targets"
 )
 
 func configureAPI(n *notary.Service, l *zap.Logger) *chi.Mux {

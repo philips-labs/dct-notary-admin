@@ -9,7 +9,8 @@ import (
 
 	"github.com/mitchellh/go-homedir"
 
-	"github.com/philips-labs/dct-notary-admin/notary"
+	"github.com/philips-labs/dct-notary-admin/lib"
+	"github.com/philips-labs/dct-notary-admin/lib/notary"
 )
 
 var (
@@ -35,7 +36,7 @@ func main() {
 		logger.Fatal("failed to expand home directory", zap.Error(err))
 	}
 
-	config := &Config{
+	config := &lib.Config{
 		ListenAddr:       listenAddr,
 		ListenAddrTLS:    listenAddrTLS,
 		NotaryConfigFile: expandedNotaryConfigFile,
@@ -46,6 +47,6 @@ func main() {
 		logger.Fatal("failed to create notary service", zap.Error(err))
 	}
 
-	server := NewServer(config, n, logger)
+	server := lib.NewServer(config, n, logger)
 	server.Start()
 }

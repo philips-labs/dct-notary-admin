@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/philips-labs/dct-notary-admin/notary"
+	"github.com/philips-labs/dct-notary-admin/lib/notary"
 )
 
 const (
@@ -38,7 +38,7 @@ func NewServer(c *Config, n *notary.Service, l *zap.Logger) *Server {
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			host, _, _ := net.SplitHostPort(r.Host)
 			u := r.URL
-			u.Host = net.JoinHostPort(host, listenAddrTLS[1:])
+			u.Host = net.JoinHostPort(host, c.ListenAddrTLS[1:])
 			u.Scheme = "https"
 			http.Redirect(w, r, u.String(), http.StatusMovedPermanently)
 		}),

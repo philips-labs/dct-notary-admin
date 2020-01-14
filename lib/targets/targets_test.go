@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/philips-labs/dct-notary-admin/notary"
+	"github.com/philips-labs/dct-notary-admin/lib/notary"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"

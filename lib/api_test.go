@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"net/http"
@@ -7,10 +7,11 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi"
-	"github.com/philips-labs/dct-notary-admin/notary"
 	"github.com/stretchr/testify/assert"
 
 	"go.uber.org/zap"
+
+	"github.com/philips-labs/dct-notary-admin/lib/notary"
 )
 
 type registeredRoute struct {

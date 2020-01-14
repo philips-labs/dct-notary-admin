@@ -1,4 +1,4 @@
-package main
+package lib
 
 // Config holds configuration options
 type Config struct {

@@ -3,7 +3,7 @@ package targets
 import (
 	"net/http"
 
-	"github.com/philips-labs/dct-notary-admin/notary"
+	"github.com/philips-labs/dct-notary-admin/lib/notary"
 
 	"github.com/go-chi/render"
 )

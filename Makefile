@@ -34,7 +34,7 @@ coverage-html: coverage
 .PHONY: build
 build: download
 	@echo Building binary
-	@go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o bin/dctna .
+	@go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o bin/dctna ./cmd
 
 .PHONY: certs
 certs:
