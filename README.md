@@ -102,7 +102,7 @@ Now you can start the server as following:
 bin/dctna
 ```
 
-> **NOTE:** you can pass the sandbox `notary-config.json` as following. `bin/dctna -notary-config-file ./notary-config.json`.
+> **NOTE:** you can pass the sandbox `.notary/config.json` as following. `bin/dctna --config .notary/config.json`.
 
 Or via the Make shorthand which also builds the solution.
 
@@ -110,4 +110,4 @@ Or via the Make shorthand which also builds the solution.
 make run
 ```
 
-> **NOTE:** via make we will also use our sandboxed `notary-config.json` automatically to prevent you from messing arround with your current notary (Production) settings.
+> **NOTE:** via make we will also use our sandboxed `.notary/config.json` automatically to prevent you from messing arround with your current notary (Production) settings.

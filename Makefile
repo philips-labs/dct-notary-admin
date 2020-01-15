@@ -8,7 +8,7 @@ all: build test
 
 .PHONY: run
 run: build
-	@bin/dctna -notary-config-file ./notary-config.json
+	@bin/dctna --config .notary/config.json
 
 .PHONY: build-sandbox
 build-sandbox:

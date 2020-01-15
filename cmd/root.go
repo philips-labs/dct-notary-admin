@@ -58,7 +58,7 @@ centralized to better manage backups.`,
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.notary/config.json)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is ./.notary/config.json or $HOME/.notary/config.json)")
 	rootCmd.PersistentFlags().String("listen-addr", "", "http listen address of server")
 	rootCmd.PersistentFlags().String("listen-addr-tls", "", "https listen address of server")
 }
@@ -76,7 +76,7 @@ func initConfig() {
 		}
 
 		viper.AddConfigPath(path.Join(home, ".notary"))
-		viper.AddConfigPath("./")
+		viper.AddConfigPath(path.Join("./", ".notary"))
 		viper.SetConfigName("config")
 	}
 

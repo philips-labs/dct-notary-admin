@@ -1,5 +1,5 @@
 {
-    "trust_dir": "~/.docker/trust",
+    "trust_dir": ".",
     "remote_server": {
         "url": "https://localhost:4443",
         "skipTLSVerify": true

@@ -37,6 +37,6 @@ WORKDIR /root
 RUN mkdir -p .notary/certs && mkdir -p .docker/trust && mkdir -p certs
 VOLUME [ "/root/.notary", "/root/.docker/trust", "/root/certs" ]
 COPY certs/ /root/certs/
-COPY notary-config.json /root/.notary/config.json
+COPY .notary/config.json /root/.notary/config.json
 COPY --from=builder /build/dctna /root/
 CMD [ "./dctna" ]
