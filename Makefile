@@ -3,6 +3,16 @@ export GOPRIVATE := github.com/philips-labs/*
 NOTARY_REPO ?= $(CURDIR)/notary
 SANDBOX_COMPOSE ?= $(NOTARY_REPO)/docker-compose.sandbox.yml
 
+VERSION := 0.0.0-dev
+GITCOMMIT := $(shell git rev-parse --short HEAD)
+GITUNTRACKEDCHANGES := $(shell git status --porcelain --untracked-files=no)
+ifneq ($(GITUNTRACKEDCHANGES),)
+GITCOMMIT := $(GITCOMMIT)-dirty
+endif
+CTIMEVAR=-X main.commit=$(GITCOMMIT) -X main.version=$(VERSION) -X main.date=$(shell date +%FT%TZ)
+GO_LDFLAGS=-ldflags "-w $(CTIMEVAR)"
+GO_LDFLAGS_STATIC=-ldflags "-w $(CTIMEVAR) -extldflags -static"
+
 .PHONY: all
 all: build test
 
@@ -69,7 +79,11 @@ coverage-html: coverage
 .PHONY: build
 build: download
 	@echo Building binary
-	@go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o bin/dctna .
+	@go build -a ${GO_LDFLAGS} -o bin/dctna .
+
+build-static: download
+	@echo Building binary
+	@go build -a -installsuffix cgo ${GO_LDFLAGS_STATIC} -o bin/static/dctna .
 
 .PHONY: certs
 certs:

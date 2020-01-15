@@ -52,9 +52,10 @@ func TestListDelegates(t *testing.T) {
 			assert := assert.New(tt)
 			delegates, err := s.ListDelegates(ctx, &target)
 			assert.NoError(err)
-			assert.Len(delegates, 1)
-			assert.Len(delegates[expectedSigner.Role], 1)
-			assert.Equal(expectedSigner, delegates[expectedSigner.Role][0])
+			if assert.Len(delegates, 1) {
+				assert.Len(delegates[expectedSigner.Role], 1)
+				assert.Equal(expectedSigner, delegates[expectedSigner.Role][0])
+			}
 		})
 	}
 }

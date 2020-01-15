@@ -28,6 +28,11 @@ create new targets and manage signers / delegates via a
 RESTFULL api. This enables us to keep keys more private and
 centralized to better manage backups.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if v, _ := cmd.Flags().GetBool("version"); v {
+			cmd.Println(sprintVersion(cmd))
+			return
+		}
+
 		logger, err := zap.NewDevelopment(zap.AddStacktrace(zapcore.FatalLevel))
 		if err != nil {
 			log.Fatalf("Can't initialize zap logger: %v", err)
@@ -61,6 +66,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is ./.notary/config.json or $HOME/.notary/config.json)")
 	rootCmd.PersistentFlags().String("listen-addr", "", "http listen address of server")
 	rootCmd.PersistentFlags().String("listen-addr-tls", "", "https listen address of server")
+
+	rootCmd.Flags().BoolP("version", "v", false, "shows version information")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -99,7 +106,8 @@ func setDefaultAndFlagBinding(key, flag string, value interface{}) {
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
+func Execute(v VersionInfo) {
+	version = v
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
