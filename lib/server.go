@@ -28,7 +28,7 @@ type Server struct {
 // NewServer creates a Server serving application endpoints
 //
 // The server implements a graceful shutdown and utilizes zap.Logger to log Requests.
-func NewServer(c *Config, n *notary.Service, l *zap.Logger) *Server {
+func NewServer(c *ServerConfig, n *notary.Service, l *zap.Logger) *Server {
 	l.Info("Configuring server")
 	r := configureAPI(n, l)
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,15 +19,16 @@ var (
 func TestListTargets(t *testing.T) {
 	assert := assert.New(t)
 
-	expandedConfigPath, err := homedir.Expand("~/.notary/config.json")
-	assert.NoError(err)
-
-	s, err := NewService(expandedConfigPath)
-	assert.NoError(err)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	s := NewService(&NotaryConfig{
+		TrustDir: "~/.docker/trust",
+		RemoteServer: RemoteServerConfig{
+			URL:           "https://localhost:4443",
+			SkipTLSVerify: true,
+		},
+	})
 	targets, err := s.ListTargets(ctx)
 	assert.NoError(err)
 	assert.Len(targets, len(expectedTargets))
@@ -36,14 +36,16 @@ func TestListTargets(t *testing.T) {
 }
 
 func TestListDelegates(t *testing.T) {
-	expandedConfigPath, err := homedir.Expand("~/.notary/config.json")
-	assert.NoError(t, err)
-
-	s, err := NewService(expandedConfigPath)
-	assert.NoError(t, err)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	s := NewService(&NotaryConfig{
+		TrustDir: "~/.docker/trust",
+		RemoteServer: RemoteServerConfig{
+			URL:           "https://localhost:4443",
+			SkipTLSVerify: true,
+		},
+	})
 
 	for _, target := range expectedTargets {
 		t.Run(target.GUN, func(tt *testing.T) {

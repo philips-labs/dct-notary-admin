@@ -1,0 +1,107 @@
+package cmd
+
+import (
+	"fmt"
+	"log"
+	"os"
+	"path"
+	"strings"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+
+	homedir "github.com/mitchellh/go-homedir"
+
+	"github.com/philips-labs/dct-notary-admin/lib"
+	"github.com/philips-labs/dct-notary-admin/lib/notary"
+)
+
+var cfgFile string
+
+var rootCmd = &cobra.Command{
+	Use:   "dctna",
+	Short: "Docker Content Trust and Notary Admin",
+	Long: `Docker Content Trust and Notary Admin allows to
+create new targets and manage signers / delegates via a
+RESTFULL api. This enables us to keep keys more private and
+centralized to better manage backups.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		logger, err := zap.NewDevelopment(zap.AddStacktrace(zapcore.FatalLevel))
+		if err != nil {
+			log.Fatalf("Can't initialize zap logger: %v", err)
+		}
+		defer logger.Sync()
+
+		var serverCfg lib.ServerConfig
+		// Bug in viper.UnmarshalKey returning nil?
+		// if err := viper.UnmarshalKey("server", &serverCfg); err != nil {
+		// 	logger.Fatal("Could not parse configuration", zap.Error(err))
+		// }
+		serverCfg = lib.ServerConfig{
+			ListenAddr:    viper.GetString("server.listen_addr"),
+			ListenAddrTLS: viper.GetString("server.listen_addr_tls"),
+		}
+
+		var notaryCfg notary.NotaryConfig
+		if err := viper.Unmarshal(&notaryCfg); err != nil {
+			logger.Fatal("Could not parse configuration", zap.Error(err))
+		}
+
+		n := notary.NewService(&notaryCfg)
+		server := lib.NewServer(&serverCfg, n, logger)
+		server.Start()
+	},
+}
+
+func init() {
+	cobra.OnInitialize(initConfig)
+
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.notary/config.json)")
+	rootCmd.PersistentFlags().String("listen-addr", "", "http listen address of server")
+	rootCmd.PersistentFlags().String("listen-addr-tls", "", "https listen address of server")
+}
+
+// initConfig reads in config file and ENV variables if set.
+func initConfig() {
+	if cfgFile != "" {
+		// Use config file from the flag.
+		viper.SetConfigFile(cfgFile)
+	} else {
+		home, err := homedir.Dir()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		viper.AddConfigPath(path.Join(home, ".notary"))
+		viper.AddConfigPath("./")
+		viper.SetConfigName("config")
+	}
+
+	setDefaultAndFlagBinding("server.listen_addr", "listen-addr", ":8086")
+	setDefaultAndFlagBinding("server.listen_addr_tls", "listen-addr-tls", ":8443")
+
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+	viper.AutomaticEnv()
+
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	}
+}
+
+func setDefaultAndFlagBinding(key, flag string, value interface{}) {
+	viper.SetDefault(key, value)
+	viper.BindPFlag(key, rootCmd.PersistentFlags().Lookup(flag))
+}
+
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}

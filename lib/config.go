@@ -1,8 +1,7 @@
 package lib
 
-// Config holds configuration options
-type Config struct {
-	ListenAddr       string
-	ListenAddrTLS    string
-	NotaryConfigFile string
+// ServerConfig holds configuration options
+type ServerConfig struct {
+	ListenAddr    string `json:"listen_addr"`
+	ListenAddrTLS string `json:"listen_addr_tls"`
 }

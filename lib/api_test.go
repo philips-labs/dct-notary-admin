@@ -19,12 +19,15 @@ type registeredRoute struct {
 	route  string
 }
 
-func bootstrapAPI() (*chi.Mux, error) {
-	n, err := notary.NewService("./notary-config.json")
-	if err != nil {
-		return nil, err
-	}
-	return configureAPI(n, zap.NewNop()), nil
+func bootstrapAPI() *chi.Mux {
+	n := notary.NewService(&notary.NotaryConfig{
+		TrustDir: "~/.dctna/trust",
+		RemoteServer: notary.RemoteServerConfig{
+			URL:           "https://localhost:4443",
+			SkipTLSVerify: true,
+		},
+	})
+	return configureAPI(n, zap.NewNop())
 }
 
 func TestRoutes(t *testing.T) {
@@ -38,11 +41,10 @@ func TestRoutes(t *testing.T) {
 		{http.MethodGet, "/targets/{target}/delegates"},
 	}
 
-	router, err := bootstrapAPI()
-	assert.NoError(err)
+	router := bootstrapAPI()
 
 	routes := make([]registeredRoute, 0)
-	err = chi.Walk(router, func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+	err := chi.Walk(router, func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
 		route = strings.Replace(route, "/*/", "/", -1)
 		routes = append(routes, registeredRoute{method, route})
 		return nil
@@ -54,8 +56,7 @@ func TestRoutes(t *testing.T) {
 
 func TestGetRoot(t *testing.T) {
 	assert := assert.New(t)
-	router, err := bootstrapAPI()
-	assert.NoError(err)
+	router := bootstrapAPI()
 
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
 	assert.NoError(err, "Failed to create request")
@@ -69,8 +70,7 @@ func TestGetRoot(t *testing.T) {
 
 func TestGetPing(t *testing.T) {
 	assert := assert.New(t)
-	router, err := bootstrapAPI()
-	assert.NoError(err)
+	router := bootstrapAPI()
 
 	req, err := http.NewRequest(http.MethodGet, "/ping", nil)
 	assert.NoError(err, "Failed to create request")

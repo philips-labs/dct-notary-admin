@@ -2,13 +2,12 @@ package notary
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"os"
 	"path"
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
+
 	"github.com/theupdateframework/notary/client"
 	"github.com/theupdateframework/notary/trustmanager"
 	"github.com/theupdateframework/notary/trustpinning"
@@ -32,44 +31,27 @@ type Key struct {
 
 // Service notary service exposes notary operations
 type Service struct {
-	config     *notaryConfig
-	configFile string
+	config *NotaryConfig
 }
 
-type notaryConfig struct {
-	TrustDir     string `json:"trust_dir"`
-	RemoteServer struct {
-		URL           string `json:"url"`
-		RootCA        string `json:"root_ca"`
-		TLSClientKey  string `json:"tls_client_key"`
-		TLSClientCert string `json:"tls_client_cert"`
-		SkipTLSVerify bool   `json:"skipTLSVerify"`
-	} `json:"remote_server"`
+type NotaryConfig struct {
+	TrustDir     string             `json:"trust_dir"`
+	RemoteServer RemoteServerConfig `json:"remote_server"`
+}
+
+type RemoteServerConfig struct {
+	URL           string `json:"url"`
+	RootCA        string `json:"root_ca"`
+	TLSClientKey  string `json:"tls_client_key"`
+	TLSClientCert string `json:"tls_client_cert"`
+	SkipTLSVerify bool   `json:"skipTLSVerify"`
 }
 
 // NewService creates a new notary service object
-func NewService(configFile string) (*Service, error) {
-	config, err := getConfig(configFile)
-	if err != nil {
-		return nil, err
-	}
-	return &Service{config, configFile}, nil
-}
-
-func getConfig(configFile string) (*notaryConfig, error) {
-	var config notaryConfig
-	f, err := os.Open(configFile)
-	if err != nil {
-		return nil, fmt.Errorf("could not open config file: %w", err)
-	}
-	defer f.Close()
-	err = json.NewDecoder(f).Decode(&config)
-	if err != nil {
-		return nil, fmt.Errorf("could not read config file: %w", err)
-	}
-	expandedTrustDir, err := homedir.Expand(config.TrustDir)
-	config.TrustDir = expandedTrustDir
-	return &config, nil
+func NewService(config *NotaryConfig) *Service {
+	expandedHomeDir, _ := homedir.Expand(config.TrustDir)
+	config.TrustDir = expandedHomeDir
+	return &Service{config}
 }
 
 // StreamKeys returns a Stream of Key
