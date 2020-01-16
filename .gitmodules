@@ -1,4 +1,4 @@
 [submodule "notary"]
 	path = notary
-	url = git@github.com:marcofranssen/notary.git
+	url = git@github.com:philips-labs/notary.git
 	branch = feature/sandbox
