@@ -60,12 +60,12 @@ download:
 .PHONY: test
 test:
 	@echo Testing
-	@go test -v -count=1 ./...
+	@go test -race -v -count=1 ./...
 
 .PHONY: coverage
 coverage:
 	@echo Testing with code coverage
-	@go test -v -count=1 -covermode=atomic -coverprofile=coverage.out ./...
+	@go test -race -v -count=1 -covermode=atomic -coverprofile=coverage.out ./...
 
 .PHONY: coverage-out
 coverage-out: coverage
