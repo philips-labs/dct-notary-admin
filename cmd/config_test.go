@@ -68,7 +68,7 @@ func TestResolvePaths(t *testing.T) {
 		key, input, exp string
 	}{
 		{key: "test_absolute", input: "/var/lib/stuff", exp: "/var/lib/stuff"},
-		{key: "test_relative", input: "./lib/stuff", exp: path.Join(wd, "lib", "stuff")},
+		{key: "test_relative", input: "./lib/stuff", exp: path.Join(wd, "../.notary", "lib", "stuff")},
 		{key: "test_home", input: "~/stuff", exp: path.Join(home, "stuff")},
 	}
 
@@ -79,4 +79,31 @@ func TestResolvePaths(t *testing.T) {
 			assert.Equal(tt, tc.exp, viper.Get(tc.key))
 		})
 	}
+}
+
+func TestUnmarshalServerConfig(t *testing.T) {
+	assert := assert.New(t)
+
+	cfg, err := unmarshalServerConfig()
+	assert.NoError(err)
+	assert.NotNil(cfg)
+	assert.Equal(":8086", cfg.ListenAddr)
+	assert.Equal(":8443", cfg.ListenAddrTLS)
+}
+
+func TestUnmarshalNotaryConfig(t *testing.T) {
+	assert := assert.New(t)
+
+	wd, err := os.Getwd()
+	assert.NoError(err)
+
+	cfg, err := unmarshalNotaryConfig()
+	assert.NoError(err)
+	assert.NotNil(cfg)
+	assert.Equal(path.Join(wd, "../.notary"), cfg.TrustDir)
+	assert.Equal("", cfg.RemoteServer.RootCA)
+	assert.True(cfg.RemoteServer.SkipTLSVerify)
+	assert.Equal("", cfg.RemoteServer.TLSClientCert)
+	assert.Equal("", cfg.RemoteServer.TLSClientKey)
+	assert.Equal("https://localhost:4443", cfg.RemoteServer.URL)
 }

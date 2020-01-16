@@ -39,23 +39,20 @@ centralized to better manage backups.`,
 		}
 		defer logger.Sync()
 
-		var serverCfg lib.ServerConfig
-		// Bug in viper.UnmarshalKey returning nil?
-		// if err := viper.UnmarshalKey("server", &serverCfg); err != nil {
-		// 	logger.Fatal("Could not parse configuration", zap.Error(err))
-		// }
-		serverCfg = lib.ServerConfig{
-			ListenAddr:    viper.GetString("server.listen_addr"),
-			ListenAddrTLS: viper.GetString("server.listen_addr_tls"),
-		}
-
-		var notaryCfg notary.NotaryConfig
-		if err := viper.Unmarshal(&notaryCfg); err != nil {
+		serverCfg, err := unmarshalServerConfig()
+		if err != nil {
 			logger.Fatal("Could not parse configuration", zap.Error(err))
 		}
+		logger.Debug("Unmarshalled ServerConfig", zap.Any("config", serverCfg))
 
-		n := notary.NewService(&notaryCfg)
-		server := lib.NewServer(&serverCfg, n, logger)
+		notaryCfg, err := unmarshalNotaryConfig()
+		if err != nil {
+			logger.Fatal("Could not parse configuration", zap.Error(err))
+		}
+		logger.Debug("Unmarshalled NotaryConfig", zap.Any("config", notaryCfg))
+
+		n := notary.NewService(notaryCfg)
+		server := lib.NewServer(serverCfg, n, logger)
 		server.Start()
 	},
 }

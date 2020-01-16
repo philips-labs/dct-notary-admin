@@ -11,6 +11,8 @@ import (
 	"text/tabwriter"
 
 	"github.com/mitchellh/go-homedir"
+	"github.com/philips-labs/dct-notary-admin/lib"
+	"github.com/philips-labs/dct-notary-admin/lib/notary"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -75,12 +77,37 @@ func writeRecurseSetting(w io.Writer, prefix string, settings map[string]interfa
 	}
 }
 
+func unmarshalServerConfig() (*lib.ServerConfig, error) {
+	var serverCfg lib.ServerConfig
+	if err := viper.UnmarshalKey("server", &serverCfg); err != nil {
+		return nil, err
+	}
+	return &serverCfg, nil
+}
+
+func unmarshalNotaryConfig() (*notary.NotaryConfig, error) {
+	var notaryCfg notary.NotaryConfig
+	if err := viper.Unmarshal(&notaryCfg); err != nil {
+		return nil, err
+	}
+	return &notaryCfg, nil
+}
+
 func resolveConfigPaths(configKeys ...string) {
 	for _, key := range configKeys {
 		absolutePath, _ := homedir.Expand(viper.GetString(key))
+		absolutePath = getPathRelativeToConfig(absolutePath)
 		absolutePath = pathRelativeToCwd(absolutePath)
 		viper.Set(key, absolutePath)
 	}
+}
+
+func getPathRelativeToConfig(p string) string {
+	configFile := viper.ConfigFileUsed()
+	if p == "" || filepath.IsAbs(p) {
+		return p
+	}
+	return filepath.Clean(filepath.Join(filepath.Dir(configFile), p))
 }
 
 func pathRelativeToCwd(path string) string {
