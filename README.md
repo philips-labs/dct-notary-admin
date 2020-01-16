@@ -47,7 +47,7 @@ Run the sandbox
 make run-sandbox
 ```
 
-Too provision the notary sandbox with some signed images you can use the `bootstrap-sandbox` make target.
+To provision the notary sandbox with some signed images you can use the `bootstrap-sandbox` make target.
 
 ```bash
 make bootstrap-sandbox
@@ -56,10 +56,10 @@ make bootstrap-sandbox
 To play with the notary and docker trust cli you can open the shell for the sandbox. [Signing docker images using docker content trust](https://marcofranssen.nl/signing-docker-images-using-docker-content-trust/)
 
 ```bash
-docker-compose -f ~/code/priv/notary/docker-compose.sandbox.yml -f docker-compose.yml exec sandbox sh
+docker-compose -f notary/docker-compose.sandbox.yml -f docker-compose.yml exec sandbox sh
 ```
 
-Too shutdown the sandbox you can run the `stop-sandbox` make target.
+To shutdown the sandbox you can run the `stop-sandbox` make target.
 
 ```bash
 make stop-sandbox
