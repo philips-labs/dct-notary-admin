@@ -97,6 +97,13 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+
+	resolveConfigPaths(
+		"trust_dir",
+		"remote_server.root_ca",
+		"remote_server.tls_client_cert",
+		"remote_server.tls_client_key",
+	)
 }
 
 func setDefaultAndFlagBinding(key, flag string, value interface{}) {

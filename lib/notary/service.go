@@ -6,8 +6,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/mitchellh/go-homedir"
-
 	"github.com/theupdateframework/notary/client"
 	"github.com/theupdateframework/notary/trustmanager"
 	"github.com/theupdateframework/notary/trustpinning"
@@ -49,8 +47,6 @@ type RemoteServerConfig struct {
 
 // NewService creates a new notary service object
 func NewService(config *NotaryConfig) *Service {
-	expandedHomeDir, _ := homedir.Expand(config.TrustDir)
-	config.TrustDir = expandedHomeDir
 	return &Service{config}
 }
 

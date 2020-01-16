@@ -3,10 +3,14 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"reflect"
 	"sort"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/mitchellh/go-homedir"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -69,4 +73,23 @@ func writeRecurseSetting(w io.Writer, prefix string, settings map[string]interfa
 			}
 		}
 	}
+}
+
+func resolveConfigPaths(configKeys ...string) {
+	for _, key := range configKeys {
+		absolutePath, _ := homedir.Expand(viper.GetString(key))
+		absolutePath = pathRelativeToCwd(absolutePath)
+		viper.Set(key, absolutePath)
+	}
+}
+
+func pathRelativeToCwd(path string) string {
+	if path == "" || filepath.IsAbs(path) {
+		return path
+	}
+	cwd, err := os.Getwd()
+	if err != nil {
+		return filepath.Clean(path)
+	}
+	return filepath.Clean(filepath.Join(cwd, path))
 }

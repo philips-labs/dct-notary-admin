@@ -23,7 +23,7 @@ func TestListTargets(t *testing.T) {
 	defer cancel()
 
 	s := NewService(&NotaryConfig{
-		TrustDir: "~/.docker/trust",
+		TrustDir: "./.notary",
 		RemoteServer: RemoteServerConfig{
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,
@@ -40,7 +40,7 @@ func TestListDelegates(t *testing.T) {
 	defer cancel()
 
 	s := NewService(&NotaryConfig{
-		TrustDir: "~/.docker/trust",
+		TrustDir: "./.notary",
 		RemoteServer: RemoteServerConfig{
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,

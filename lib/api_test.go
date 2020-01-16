@@ -21,7 +21,7 @@ type registeredRoute struct {
 
 func bootstrapAPI() *chi.Mux {
 	n := notary.NewService(&notary.NotaryConfig{
-		TrustDir: "~/.dctna/trust",
+		TrustDir: "./.notary",
 		RemoteServer: notary.RemoteServerConfig{
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,

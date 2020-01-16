@@ -11,6 +11,8 @@ tab_width = 4
 
 [*.go]
 indent_style = tab
+# required for multiline strings in test cases
+trim_trailing_whitespace = false
 
 [Makefile]
 indent_style = tab
