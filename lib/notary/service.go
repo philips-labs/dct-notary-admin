@@ -29,14 +29,16 @@ type Key struct {
 
 // Service notary service exposes notary operations
 type Service struct {
-	config *NotaryConfig
+	config *Config
 }
 
-type NotaryConfig struct {
+// Config notary configuration
+type Config struct {
 	TrustDir     string             `json:"trust_dir" mapstructure:"trust_dir"`
 	RemoteServer RemoteServerConfig `json:"remote_server" mapstructure:"remote_server"`
 }
 
+// RemoteServerConfig notary remote server configuration
 type RemoteServerConfig struct {
 	URL           string `json:"url" mapstructure:"url"`
 	RootCA        string `json:"root_ca" mapstructure:"root_ca"`
@@ -46,7 +48,7 @@ type RemoteServerConfig struct {
 }
 
 // NewService creates a new notary service object
-func NewService(config *NotaryConfig) *Service {
+func NewService(config *Config) *Service {
 	return &Service{config}
 }
 

@@ -103,7 +103,7 @@ const (
 	admin
 )
 
-func getTransport(config *NotaryConfig, gun data.GUN, permission httpAccess) (http.RoundTripper, error) {
+func getTransport(config *Config, gun data.GUN, permission httpAccess) (http.RoundTripper, error) {
 	// Attempt to get a root CA from the config file. Nil is the host defaults.
 	rootCAFile := config.RemoteServer.RootCA
 	clientCert := config.RemoteServer.TLSClientCert

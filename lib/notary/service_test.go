@@ -22,7 +22,7 @@ func TestListTargets(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	s := NewService(&NotaryConfig{
+	s := NewService(&Config{
 		TrustDir: "./.notary",
 		RemoteServer: RemoteServerConfig{
 			URL:           "https://localhost:4443",
@@ -39,7 +39,7 @@ func TestListDelegates(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	s := NewService(&NotaryConfig{
+	s := NewService(&Config{
 		TrustDir: "./.notary",
 		RemoteServer: RemoteServerConfig{
 			URL:           "https://localhost:4443",

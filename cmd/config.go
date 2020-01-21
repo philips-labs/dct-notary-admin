@@ -85,8 +85,8 @@ func unmarshalServerConfig() (*lib.ServerConfig, error) {
 	return &serverCfg, nil
 }
 
-func unmarshalNotaryConfig() (*notary.NotaryConfig, error) {
-	var notaryCfg notary.NotaryConfig
+func unmarshalNotaryConfig() (*notary.Config, error) {
+	var notaryCfg notary.Config
 	if err := viper.Unmarshal(&notaryCfg); err != nil {
 		return nil, err
 	}

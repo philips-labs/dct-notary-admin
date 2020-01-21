@@ -24,7 +24,7 @@ func createRouter() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Recoverer)
-	n := notary.NewService(&notary.NotaryConfig{
+	n := notary.NewService(&notary.Config{
 		TrustDir: "../../.notary",
 		RemoteServer: notary.RemoteServerConfig{
 			URL:           "https://localhost:4443",
