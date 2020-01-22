@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"go.uber.org/zap"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,7 +31,7 @@ func TestListTargets(t *testing.T) {
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,
 		},
-	})
+	}, zap.NewNop())
 	targets, err := s.ListTargets(ctx)
 	assert.NoError(err)
 	assert.Len(targets, len(expectedTargets))
@@ -47,7 +49,7 @@ func TestListDelegates(t *testing.T) {
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,
 		},
-	})
+	}, zap.NewNop())
 
 	for _, target := range expectedTargets {
 		t.Run(target.GUN, func(tt *testing.T) {

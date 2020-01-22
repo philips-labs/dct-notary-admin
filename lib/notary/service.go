@@ -6,6 +6,8 @@ import (
 	"path"
 	"strings"
 
+	"go.uber.org/zap"
+
 	"github.com/theupdateframework/notary/client"
 	"github.com/theupdateframework/notary/trustmanager"
 	"github.com/theupdateframework/notary/trustpinning"
@@ -30,6 +32,7 @@ type Key struct {
 // Service notary service exposes notary operations
 type Service struct {
 	config *Config
+	log    *zap.Logger
 }
 
 // Config notary configuration
@@ -48,8 +51,8 @@ type RemoteServerConfig struct {
 }
 
 // NewService creates a new notary service object
-func NewService(config *Config) *Service {
-	return &Service{config}
+func NewService(config *Config, log *zap.Logger) *Service {
+	return &Service{config, log}
 }
 
 // StreamKeys returns a Stream of Key

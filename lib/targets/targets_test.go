@@ -5,12 +5,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/philips-labs/dct-notary-admin/lib/notary"
+	"go.uber.org/zap"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/philips-labs/dct-notary-admin/lib/notary"
 )
 
 const (
@@ -30,7 +32,7 @@ func createRouter() *chi.Mux {
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,
 		},
-	})
+	}, zap.NewNop())
 	tr := NewResource(n)
 
 	tr.RegisterRoutes(r)

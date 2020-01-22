@@ -51,7 +51,7 @@ centralized to better manage backups.`,
 		}
 		logger.Debug("Unmarshalled NotaryConfig", zap.Any("config", notaryCfg))
 
-		n := notary.NewService(notaryCfg)
+		n := notary.NewService(notaryCfg, logger)
 		server := lib.NewServer(serverCfg, n, logger)
 		server.Start()
 	},
