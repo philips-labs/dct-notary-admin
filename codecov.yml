@@ -1,0 +1,30 @@
+codecov:
+  require_ci_to_pass: yes
+  notify:
+    after_n_builds: 1
+
+coverage:
+  range: "70...100"
+  status:
+    # project will give us the diff in the total code coverage between a commit
+    # and its parent
+    project:
+      default:
+        target: auto
+        threshold: "0.05%"
+    # patch would give us the code coverage of the diff only
+    patch: false
+    # changes tells us if there are unexpected code coverage changes in other files
+    # which were not changed by the diff
+    changes: false
+  ignore:  # ignore testutils for coverage
+    - "tuf/testutils/*"
+    - "vendor/*"
+    - "proto/*.pb.go"
+    - "trustmanager/remoteks/*.pb.go"
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: no
+
