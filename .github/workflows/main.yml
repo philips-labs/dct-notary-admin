@@ -1,4 +1,4 @@
-name: Go
+name: CI
 
 on: [push]
 
@@ -19,9 +19,9 @@ jobs:
 
     - name: Get dependencies
       run: go mod download
-      
+
     - name: Build
       run: go build -v .
-      
+
     - name: Test
       run: go test -v -count=1 ./...
