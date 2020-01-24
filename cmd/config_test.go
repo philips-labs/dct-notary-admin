@@ -3,12 +3,12 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 	"testing"
 
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -59,23 +59,51 @@ func TestConfigWithParamsCommand(t *testing.T) {
 	assert.Equal(exp, output, "Expected configuration to be outputted in a different format")
 }
 
-func TestResolvePaths(t *testing.T) {
-	home := os.Getenv("HOME")
+func TestConfigPathRelativeToCwd(t *testing.T) {
+	home, err := homedir.Dir()
+	assert.NoError(t, err)
+
 	wd, err := os.Getwd()
 	assert.NoError(t, err)
 
 	testCases := []struct {
 		key, input, exp string
 	}{
-		{key: "test_absolute", input: "/var/lib/stuff", exp: "/var/lib/stuff"},
-		{key: "test_relative", input: "./lib/stuff", exp: path.Join(wd, "../.notary", "lib", "stuff")},
-		{key: "test_home", input: "~/stuff", exp: path.Join(home, "stuff")},
+		{key: "rel_wd_test_empty", input: "", exp: ""},
+		{key: "rel_wd_test_absolute", input: "/var/lib/stuff", exp: "/var/lib/stuff"},
+		{key: "rel_wd_test_relative", input: "./lib/stuff", exp: filepath.Join(wd, "lib", "stuff")},
+		{key: "rel_wd_test_home", input: "~/stuff", exp: filepath.Join(home, "stuff")},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.key, func(tt *testing.T) {
 			viper.Set(tc.key, tc.input)
-			resolveConfigPaths(tc.key)
+			resolveConfigPathsRelativeToCwd(tc.key)
+			assert.Equal(tt, tc.exp, viper.Get(tc.key))
+		})
+	}
+}
+
+func TestConfigPathRelativeToConfig(t *testing.T) {
+	home, err := homedir.Dir()
+	assert.NoError(t, err)
+
+	wd, err := os.Getwd()
+	assert.NoError(t, err)
+
+	testCases := []struct {
+		key, input, exp string
+	}{
+		{key: "rel_config_test_empty", input: "", exp: ""},
+		{key: "rel_config_test_absolute", input: "/var/lib/stuff", exp: "/var/lib/stuff"},
+		{key: "rel_config_test_relative", input: "./lib/stuff", exp: filepath.Join(wd, "../.notary", "lib", "stuff")},
+		{key: "rel_config_test_home", input: "~/stuff", exp: filepath.Join(home, "stuff")},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.key, func(tt *testing.T) {
+			viper.Set(tc.key, tc.input)
+			resolveConfigPathsRelativeToConfig(tc.key)
 			assert.Equal(tt, tc.exp, viper.Get(tc.key))
 		})
 	}
@@ -100,7 +128,7 @@ func TestUnmarshalNotaryConfig(t *testing.T) {
 	cfg, err := unmarshalNotaryConfig()
 	assert.NoError(err)
 	assert.NotNil(cfg)
-	assert.Equal(path.Join(wd, "../.notary"), cfg.TrustDir)
+	assert.Equal(filepath.Join(wd, "../.notary"), cfg.TrustDir)
 	assert.Equal("", cfg.RemoteServer.RootCA)
 	assert.True(cfg.RemoteServer.SkipTLSVerify)
 	assert.Equal("", cfg.RemoteServer.TLSClientCert)

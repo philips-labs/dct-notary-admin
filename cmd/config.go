@@ -93,30 +93,43 @@ func unmarshalNotaryConfig() (*notary.Config, error) {
 	return &notaryCfg, nil
 }
 
-func resolveConfigPaths(configKeys ...string) {
+func resolveConfigPathsRelativeToConfig(configKeys ...string) {
 	for _, key := range configKeys {
-		absolutePath, _ := homedir.Expand(viper.GetString(key))
-		absolutePath = getPathRelativeToConfig(absolutePath)
-		absolutePath = pathRelativeToCwd(absolutePath)
+		path := viper.GetString(key)
+		absolutePath := resolveConfigPathRelativeToConfig(path)
 		viper.Set(key, absolutePath)
 	}
 }
 
-func getPathRelativeToConfig(p string) string {
-	configFile := viper.ConfigFileUsed()
+func resolveConfigPathsRelativeToCwd(configKeys ...string) {
+	for _, key := range configKeys {
+		path := viper.GetString(key)
+		absolutePath := resolveConfigPathRelativeToCwd(path)
+		viper.Set(key, absolutePath)
+	}
+}
+
+func resolveConfigPathRelativeToConfig(p string) string {
+	if strings.HasPrefix(p, "~") {
+		p, _ = homedir.Expand(p)
+	}
 	if p == "" || filepath.IsAbs(p) {
 		return p
 	}
+	configFile := viper.ConfigFileUsed()
 	return filepath.Clean(filepath.Join(filepath.Dir(configFile), p))
 }
 
-func pathRelativeToCwd(path string) string {
-	if path == "" || filepath.IsAbs(path) {
-		return path
+func resolveConfigPathRelativeToCwd(p string) string {
+	if strings.HasPrefix(p, "~") {
+		p, _ = homedir.Expand(p)
+	}
+	if p == "" || filepath.IsAbs(p) {
+		return p
 	}
 	cwd, err := os.Getwd()
 	if err != nil {
-		return filepath.Clean(path)
+		return filepath.Clean(p)
 	}
-	return filepath.Clean(filepath.Join(cwd, path))
+	return filepath.Clean(filepath.Join(cwd, p))
 }

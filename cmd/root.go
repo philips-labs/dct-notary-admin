@@ -95,7 +95,7 @@ func initConfig() {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 
-	resolveConfigPaths(
+	resolveConfigPathsRelativeToConfig(
 		"trust_dir",
 		"remote_server.root_ca",
 		"remote_server.tls_client_cert",
