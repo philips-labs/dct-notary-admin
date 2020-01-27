@@ -1,5 +1,6 @@
 # Docker Content Trust - Notary Admin
 
+[![CI](https://github.com/philips-labs/dct-notary-admin/workflows/CI/badge.svg)](https://github.com/philips-labs/dct-notary-admin/actions?query=branch%3Adevelop)
 [![codecov](https://codecov.io/gh/philips-labs/dct-notary-admin/branch/develop/graph/badge.svg)](https://codecov.io/gh/philips-labs/dct-notary-admin)
 
 This API and webapp add the capability to manage your Docker Content Trust and notary certificates.
