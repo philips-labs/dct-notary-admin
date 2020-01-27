@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	rootKeyID       = "760e57b96f72ed27e523633d2ffafe45ae0ff804e78dfc014a50f01f823d161d"
 	expectedTargets = []Key{
 		Key{ID: "b635efeddff59751e8b6b59abb45383555103d702e7d3f46fbaaa9a8ac144ab8", GUN: "docker.io/marcofranssen/whalesay", Role: "targets"},
 		Key{ID: "d22b2a4c0651b833f0b1a536068c5ba8588041abe7d058aab95fffc5b78c98bd", GUN: "docker.io/marcofranssen/nginx", Role: "targets"},
@@ -17,6 +18,26 @@ var (
 	}
 	expectedSigner = Key{ID: "eb9dd99255f91efeba139941fbfdb629f11c2353704de07a2ad653d22311c88b", Role: "marcofranssen"}
 )
+
+func TestListRootKeys(t *testing.T) {
+	assert := assert.New(t)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	s := NewService(&Config{
+		TrustDir: "../../.notary",
+		RemoteServer: RemoteServerConfig{
+			URL:           "https://localhost:4443",
+			SkipTLSVerify: true,
+		},
+	}, zap.NewNop())
+
+	rootKeys, err := s.ListRootKeys(ctx)
+	assert.NoError(err)
+	assert.Len(rootKeys, 1)
+	assert.Equal(rootKeyID, rootKeys[0].ID)
+	assert.Equal("", rootKeys[0].GUN)
+}
 
 func TestListTargets(t *testing.T) {
 	t.Skip("Will need stubbing")

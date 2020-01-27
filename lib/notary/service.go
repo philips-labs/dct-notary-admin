@@ -82,20 +82,26 @@ func (s *Service) StreamKeys(ctx context.Context) (<-chan Key, error) {
 	return keysChan, nil
 }
 
+// ListRootKeys lists all the notary root keys
+func (s *Service) ListRootKeys(ctx context.Context) ([]Key, error) {
+	return s.ListKeys(ctx, RootFilter)
+}
+
 // ListTargets lists all the notary target keys
 func (s *Service) ListTargets(ctx context.Context) ([]Key, error) {
+	return s.ListKeys(ctx, TargetsFilter)
+}
+
+// ListKeys lists all the notary keys filtered by the given filter
+func (s *Service) ListKeys(ctx context.Context, filter KeyFilter) ([]Key, error) {
 	keysChan, err := s.StreamKeys(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve keys: %w", err)
 	}
-	targetChan := Reduce(ctx, keysChan, TargetsFilter)
+	filteredChan := Reduce(ctx, keysChan, filter)
+	filtered := KeyChanToList(filteredChan)
 
-	targets := make([]Key, 0)
-	for target := range targetChan {
-		targets = append(targets, target)
-	}
-
-	return targets, nil
+	return filtered, nil
 }
 
 // GetTarget retrieves a target by its path/id

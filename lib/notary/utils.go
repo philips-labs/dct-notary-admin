@@ -40,11 +40,21 @@ type KeyFilter func(Key) bool
 var (
 	// TargetsFilter filters all keys by role equals targets
 	TargetsFilter KeyFilter = func(k Key) bool { return k.Role == "targets" }
+	// RootFilter filters all root keys by role equals root
+	RootFilter KeyFilter = func(k Key) bool { return k.Role == "root" }
 )
 
 // IDFilter filters the keys by the given id
 func IDFilter(id string) KeyFilter {
 	return KeyFilter(func(k Key) bool { return strings.HasPrefix(k.ID, id) })
+}
+
+func KeyChanToList(keysChan <-chan Key) []Key {
+	keys := make([]Key, 0)
+	for key := range keysChan {
+		keys = append(keys, key)
+	}
+	return keys
 }
 
 // Reduce reduces the channel to only stream elements matching the provided filter
