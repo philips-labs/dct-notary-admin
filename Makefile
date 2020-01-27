@@ -60,6 +60,7 @@ download:
 .PHONY: test
 test:
 	@echo Testing
+	@docker-compose -f $(SANDBOX_COMPOSE) up -d
 	@go test -race -v -count=1 ./...
 
 .PHONY: coverage
