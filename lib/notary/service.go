@@ -3,6 +3,7 @@ package notary
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"path"
 	"strings"
 
@@ -105,6 +106,43 @@ func (s *Service) CreateRepository(ctx context.Context, cmd CreateRepoCommand) e
 	}
 
 	return maybeAutoPublish(s.log, cmd.AutoPublish, cmd.GUN, s.config, s.retriever)
+}
+
+// DeleteRepositoryCommand holds data to delete the repository for the given data.GUN
+type DeleteRepositoryCommand struct {
+	GUN          data.GUN
+	DeleteRemote bool
+}
+
+// DeleteRepository deletes the repository for the given gun
+func (s *Service) DeleteRepository(ctx context.Context, cmd DeleteRepositoryCommand) error {
+	if cmd.GUN.String() == "" {
+		return fmt.Errorf("Must specify a GUN")
+	}
+
+	// Only initialize a roundtripper if we get the remote flag
+	var err error
+	var rt http.RoundTripper
+	var remoteDeleteInfo string
+	if cmd.DeleteRemote {
+		rt, err = getTransport(s.config, cmd.GUN, admin)
+		if err != nil {
+			return err
+		}
+		remoteDeleteInfo = " and remote"
+	}
+
+	if err := client.DeleteTrustData(
+		s.config.TrustDir,
+		cmd.GUN,
+		s.config.RemoteServer.URL,
+		rt,
+		cmd.DeleteRemote,
+	); err != nil {
+		return err
+	}
+	s.log.Info(fmt.Sprintf("Successfully deleted local%s trust data for repository", remoteDeleteInfo), zap.Stringer("gun", cmd.GUN))
+	return nil
 }
 
 // StreamKeys returns a Stream of Key

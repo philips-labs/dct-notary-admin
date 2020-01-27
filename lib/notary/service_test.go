@@ -64,7 +64,7 @@ func TestListTargets(t *testing.T) {
 	assert.ElementsMatch(expectedTargets, targets)
 }
 
-func TestCreateRepository(t *testing.T) {
+func TestCreateAndRemoveRepository(t *testing.T) {
 	assert := assert.New(t)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -83,7 +83,7 @@ func TestCreateRepository(t *testing.T) {
 	}, zap.NewNop())
 
 	gun := "localhost:5000/dct-notary-admin"
-	err := s.CreateRepository(ctx, CreateRepoCommand{GUN: data.GUN(gun)})
+	err := s.CreateRepository(ctx, CreateRepoCommand{GUN: data.GUN(gun), AutoPublish: true})
 	assert.NoError(err)
 
 	targetKeys, err := s.ListTargets(ctx)
@@ -96,10 +96,19 @@ func TestCreateRepository(t *testing.T) {
 	assert.Len(snapshotKeys, 1)
 	assert.Equal(gun, snapshotKeys[0].GUN)
 
-	err = os.Remove(filepath.Join(trustStore, "private", fmt.Sprintf("%s.key", targetKeys[0].ID)))
-	assert.NoError(err, "Failed to cleanup newly created target key %s", targetKeys[0].ID)
-	err = os.Remove(filepath.Join(trustStore, "private", fmt.Sprintf("%s.key", snapshotKeys[0].ID)))
-	assert.NoError(err, "Failed to cleanup newly created snapshot key %s", snapshotKeys[0].ID)
+	err = s.DeleteRepository(ctx, DeleteRepositoryCommand{GUN: data.GUN(gun), DeleteRemote: true})
+	assert.NoError(err)
+
+	err = cleanupKeys(targetKeys[0].ID, snapshotKeys[0].ID)
+	assert.NoError(err)
+
+	targetKeys, err = s.ListTargets(ctx)
+	assert.NoError(err)
+	assert.Len(targetKeys, 0)
+
+	snapshotKeys, err = s.ListKeys(ctx, SnapshotsFilter)
+	assert.NoError(err)
+	assert.Len(snapshotKeys, 0)
 }
 
 func TestListDelegates(t *testing.T) {
@@ -126,4 +135,19 @@ func TestListDelegates(t *testing.T) {
 			}
 		})
 	}
+}
+
+func cleanupKeys(keys ...string) error {
+	failures := make([]string, 0)
+	for _, key := range keys {
+		err := os.Remove(filepath.Join(trustStore, "private", fmt.Sprintf("%s.key", key)))
+		if err != nil {
+			failures = append(failures, key)
+		}
+	}
+
+	if len(failures) > 0 {
+		return fmt.Errorf("failed to remove keys %s", failures)
+	}
+	return nil
 }
