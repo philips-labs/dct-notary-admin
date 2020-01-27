@@ -35,8 +35,8 @@ func TestRoutes(t *testing.T) {
 	expectedRoutes := []registeredRoute{
 		{http.MethodGet, "/"},
 		{http.MethodGet, "/ping"},
-		{http.MethodGet, "/targets"},
-		{http.MethodPost, "/targets"},
+		{http.MethodGet, "/targets/"},
+		{http.MethodPost, "/targets/"},
 		{http.MethodGet, "/targets/{target}"},
 		{http.MethodGet, "/targets/{target}/delegates"},
 	}

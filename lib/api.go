@@ -19,6 +19,7 @@ func configureAPI(n *notary.Service, l *zap.Logger) *chi.Mux {
 
 	r.Use(middleware.RequestID)
 	r.Use(zapLogger(l))
+	r.Use(middleware.RedirectSlashes)
 	r.Use(middleware.Recoverer)
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {

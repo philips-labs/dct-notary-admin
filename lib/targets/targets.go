@@ -23,10 +23,12 @@ func NewResource(service *notary.Service) *Resource {
 
 // RegisterRoutes registers the API routes
 func (tr *Resource) RegisterRoutes(r chi.Router) {
-	r.Get("/targets", tr.listTargets)
-	r.Post("/targets", tr.createTargets)
-	r.Get("/targets/{target}", tr.getTarget)
-	r.Get("/targets/{target}/delegates", tr.listDelegates)
+	r.Route("/targets", func(rr chi.Router) {
+		rr.Get("/", tr.listTargets)
+		rr.Post("/", tr.createTargets)
+		rr.Get("/{target}", tr.getTarget)
+		rr.Get("/{target}/delegates", tr.listDelegates)
+	})
 }
 
 func (tr *Resource) listTargets(w http.ResponseWriter, r *http.Request) {
