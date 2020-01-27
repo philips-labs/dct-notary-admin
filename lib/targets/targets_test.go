@@ -20,6 +20,8 @@ const (
 	NotFoundResponse       = "{\"status\":\"Resource not found.\"}\n"
 	InvalidIDResponse      = "{\"status\":\"Invalid request.\",\"error\":\"you must provide at least 7 characters of the path: invalid id\"}\n"
 	EmptyResponse          = "[]\n"
+	DCTResponse            = "{\"id\":\"c3b49d8c15f339864a21c90a0b7c242e737e6a8a4d1ad73603bfdf0709f01241\",\"gun\":\"localhost:5000/dct-notary-admin\",\"role\":\"targets\"}\n"
+	ListResponse           = "[{\"id\":\"c3b49d8c15f339864a21c90a0b7c242e737e6a8a4d1ad73603bfdf0709f01241\",\"gun\":\"localhost:5000/dct-notary-admin\",\"role\":\"targets\"}]\n"
 )
 
 func createRouter() *chi.Mux {
@@ -50,10 +52,24 @@ func TestGetTargets(t *testing.T) {
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(http.StatusOK, rr.Code, "Invalid status code")
-	assert.Equal(EmptyResponse, rr.Body.String(), "Invalid response")
+	assert.Equal(ListResponse, rr.Body.String(), "Invalid response")
 }
 
 func TestGetTarget(t *testing.T) {
+	assert := assert.New(t)
+	router := createRouter()
+
+	req, err := http.NewRequest(http.MethodGet, "/targets/c3b49d8", nil)
+	assert.NoError(err, "Failed to create request")
+
+	rr := httptest.NewRecorder()
+	router.ServeHTTP(rr, req)
+
+	assert.Equal(http.StatusOK, rr.Code, "Invalid status code")
+	assert.Equal(DCTResponse, rr.Body.String(), "Invalid response")
+}
+
+func TestGetUnknownTarget(t *testing.T) {
 	assert := assert.New(t)
 	router := createRouter()
 
@@ -71,7 +87,7 @@ func TestGetTargetWithInvalidID(t *testing.T) {
 	assert := assert.New(t)
 	router := createRouter()
 
-	req, err := http.NewRequest(http.MethodGet, "/targets/b635", nil)
+	req, err := http.NewRequest(http.MethodGet, "/targets/c3b4", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -99,12 +115,12 @@ func TestListTargetDelegates(t *testing.T) {
 	assert := assert.New(t)
 	router := createRouter()
 
-	req, err := http.NewRequest(http.MethodGet, "/targets/d22b2a4/delegates", nil)
+	req, err := http.NewRequest(http.MethodGet, "/targets/c3b49d8/delegates", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
 	router.ServeHTTP(rr, req)
 
-	assert.Equal(http.StatusNotFound, rr.Code, "Invalid status code")
-	assert.Equal(NotFoundResponse, rr.Body.String(), "Invalid response text")
+	assert.Equal(http.StatusOK, rr.Code, "Invalid status code")
+	assert.Equal(EmptyResponse, rr.Body.String(), "Invalid response text")
 }

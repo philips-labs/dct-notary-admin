@@ -51,7 +51,34 @@ func IDFilter(id string) KeyFilter {
 	return KeyFilter(func(k Key) bool { return strings.HasPrefix(k.ID, id) })
 }
 
-func KeyChanToList(keysChan <-chan Key) []Key {
+// GUNFilter filters the keys by GUN
+func GUNFilter(gun string) KeyFilter {
+	return func(k Key) bool {
+		return k.GUN == strings.Trim(gun, " \t")
+	}
+}
+
+// NotGUNFilter filters the keys by GUN not matching the provided GUN
+func NotGUNFilter(gun string) KeyFilter {
+	return func(k Key) bool {
+		return k.GUN != strings.Trim(gun, " \t")
+	}
+}
+
+// AndFilter combines all filters using a AND operation, where all filters must evaluate true
+func AndFilter(filters ...KeyFilter) KeyFilter {
+	return func(k Key) bool {
+		for _, f := range filters {
+			if f(k) == false {
+				return false
+			}
+		}
+		return true
+	}
+}
+
+// KeyChanToSlice transforms a channel to a Slice
+func KeyChanToSlice(keysChan <-chan Key) []Key {
 	keys := make([]Key, 0)
 	for key := range keysChan {
 		keys = append(keys, key)

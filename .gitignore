@@ -16,5 +16,5 @@
 
 # binary builds
 bin/
-dct-notary-admin
+./dct-notary-admin
 
