@@ -40,6 +40,8 @@ type KeyFilter func(Key) bool
 var (
 	// TargetsFilter filters all keys by role equals targets
 	TargetsFilter KeyFilter = func(k Key) bool { return k.Role == "targets" }
+	// SnapshotsFilter filters all keys by role equals targets
+	SnapshotsFilter KeyFilter = func(k Key) bool { return k.Role == "snapshot" }
 	// RootFilter filters all root keys by role equals root
 	RootFilter KeyFilter = func(k Key) bool { return k.Role == "root" }
 )

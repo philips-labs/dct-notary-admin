@@ -8,6 +8,7 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/theupdateframework/notary"
 	"github.com/theupdateframework/notary/client"
 	"github.com/theupdateframework/notary/trustmanager"
 	"github.com/theupdateframework/notary/trustpinning"
@@ -31,8 +32,9 @@ type Key struct {
 
 // Service notary service exposes notary operations
 type Service struct {
-	config *Config
-	log    *zap.Logger
+	config    *Config
+	retriever notary.PassRetriever
+	log       *zap.Logger
 }
 
 // Config notary configuration
@@ -60,7 +62,49 @@ type TrustPinningConfig struct {
 
 // NewService creates a new notary service object
 func NewService(config *Config, log *zap.Logger) *Service {
-	return &Service{config, log}
+	return &Service{config, getPassphraseRetriever(), log}
+}
+
+// CreateRepoCommand holds data to create a new repository for the given data.GUN
+type CreateRepoCommand struct {
+	GUN         data.GUN
+	RootKey     string
+	RootCert    string
+	AutoPublish bool
+}
+
+// CreateRepository creates a new repository with the given id
+func (s *Service) CreateRepository(ctx context.Context, cmd CreateRepoCommand) error {
+	if cmd.GUN.String() == "" {
+		return fmt.Errorf("Must specify a GUN")
+	}
+
+	fact := ConfigureRepo(s.config, s.retriever, true, readOnly)
+	nRepo, err := fact(cmd.GUN)
+	if err != nil {
+		return err
+	}
+
+	rootKeyIDs, err := importRootKey(s.log, cmd.RootKey, nRepo, s.retriever)
+	if err != nil {
+		return err
+	}
+
+	rootCerts, err := importRootCert(cmd.RootCert)
+	if err != nil {
+		return err
+	}
+
+	// if key is not defined but cert is, then clear the key to allow key to be searched in keystore
+	if cmd.RootKey == "" && cmd.RootCert != "" {
+		rootKeyIDs = []string{}
+	}
+
+	if err = nRepo.InitializeWithCertificate(rootKeyIDs, rootCerts); err != nil {
+		return err
+	}
+
+	return maybeAutoPublish(s.log, cmd.AutoPublish, cmd.GUN, s.config, s.retriever)
 }
 
 // StreamKeys returns a Stream of Key
