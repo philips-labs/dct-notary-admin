@@ -30,7 +30,7 @@ clean-dangling-images:
 	@docker rmi $$(docker images -qf dangling=true)
 
 .PHONY: run-sandbox
-run-sandbox: build-sandbox
+run-sandbox:
 	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml up -d
 	@echo
 	@echo Too get logs:
