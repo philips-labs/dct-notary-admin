@@ -38,8 +38,14 @@ jobs:
     - name: Run sandbox
       run: docker-compose -f notary/docker-compose.sandbox.yml up -d
 
-    - name: Wait for sandbox to boot
-      run: sleep 30
+    - name: Wait for notary server to be ready
+      run: |
+        health_check=https://localhost:4443/_notary_server/health
+        while [[ "$(curl --insecure -sLSo /dev/null -w ''%{http_code}'' ${health_check})" != "200" ]]; \
+        do echo "Waiting for ${health_check}" && sleep 1; \
+        done
+        echo 'OK!'
+        curl -X GET -sIL --insecure ${health_check}
 
     - name: Test and Cover
       run: go test -v -race -count=1 -covermode=atomic -coverprofile=coverage.out ./...
