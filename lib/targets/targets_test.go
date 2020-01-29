@@ -162,7 +162,6 @@ func TestCreateTarget(t *testing.T) {
 }
 
 func TestListTargetDelegates(t *testing.T) {
-	t.Skip()
 	assert := assert.New(t)
 
 	req, err := http.NewRequest(http.MethodGet, "/targets/c3b49d8/delegates", nil)
