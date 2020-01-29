@@ -2,6 +2,7 @@ export GOPRIVATE := github.com/philips-labs/*
 
 NOTARY_REPO ?= $(CURDIR)/notary
 SANDBOX_COMPOSE ?= $(NOTARY_REPO)/docker-compose.sandbox.yml
+SANDBOX_HEALTH ?= https://localhost:4443/_notary_server/health
 
 VERSION := 0.0.0-dev
 GITCOMMIT := $(shell git rev-parse --short HEAD)
@@ -39,6 +40,14 @@ run-sandbox:
 	@echo Too enter the sandbox:
 	@echo "  docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml exec sandbox sh"
 
+.PHONY: check-sandbox
+check-sandbox:
+	@while [[ "$$(curl --insecure -sLSo /dev/null -w ''%{http_code}'' $(SANDBOX_HEALTH))" != "200" ]]; \
+	do echo "Waiting for $(SANDBOX_HEALTH)" && sleep 1; \
+	done
+	@echo $(SANDBOX_HEALTH)
+	@curl -X GET -IL --insecure ${SANDBOX_HEALTH}
+
 .PHONY: bootstrap-sandbox
 bootstrap-sandbox:
 	@docker cp bootstrap-sandbox.sh notary_sandbox_1:/root/
@@ -61,6 +70,7 @@ download:
 test:
 	@echo Testing
 	@docker-compose -f $(SANDBOX_COMPOSE) up -d
+	@make check-sandbox
 	@go test -race -v -count=1 ./...
 
 .PHONY: coverage

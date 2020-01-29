@@ -2,7 +2,9 @@ package notary
 
 import (
 	"context"
+	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/theupdateframework/notary"
@@ -34,6 +36,23 @@ func getPassphraseRetriever() notary.PassRetriever {
 	}
 }
 
+// CleanupKeys utility function for tests to cleanup test generated data
+func CleanupKeys(trustStore string, keys ...string) error {
+	failures := make([]string, 0)
+	for _, key := range keys {
+		err := os.Remove(filepath.Join(trustStore, "private", fmt.Sprintf("%s.key", key)))
+		if err != nil {
+			failures = append(failures, key)
+		}
+	}
+
+	if len(failures) > 0 {
+		return fmt.Errorf("failed to remove keys %s", failures)
+	}
+
+	return nil
+}
+
 // KeyFilter allows to filter keys using this filter
 type KeyFilter func(Key) bool
 
@@ -55,13 +74,6 @@ func IDFilter(id string) KeyFilter {
 func GUNFilter(gun string) KeyFilter {
 	return func(k Key) bool {
 		return k.GUN == strings.Trim(gun, " \t")
-	}
-}
-
-// NotGUNFilter filters the keys by GUN not matching the provided GUN
-func NotGUNFilter(gun string) KeyFilter {
-	return func(k Key) bool {
-		return k.GUN != strings.Trim(gun, " \t")
 	}
 }
 

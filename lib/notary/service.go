@@ -22,6 +22,8 @@ const (
 
 var (
 	releasesRole = data.RoleName(path.Join(data.CanonicalTargetsRole.String(), "releases"))
+	// ErrGunMandatory when no GUN is given this error is thrown
+	ErrGunMandatory = fmt.Errorf("must specify a GUN")
 )
 
 // Key holds Path and GUN to keys
@@ -76,8 +78,8 @@ type CreateRepoCommand struct {
 
 // CreateRepository creates a new repository with the given id
 func (s *Service) CreateRepository(ctx context.Context, cmd CreateRepoCommand) error {
-	if cmd.GUN.String() == "" {
-		return fmt.Errorf("Must specify a GUN")
+	if strings.Trim(cmd.GUN.String(), " \t") == "" {
+		return ErrGunMandatory
 	}
 
 	fact := ConfigureRepo(s.config, s.retriever, true, readOnly)
@@ -116,8 +118,8 @@ type DeleteRepositoryCommand struct {
 
 // DeleteRepository deletes the repository for the given gun
 func (s *Service) DeleteRepository(ctx context.Context, cmd DeleteRepositoryCommand) error {
-	if cmd.GUN.String() == "" {
-		return fmt.Errorf("Must specify a GUN")
+	if strings.Trim(cmd.GUN.String(), " \t") == "" {
+		return ErrGunMandatory
 	}
 
 	// Only initialize a roundtripper if we get the remote flag
@@ -181,7 +183,7 @@ func (s *Service) ListKeys(ctx context.Context, filter KeyFilter) ([]Key, error)
 		return nil, fmt.Errorf("failed to retrieve keys: %w", err)
 	}
 	filteredChan := Reduce(ctx, keysChan, filter)
-	filtered := KeyChanToList(filteredChan)
+	filtered := KeyChanToSlice(filteredChan)
 
 	return filtered, nil
 }

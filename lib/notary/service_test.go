@@ -2,9 +2,7 @@ package notary
 
 import (
 	"context"
-	"fmt"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"go.uber.org/zap"
@@ -61,6 +59,17 @@ func TestListTargets(t *testing.T) {
 	assert.ElementsMatch(expectedTargets, targets)
 }
 
+func TestCreateRepositoryInvalidGUN(t *testing.T) {
+	assert := assert.New(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	err := service.CreateRepository(ctx, CreateRepoCommand{GUN: data.GUN("\t "), AutoPublish: false})
+	assert.Error(err)
+	assert.Equal(ErrGunMandatory, err)
+}
+
 func TestCreateAndRemoveRepository(t *testing.T) {
 	assert := assert.New(t)
 
@@ -71,25 +80,38 @@ func TestCreateAndRemoveRepository(t *testing.T) {
 	err := service.CreateRepository(ctx, CreateRepoCommand{GUN: data.GUN(gun), AutoPublish: true})
 	assert.NoError(err)
 
-	targetKeys, err := service.ListKeys(ctx, AndFilter(TargetsFilter, NotGUNFilter(expectedTargets[0].GUN)))
+	targetKeys, err := service.ListKeys(ctx, AndFilter(TargetsFilter, GUNFilter(gun)))
 	assert.NoError(err)
-	assert.Len(targetKeys, 1)
-	assert.Equal(gun, targetKeys[0].GUN)
 
-	snapshotKeys, err := service.ListKeys(ctx, AndFilter(SnapshotsFilter, NotGUNFilter(expectedTargets[0].GUN)))
+	snapshotKeys, err := service.ListKeys(ctx, AndFilter(SnapshotsFilter, GUNFilter(gun)))
 	assert.NoError(err)
-	assert.Len(snapshotKeys, 1)
-	assert.Equal(gun, snapshotKeys[0].GUN)
 
 	err = service.DeleteRepository(ctx, DeleteRepositoryCommand{GUN: data.GUN(gun), DeleteRemote: true})
 	assert.NoError(err)
 
-	err = cleanupKeys(targetKeys[0].ID, snapshotKeys[0].ID)
+	gunKeys := append(targetKeys, snapshotKeys...)
+
+	keyIds := make([]string, len(gunKeys))
+	for i, key := range gunKeys {
+		keyIds[i] = key.ID
+	}
+	err = CleanupKeys(trustStore, keyIds...)
 	assert.NoError(err)
 }
 
+func TestDeleteRepositoryInvalidGUN(t *testing.T) {
+	assert := assert.New(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	err := service.DeleteRepository(ctx, DeleteRepositoryCommand{GUN: data.GUN("  "), DeleteRemote: false})
+	assert.Error(err)
+	assert.Equal(ErrGunMandatory, err)
+}
+
 func TestListDelegates(t *testing.T) {
-	t.Skip("Will need stubbing")
+	t.Skip()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -104,19 +126,4 @@ func TestListDelegates(t *testing.T) {
 			}
 		})
 	}
-}
-
-func cleanupKeys(keys ...string) error {
-	failures := make([]string, 0)
-	for _, key := range keys {
-		err := os.Remove(filepath.Join(trustStore, "private", fmt.Sprintf("%s.key", key)))
-		if err != nil {
-			failures = append(failures, key)
-		}
-	}
-
-	if len(failures) > 0 {
-		return fmt.Errorf("failed to remove keys %s", failures)
-	}
-	return nil
 }

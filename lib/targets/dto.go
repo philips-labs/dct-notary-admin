@@ -1,12 +1,28 @@
 package targets
 
 import (
+	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/philips-labs/dct-notary-admin/lib/notary"
 
 	"github.com/go-chi/render"
 )
+
+type RepositoryRequest struct {
+	GUN string `json:"gun"`
+}
+
+// Bind unmarshals request into structure and validates / cleans input
+func (rr *RepositoryRequest) Bind(r *http.Request) error {
+	rr.GUN = strings.Trim(rr.GUN, " \t")
+	if rr.GUN == "" {
+		return errors.New("gun is required")
+	}
+
+	return nil
+}
 
 // KeyResponse returns a notary.Key structure
 type KeyResponse struct {

@@ -7,6 +7,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
+	"github.com/theupdateframework/notary/tuf/data"
+
 	e "github.com/philips-labs/dct-notary-admin/lib/errors"
 	"github.com/philips-labs/dct-notary-admin/lib/notary"
 )
@@ -24,8 +26,9 @@ func NewResource(service *notary.Service) *Resource {
 // RegisterRoutes registers the API routes
 func (tr *Resource) RegisterRoutes(r chi.Router) {
 	r.Route("/targets", func(rr chi.Router) {
+		rr.Use(render.SetContentType(render.ContentTypeJSON))
 		rr.Get("/", tr.listTargets)
-		rr.Post("/", tr.createTargets)
+		rr.Post("/", tr.createTarget)
 		rr.Get("/{target}", tr.getTarget)
 		rr.Get("/{target}/delegates", tr.listDelegates)
 	})
@@ -43,8 +46,33 @@ func (tr *Resource) listTargets(w http.ResponseWriter, r *http.Request) {
 	respondList(w, r, NewKeyListResponse(targets))
 }
 
-func (tr *Resource) createTargets(w http.ResponseWriter, r *http.Request) {
-	respond(w, r, e.ErrNotImplemented)
+func (tr *Resource) createTarget(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	body := &RepositoryRequest{}
+	if err := render.Bind(r, body); err != nil {
+		respond(w, r, e.ErrInvalidRequest(err))
+		return
+	}
+
+	err := tr.notary.CreateRepository(ctx, notary.CreateRepoCommand{
+		GUN:         data.GUN(body.GUN),
+		AutoPublish: true,
+	})
+	if err != nil {
+		respond(w, r, e.ErrInternalServer(err))
+		return
+	}
+
+	newKey, err := tr.notary.ListKeys(ctx, notary.AndFilter(notary.TargetsFilter, notary.GUNFilter(body.GUN)))
+	if err != nil {
+		respond(w, r, e.ErrInternalServer(err))
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	respond(w, r, NewKeyResponse(newKey[0]))
 }
 
 func (tr *Resource) getTarget(w http.ResponseWriter, r *http.Request) {
