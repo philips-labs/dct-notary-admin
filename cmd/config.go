@@ -11,6 +11,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/mitchellh/go-homedir"
+
 	"github.com/philips-labs/dct-notary-admin/lib"
 	"github.com/philips-labs/dct-notary-admin/lib/notary"
 
