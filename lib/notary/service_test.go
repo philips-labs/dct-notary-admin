@@ -78,7 +78,8 @@ func TestCreateRepositoryInvalidGUN(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err := service.CreateRepository(ctx, CreateRepoCommand{GUN: data.GUN("\t "), AutoPublish: false})
+	cmd := CreateRepoCommand{TargetCommand: TargetCommand{GUN: data.GUN("\t ")}, AutoPublish: false}
+	err := service.CreateRepository(ctx, cmd)
 	assert.Error(err)
 	assert.Equal(ErrGunMandatory, err)
 }
@@ -90,7 +91,8 @@ func TestCreateAndRemoveRepository(t *testing.T) {
 	defer cancel()
 
 	gun := "localhost:5000/test-create-remove/dct-notary-admin"
-	err := service.CreateRepository(ctx, CreateRepoCommand{GUN: data.GUN(gun), AutoPublish: true})
+	createCmd := CreateRepoCommand{TargetCommand: TargetCommand{GUN: data.GUN(gun)}, AutoPublish: true}
+	err := service.CreateRepository(ctx, createCmd)
 	assert.NoError(err)
 
 	targetKeys, err := service.ListKeys(ctx, AndFilter(TargetsFilter, GUNFilter(gun)))
@@ -99,7 +101,8 @@ func TestCreateAndRemoveRepository(t *testing.T) {
 	snapshotKeys, err := service.ListKeys(ctx, AndFilter(SnapshotsFilter, GUNFilter(gun)))
 	assert.NoError(err)
 
-	err = service.DeleteRepository(ctx, DeleteRepositoryCommand{GUN: data.GUN(gun), DeleteRemote: true})
+	deleteCmd := DeleteRepositoryCommand{TargetCommand: TargetCommand{GUN: data.GUN(gun)}, DeleteRemote: true}
+	err = service.DeleteRepository(ctx, deleteCmd)
 	assert.NoError(err)
 
 	gunKeys := append(targetKeys, snapshotKeys...)
@@ -118,7 +121,8 @@ func TestDeleteRepositoryInvalidGUN(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err := service.DeleteRepository(ctx, DeleteRepositoryCommand{GUN: data.GUN("  "), DeleteRemote: false})
+	cmd := DeleteRepositoryCommand{TargetCommand: TargetCommand{GUN: data.GUN(" ")}, DeleteRemote: false}
+	err := service.DeleteRepository(ctx, cmd)
 	assert.Error(err)
 	assert.Equal(ErrGunMandatory, err)
 }

@@ -150,7 +150,7 @@ func TestCreateTarget(t *testing.T) {
 	snapshotKeys, err := n.ListKeys(ctx, notary.AndFilter(notary.SnapshotsFilter, notary.GUNFilter(reqData.GUN)))
 	assert.NoError(err)
 
-	err = n.DeleteRepository(ctx, notary.DeleteRepositoryCommand{GUN: data.GUN(reqData.GUN)})
+	err = n.DeleteRepository(ctx, notary.DeleteRepositoryCommand{TargetCommand: notary.TargetCommand{GUN: data.GUN(reqData.GUN)}})
 	assert.NoError(err)
 
 	keyIds := make([]string, len(snapshotKeys))

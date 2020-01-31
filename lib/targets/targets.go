@@ -57,8 +57,8 @@ func (tr *Resource) createTarget(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := tr.notary.CreateRepository(ctx, notary.CreateRepoCommand{
-		GUN:         data.GUN(body.GUN),
-		AutoPublish: true,
+		TargetCommand: notary.TargetCommand{GUN: data.GUN(body.GUN)},
+		AutoPublish:   true,
 	})
 	if err != nil {
 		respond(w, r, e.ErrInternalServer(err))

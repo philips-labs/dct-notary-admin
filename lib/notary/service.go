@@ -45,18 +45,10 @@ func NewService(config *Config, log *zap.Logger) *Service {
 	return &Service{config, getPassphraseRetriever(), log}
 }
 
-// CreateRepoCommand holds data to create a new repository for the given data.GUN
-type CreateRepoCommand struct {
-	GUN         data.GUN
-	RootKey     string
-	RootCert    string
-	AutoPublish bool
-}
-
 // CreateRepository creates a new repository with the given id
 func (s *Service) CreateRepository(ctx context.Context, cmd CreateRepoCommand) error {
-	if strings.Trim(cmd.GUN.String(), " \t") == "" {
-		return ErrGunMandatory
+	if err := cmd.GuardHasGUN(); err != nil {
+		return err
 	}
 
 	fact := ConfigureRepo(s.config, s.retriever, true, readOnly)
@@ -87,16 +79,10 @@ func (s *Service) CreateRepository(ctx context.Context, cmd CreateRepoCommand) e
 	return maybeAutoPublish(s.log, cmd.AutoPublish, cmd.GUN, s.config, s.retriever)
 }
 
-// DeleteRepositoryCommand holds data to delete the repository for the given data.GUN
-type DeleteRepositoryCommand struct {
-	GUN          data.GUN
-	DeleteRemote bool
-}
-
 // DeleteRepository deletes the repository for the given gun
 func (s *Service) DeleteRepository(ctx context.Context, cmd DeleteRepositoryCommand) error {
-	if strings.Trim(cmd.GUN.String(), " \t") == "" {
-		return ErrGunMandatory
+	if err := cmd.GuardHasGUN(); err != nil {
+		return err
 	}
 
 	// Only initialize a roundtripper if we get the remote flag
