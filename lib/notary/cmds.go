@@ -25,6 +25,15 @@ type DeleteRepositoryCommand struct {
 	DeleteRemote bool
 }
 
+// AddDelegationCommand holds parameters to create a delegation
+type AddDelegationCommand struct {
+	TargetCommand
+	Role           data.RoleName
+	DelegationKeys []data.PublicKey
+	Paths          []string
+	AutoPublish    bool
+}
+
 // GuardHasGUN guards that a valid GUN has been provided
 func (cmd TargetCommand) GuardHasGUN() error {
 	if strings.Trim(cmd.GUN.String(), " \t") == "" {

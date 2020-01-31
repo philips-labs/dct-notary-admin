@@ -24,6 +24,8 @@ var (
 	releasesRole = data.RoleName(path.Join(data.CanonicalTargetsRole.String(), "releases"))
 	// ErrGunMandatory when no GUN is given this error is thrown
 	ErrGunMandatory = fmt.Errorf("must specify a GUN")
+	// ErrPublicKeysAndPathsMandatory when no Public Keys and Paths are provided
+	ErrPublicKeysAndPathsMandatory = fmt.Errorf("public key(s) and path(s) are required")
 )
 
 // Key holds Path and GUN to keys
@@ -107,6 +109,29 @@ func (s *Service) DeleteRepository(ctx context.Context, cmd DeleteRepositoryComm
 		return err
 	}
 	s.log.Info(fmt.Sprintf("Successfully deleted local%s trust data for repository", remoteDeleteInfo), zap.Stringer("gun", cmd.GUN))
+	return nil
+}
+
+// AddDelegation add a new delegate key to the specified repository target
+func (s *Service) AddDelegation(ctx context.Context, cmd AddDelegationCommand) error {
+	if err := cmd.GuardHasGUN(); err != nil {
+		return err
+	}
+	if len(cmd.DelegationKeys) == 0 || len(cmd.Paths) == 0 {
+		return ErrPublicKeysAndPathsMandatory
+	}
+
+	fact := ConfigureRepo(s.config, s.retriever, true, readOnly)
+	nRepo, err := fact(cmd.GUN)
+	if err != nil {
+		return err
+	}
+
+	err = nRepo.AddDelegation(cmd.Role, cmd.DelegationKeys, cmd.Paths)
+	if err != nil {
+		return fmt.Errorf("failed to create delegation: %v", err)
+	}
+
 	return nil
 }
 

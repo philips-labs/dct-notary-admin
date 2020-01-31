@@ -80,8 +80,7 @@ func TestCreateRepositoryInvalidGUN(t *testing.T) {
 
 	cmd := CreateRepoCommand{TargetCommand: TargetCommand{GUN: data.GUN("\t ")}, AutoPublish: false}
 	err := service.CreateRepository(ctx, cmd)
-	assert.Error(err)
-	assert.Equal(ErrGunMandatory, err)
+	assert.EqualError(err, ErrGunMandatory.Error())
 }
 
 func TestCreateAndRemoveRepository(t *testing.T) {
@@ -115,6 +114,28 @@ func TestCreateAndRemoveRepository(t *testing.T) {
 	assert.NoError(err)
 }
 
+func TestAddDelegateWithoutPublicKeyAndPath(t *testing.T) {
+	assert := assert.New(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	cmd := AddDelegationCommand{TargetCommand: TargetCommand{GUN: data.GUN("localhost:5000/dct-notary-admin")}}
+	err := service.AddDelegation(ctx, cmd)
+	assert.EqualError(err, ErrPublicKeysAndPathsMandatory.Error())
+}
+
+func TestAddDelegateInvalidGUN(t *testing.T) {
+	assert := assert.New(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	cmd := AddDelegationCommand{TargetCommand: TargetCommand{GUN: data.GUN("\t \t")}}
+	err := service.AddDelegation(ctx, cmd)
+	assert.EqualError(err, ErrGunMandatory.Error())
+}
+
 func TestDeleteRepositoryInvalidGUN(t *testing.T) {
 	assert := assert.New(t)
 
@@ -123,8 +144,7 @@ func TestDeleteRepositoryInvalidGUN(t *testing.T) {
 
 	cmd := DeleteRepositoryCommand{TargetCommand: TargetCommand{GUN: data.GUN(" ")}, DeleteRemote: false}
 	err := service.DeleteRepository(ctx, cmd)
-	assert.Error(err)
-	assert.Equal(ErrGunMandatory, err)
+	assert.EqualError(err, ErrGunMandatory.Error())
 }
 
 func TestListDelegates(t *testing.T) {
