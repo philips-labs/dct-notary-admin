@@ -15,6 +15,7 @@ This way the certificates can be stored in a secured environment where backups a
 | ----------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | GET         | [https://localhost:8443/ping](https://localhost:8443/ping)                                     | return pong                                    |
 | GET         | [https://localhost:8443/targets](https://localhost:8443/targets)                               | retrieves all target keys                      |
+| POST        | [https://localhost:8443/targets](https://localhost:8443/targets)                               | creates a new target and keys                  |
 | GET         | [https://localhost:8443/targets/{id}](https://localhost:8443/targets/{id})                     | retrieves a single target key                  |
 | GET         | [https://localhost:8443/targets/{id}/delegates](https://localhost:8443/targets/{id}/delegates) | retrieves all delegate keys for a given target |
 
