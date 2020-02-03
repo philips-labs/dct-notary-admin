@@ -173,3 +173,29 @@ func TestListTargetDelegates(t *testing.T) {
 	assert.Equal(http.StatusOK, rr.Code, "Invalid status code")
 	assert.Equal(EmptyResponse, rr.Body.String(), "Invalid response text")
 }
+
+func TestAddDelegation(t *testing.T) {
+	assert := assert.New(t)
+
+	req, err := http.NewRequest(http.MethodPost, "/targets/4ea1fec/delegations", nil)
+	assert.NoError(err, "Failed to create request")
+
+	rr := httptest.NewRecorder()
+	router.ServeHTTP(rr, req)
+
+	assert.Equal(http.StatusNotImplemented, rr.Code, "Invalid status code")
+	assert.Equal(NotImplementedResponse, rr.Body.String(), "Expected empty response")
+}
+
+func TestRemoveDelegation(t *testing.T) {
+	assert := assert.New(t)
+
+	req, err := http.NewRequest(http.MethodDelete, "/targets/4ea1fec/delegations/1234567", nil)
+	assert.NoError(err, "Failed to create request")
+
+	rr := httptest.NewRecorder()
+	router.ServeHTTP(rr, req)
+
+	assert.Equal(http.StatusNotImplemented, rr.Code, "Invalid status code")
+	assert.Equal(NotImplementedResponse, rr.Body.String(), "Expected empty response")
+}

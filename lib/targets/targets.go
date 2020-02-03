@@ -30,7 +30,11 @@ func (tr *Resource) RegisterRoutes(r chi.Router) {
 		rr.Get("/", tr.listTargets)
 		rr.Post("/", tr.createTarget)
 		rr.Get("/{target}", tr.getTarget)
-		rr.Get("/{target}/delegates", tr.listDelegates)
+		rr.Route("/{target}/delegations", func(rrr chi.Router) {
+			rrr.Get("/", tr.listDelegates)
+			rrr.Post("/", tr.addDelegation)
+			rrr.Delete("/{delegation}", tr.removeDelegation)
+		})
 	})
 }
 
@@ -120,6 +124,14 @@ func (tr *Resource) listDelegates(w http.ResponseWriter, r *http.Request) {
 		response = append(response, v...)
 	}
 	respondList(w, r, NewKeyListResponse(response))
+}
+
+func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
+	respond(w, r, e.ErrNotImplemented)
+}
+
+func (tr *Resource) removeDelegation(w http.ResponseWriter, r *http.Request) {
+	respond(w, r, e.ErrNotImplemented)
 }
 
 func respond(w http.ResponseWriter, r *http.Request, renderer render.Renderer) {
