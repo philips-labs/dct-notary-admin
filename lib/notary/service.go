@@ -52,9 +52,10 @@ func (s *Service) CreateRepository(ctx context.Context, cmd CreateRepoCommand) e
 	if err := cmd.GuardHasGUN(); err != nil {
 		return err
 	}
+	sanitizedGUN := cmd.SanitizedGUN()
 
 	fact := ConfigureRepo(s.config, s.retriever, true, readOnly)
-	nRepo, err := fact(cmd.GUN)
+	nRepo, err := fact(sanitizedGUN)
 	if err != nil {
 		return err
 	}
@@ -78,7 +79,7 @@ func (s *Service) CreateRepository(ctx context.Context, cmd CreateRepoCommand) e
 		return err
 	}
 
-	return maybeAutoPublish(s.log, cmd.AutoPublish, cmd.GUN, s.config, s.retriever)
+	return maybeAutoPublish(s.log, cmd.AutoPublish, sanitizedGUN, s.config, s.retriever)
 }
 
 // DeleteRepository deletes the repository for the given gun
@@ -86,13 +87,13 @@ func (s *Service) DeleteRepository(ctx context.Context, cmd DeleteRepositoryComm
 	if err := cmd.GuardHasGUN(); err != nil {
 		return err
 	}
-
+	sanitizedGUN := cmd.SanitizedGUN()
 	// Only initialize a roundtripper if we get the remote flag
 	var err error
 	var rt http.RoundTripper
 	var remoteDeleteInfo string
 	if cmd.DeleteRemote {
-		rt, err = getTransport(s.config, cmd.GUN, admin)
+		rt, err = getTransport(s.config, sanitizedGUN, admin)
 		if err != nil {
 			return err
 		}
@@ -101,14 +102,14 @@ func (s *Service) DeleteRepository(ctx context.Context, cmd DeleteRepositoryComm
 
 	if err := client.DeleteTrustData(
 		s.config.TrustDir,
-		cmd.GUN,
+		sanitizedGUN,
 		s.config.RemoteServer.URL,
 		rt,
 		cmd.DeleteRemote,
 	); err != nil {
 		return err
 	}
-	s.log.Info(fmt.Sprintf("Successfully deleted local%s trust data for repository", remoteDeleteInfo), zap.Stringer("gun", cmd.GUN))
+	s.log.Info(fmt.Sprintf("Successfully deleted local%s trust data for repository", remoteDeleteInfo), zap.Stringer("gun", sanitizedGUN))
 	return nil
 }
 
@@ -120,9 +121,10 @@ func (s *Service) AddDelegation(ctx context.Context, cmd AddDelegationCommand) e
 	if len(cmd.DelegationKeys) == 0 || len(cmd.Paths) == 0 {
 		return ErrPublicKeysAndPathsMandatory
 	}
+	sanitizedGUN := cmd.SanitizedGUN()
 
 	fact := ConfigureRepo(s.config, s.retriever, true, readOnly)
-	nRepo, err := fact(cmd.GUN)
+	nRepo, err := fact(sanitizedGUN)
 	if err != nil {
 		return err
 	}

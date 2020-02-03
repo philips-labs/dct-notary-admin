@@ -36,8 +36,13 @@ type AddDelegationCommand struct {
 
 // GuardHasGUN guards that a valid GUN has been provided
 func (cmd TargetCommand) GuardHasGUN() error {
-	if strings.Trim(cmd.GUN.String(), " \t") == "" {
+	if cmd.SanitizedGUN() == "" {
 		return ErrGunMandatory
 	}
 	return nil
+}
+
+// SanitizedGUN removes all whitespace characters from a GUN
+func (cmd TargetCommand) SanitizedGUN() data.GUN {
+	return data.GUN(strings.Trim(cmd.GUN.String(), " \t\r\n"))
 }
