@@ -215,7 +215,7 @@ func (s *Service) ListDelegates(ctx context.Context, target *Key) (map[string][]
 		gun,
 		s.config.RemoteServer.URL,
 		rt,
-		getPassphraseRetriever(),
+		s.retriever,
 		trustpinning.TrustPinConfig{})
 
 	if err != nil {
