@@ -13,13 +13,15 @@ This project makes use of a [Notary sandbox][NotaryForkSandbox] which is an in p
 
 ## API endpoints
 
-| HTTP Method | URL                                                                                            | description                                    |
-| ----------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| GET         | [https://localhost:8443/ping](https://localhost:8443/ping)                                     | return pong                                    |
-| GET         | [https://localhost:8443/targets](https://localhost:8443/targets)                               | retrieves all target keys                      |
-| POST        | [https://localhost:8443/targets](https://localhost:8443/targets)                               | creates a new target and keys                  |
-| GET         | [https://localhost:8443/targets/{id}](https://localhost:8443/targets/{id})                     | retrieves a single target key                  |
-| GET         | [https://localhost:8443/targets/{id}/delegates](https://localhost:8443/targets/{id}/delegates) | retrieves all delegate keys for a given target |
+| HTTP Method | URL                                                                                                                          | description                                    |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| GET         | [https://localhost:8443/ping](https://localhost:8443/ping)                                                                   | return pong                                    |
+| GET         | [https://localhost:8443/targets](https://localhost:8443/targets)                                                             | retrieves all target keys                      |
+| POST        | [https://localhost:8443/targets](https://localhost:8443/targets)                                                             | creates a new target and keys                  |
+| GET         | [https://localhost:8443/targets/{id}](https://localhost:8443/targets/{id})                                                   | retrieves a single target key                  |
+| GET         | [https://localhost:8443/targets/{id}/delegations](https://localhost:8443/targets/{id}/delegations)                           | retrieves all delegate keys for a given target |
+| POST        | [https://localhost:8443/targets/{id}/delegations](https://localhost:8443/targets/{id}/delegations)                           | add a new delegation to the given target       |
+| DELETE      | [https://localhost:8443/targets/{id}/delegations/{delegation}](https://localhost:8443/targets/{id}/delegations/{delegation}) | remove a delegation from the given target      |
 
 ## Prerequisites
 
