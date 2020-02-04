@@ -103,9 +103,6 @@ Check the coverage report in your browser.
 make coverage-html
 ```
 
-[cmake-3.16.2-win64-x64.msi]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-win64-x64.msi "Download cmake-3.16.2-win64-x64.msi"
-[cmake-3.16.2-darwin-x86_64.dmg]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Darwin-x86_64.dmg "Download cmake-3.16.2-Darwin-x86_64.dmg"
-
 ## Run
 
 Now you can start the server as following:
@@ -124,6 +121,8 @@ make run
 
 > **NOTE:** via make we will also use our sandboxed `.notary/config.json` automatically to prevent you from messing arround with your current notary (Production) settings.
 
+[cmake-3.16.2-win64-x64.msi]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-win64-x64.msi "Download cmake-3.16.2-win64-x64.msi"
+[cmake-3.16.2-darwin-x86_64.dmg]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Darwin-x86_64.dmg "Download cmake-3.16.2-Darwin-x86_64.dmg"
 [Notary]: https://github.com/theupdateframework/notary "Notary is a project that allows anyone to have trust over arbitrary collections of data"
 [NotaryFork]: https://github.com/philips-labs/notary/blob/feature/sandbox "This Fork is only to support the submodule which contains the sandbox setup"
 [NotaryForkSandbox]: https://github.com/philips-labs/notary/blob/feature/sandbox/docker-compose.sandbox.yml "Notary docker-compose sandbox setup"
