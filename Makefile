@@ -61,21 +61,30 @@ sandbox-logs:
 stop-sandbox:
 	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml down
 
+.PHONY: reset-sandbox
+reset-sandbox:
+	@echo Shutting down sandbox
+	@docker-compose -f $(SANDBOX_COMPOSE) down &> /dev/null
+	@echo Cleaning volumes
+	@docker volume rm $$(docker-compose -f $(SANDBOX_COMPOSE) config --volumes | sed 's/^/notary_/g') 2> /dev/null || true
+
 .PHONY: download
 download:
 	@echo Downloading dependencies
 	@go mod download
 
 .PHONY: test
-test:
+test: reset-sandbox
 	@echo Testing
 	@docker-compose -f $(SANDBOX_COMPOSE) up -d
 	@make check-sandbox
 	@go test -race -v -count=1 ./...
 
 .PHONY: coverage
-coverage:
+coverage: reset-sandbox
 	@echo Testing with code coverage
+	@docker-compose -f $(SANDBOX_COMPOSE) up -d
+	@make check-sandbox
 	@go test -race -v -count=1 -covermode=atomic -coverprofile=coverage.out ./...
 
 .PHONY: coverage-out

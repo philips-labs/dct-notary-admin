@@ -85,7 +85,7 @@ make build
 
 ## Test
 
-Run the tests.
+To run the tests, make sure to run `make stop-sandbox` first (tests are also reusing the same sandbox which require a clean env).
 
 ```bash
 make test
