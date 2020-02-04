@@ -9,6 +9,8 @@ It allows you to create new **Target** certificates for your Docker repositories
 
 This way the certificates can be stored in a secured environment where backups are managed.
 
+This project makes use of a [Notary sandbox][NotaryForkSandbox] which is an in progress development setup, which is intended to be contributed [upstream][Notary]. The [Fork][NotaryFork] is by no means a hard Fork of [Notary][Notary] and is solely there to bridge a period of time to get this back in the upstream.
+
 ## API endpoints
 
 | HTTP Method | URL                                                                                            | description                                    |
@@ -115,3 +117,7 @@ make run
 ```
 
 > **NOTE:** via make we will also use our sandboxed `.notary/config.json` automatically to prevent you from messing arround with your current notary (Production) settings.
+
+[Notary]: https://github.com/theupdateframework/notary "Notary is a project that allows anyone to have trust over arbitrary collections of data"
+[NotaryFork]: https://github.com/philips-labs/notary/blob/feature/sandbox "This Fork is only to support the submodule which contains the sandbox setup"
+[NotaryForkSandbox]: https://github.com/philips-labs/notary/blob/feature/sandbox/docker-compose.sandbox.yml "Notary docker-compose sandbox setup"
