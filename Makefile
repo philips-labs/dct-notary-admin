@@ -23,7 +23,7 @@ run: build
 
 .PHONY: build-sandbox
 build-sandbox:
-	@(cd $(NOTARY_REPO) ; make cross ; docker-compose -f docker-compose.sandbox build)
+	@(cd $(NOTARY_REPO) ; make cross ; docker-compose -f docker-compose.sandbox.yml build)
 	@docker-compose build
 
 .PHONY: clean-dangling-images
