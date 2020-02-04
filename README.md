@@ -47,6 +47,12 @@ git submodule init
 git submodule update
 ```
 
+Build the sandbox
+
+```bash
+make build-sandbox
+```
+
 Run the sandbox
 
 ```bash
