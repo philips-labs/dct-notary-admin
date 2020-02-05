@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -127,4 +128,9 @@ func Reduce(ctx context.Context, keysChan <-chan Key, filter KeyFilter) <-chan K
 	}()
 
 	return targetChan
+}
+
+// DelegationPath prefixes 'targets/' to a given roleName
+func DelegationPath(roleName string) data.RoleName {
+	return data.RoleName(path.Join(data.CanonicalTargetsRole.String(), roleName))
 }

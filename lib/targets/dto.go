@@ -14,6 +14,15 @@ type RepositoryRequest struct {
 	GUN string `json:"gun"`
 }
 
+type DelegationRequest struct {
+	DelegationPublicKey string `json:"delegationPublicKey"`
+	DelegationName      string `json:"delegationName"`
+}
+
+func (rr *DelegationRequest) Bind(r *http.Request) error {
+	return nil
+}
+
 // Bind unmarshals request into structure and validates / cleans input
 func (rr *RepositoryRequest) Bind(r *http.Request) error {
 	rr.GUN = strings.Trim(rr.GUN, " \t")

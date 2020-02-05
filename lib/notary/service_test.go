@@ -5,13 +5,11 @@ import (
 	"os"
 	"path"
 	"testing"
-	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/theupdateframework/notary/client"
-	"github.com/theupdateframework/notary/cryptoservice"
 	"github.com/theupdateframework/notary/trustmanager"
 	"github.com/theupdateframework/notary/tuf/data"
 	"github.com/theupdateframework/notary/tuf/utils"

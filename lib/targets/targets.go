@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/theupdateframework/notary/tuf/utils"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
@@ -127,7 +129,36 @@ func (tr *Resource) listDelegates(w http.ResponseWriter, r *http.Request) {
 }
 
 func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
-	respond(w, r, e.ErrNotImplemented)
+	id := chi.URLParam(r, "target")
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+	target, err := tr.notary.GetTarget(ctx, id)
+	if err != nil {
+		respond(w, r, e.ErrInvalidRequest(err))
+		return
+	}
+	body := &DelegationRequest{}
+	if err := render.Bind(r, body); err != nil {
+		respond(w, r, e.ErrInvalidRequest(err))
+		return
+	}
+
+	pubKey, err := utils.ParsePEMPublicKey([]byte(body.DelegationPublicKey))
+	if err != nil {
+		respond(w, r, e.ErrInvalidRequest(err))
+		return
+	}
+	err = tr.notary.AddDelegation(ctx, notary.AddDelegationCommand{
+		AutoPublish:    true,
+		Role:           notary.DelegationPath(body.DelegationName),
+		DelegationKeys: []data.PublicKey{pubKey},
+		Paths:          []string{""},
+		TargetCommand:  notary.TargetCommand{GUN: data.GUN(target.GUN)},
+	})
+	if err != nil {
+		respond(w, r, e.ErrInternalServer(err))
+		return
+	}
 }
 
 func (tr *Resource) removeDelegation(w http.ResponseWriter, r *http.Request) {
