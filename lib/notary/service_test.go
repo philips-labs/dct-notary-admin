@@ -3,12 +3,18 @@ package notary
 import (
 	"context"
 	"os"
+	"path"
 	"testing"
+	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/theupdateframework/notary/client"
+	"github.com/theupdateframework/notary/cryptoservice"
+	"github.com/theupdateframework/notary/trustmanager"
 	"github.com/theupdateframework/notary/tuf/data"
+	"github.com/theupdateframework/notary/tuf/utils"
 )
 
 var (
@@ -19,20 +25,25 @@ var (
 	}
 	expectedSigner = Key{ID: "eb9dd99255f91efeba139941fbfdb629f11c2353704de07a2ad653d22311c88b", Role: "marcofranssen"}
 	service        *Service
+	fact           RepoFactory
 )
 
 func init() {
 	os.Setenv("NOTARY_ROOT_PASSPHRASE", "test1234")
 	os.Setenv("NOTARY_TARGETS_PASSPHRASE", "test1234")
 	os.Setenv("NOTARY_SNAPSHOT_PASSPHRASE", "test1234")
+	os.Setenv("NOTARY_DELEGATION_PASSPHRASE", "test1234")
 
-	service = NewService(&Config{
+	config := &Config{
 		TrustDir: trustStore,
 		RemoteServer: RemoteServerConfig{
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,
 		},
-	}, zap.NewNop())
+	}
+
+	fact = ConfigureRepo(config, getPassphraseRetriever(), true, readOnly)
+	service = NewService(config, zap.NewNop())
 }
 
 func TestListRootKeys(t *testing.T) {
@@ -136,6 +147,37 @@ func TestAddDelegateInvalidGUN(t *testing.T) {
 	assert.EqualError(err, ErrGunMandatory.Error())
 }
 
+func TestAddDelegation(t *testing.T) {
+	assert := assert.New(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	role := data.RoleName("test-add-delegation")
+	gun := data.GUN("localhost:5000/dct-notary-admin")
+	signerRole := data.RoleName(path.Join(data.CanonicalTargetsRole.String(), role.String()))
+
+	nRepo, err := fact(gun)
+	defer nRepo.RemoveDelegationRole(signerRole)
+
+	delgKey := createDelgKey(assert, nRepo, role, true)
+	defer CleanupKeys(trustStore, delgKey.ID())
+
+	if !assert.NotNil(delgKey) {
+		return
+	}
+
+	cmd := AddDelegationCommand{
+		TargetCommand:  TargetCommand{GUN: data.GUN(gun)},
+		Role:           signerRole,
+		DelegationKeys: []data.PublicKey{delgKey},
+		Paths:          []string{""},
+		AutoPublish:    true,
+	}
+	err = service.AddDelegation(ctx, cmd)
+	assert.NoError(err)
+}
+
 func TestDeleteRepositoryInvalidGUN(t *testing.T) {
 	assert := assert.New(t)
 
@@ -165,4 +207,15 @@ func TestListDelegates(t *testing.T) {
 			// }
 		})
 	}
+}
+
+func createDelgKey(assert *assert.Assertions, repo client.Repository, role data.RoleName, x509 bool) data.PublicKey {
+	fileKeyStore, err := trustmanager.NewKeyFileStore(trustStore, getPassphraseRetriever())
+	if !assert.NoError(err) {
+		return nil
+	}
+	privKey, err := utils.GenerateKey(data.ECDSAKey)
+	fileKeyStore.AddKey(trustmanager.KeyInfo{Role: role}, privKey)
+
+	return data.PublicKeyFromPrivate(privKey)
 }
