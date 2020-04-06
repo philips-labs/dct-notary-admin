@@ -69,7 +69,7 @@ func init() {
 func TestGetTargets(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/targets", nil)
+	req, err := http.NewRequest(http.MethodGet, "/api/targets", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -85,7 +85,7 @@ func TestGetTargets(t *testing.T) {
 func TestGetTarget(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/targets/4ea1fec", nil)
+	req, err := http.NewRequest(http.MethodGet, "/api/targets/4ea1fec", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -101,7 +101,7 @@ func TestGetTarget(t *testing.T) {
 func TestGetUnknownTarget(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/targets/b635efe", nil)
+	req, err := http.NewRequest(http.MethodGet, "/api/targets/b635efe", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -114,7 +114,7 @@ func TestGetUnknownTarget(t *testing.T) {
 func TestGetTargetWithInvalidID(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/targets/c3b4", nil)
+	req, err := http.NewRequest(http.MethodGet, "/api/targets/c3b4", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -132,7 +132,7 @@ func TestCreateTarget(t *testing.T) {
 
 	reqData := RepositoryRequest{GUN: "localhost:5000/api-create-test/dct-notary-admin"}
 	jsonData, _ := json.Marshal(reqData)
-	req, err := http.NewRequest(http.MethodPost, "/targets", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(http.MethodPost, "/api/targets", bytes.NewBuffer(jsonData))
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -164,7 +164,7 @@ func TestCreateTarget(t *testing.T) {
 func TestListTargetDelegates(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/targets/4ea1fec/delegates", nil)
+	req, err := http.NewRequest(http.MethodGet, "/api/targets/4ea1fec/delegates", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()

@@ -31,8 +31,10 @@ func configureAPI(n *notary.Service, l *zap.Logger) *chi.Mux {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("pong\n"))
 	})
-	tr := targets.NewResource(n)
-	tr.RegisterRoutes(r)
+	r.Route("/api", func(rr chi.Router) {
+		tr := targets.NewResource(n)
+		tr.RegisterRoutes(rr)
+	})
 
 	logRoutes(r, l)
 

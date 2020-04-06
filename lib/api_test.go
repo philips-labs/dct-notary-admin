@@ -35,12 +35,12 @@ func TestRoutes(t *testing.T) {
 	expectedRoutes := []registeredRoute{
 		{http.MethodGet, "/"},
 		{http.MethodGet, "/ping"},
-		{http.MethodGet, "/targets/"},
-		{http.MethodPost, "/targets/"},
-		{http.MethodGet, "/targets/{target}"},
-		{http.MethodGet, "/targets/{target}/delegations/"},
-		{http.MethodPost, "/targets/{target}/delegations/"},
-		{http.MethodDelete, "/targets/{target}/delegations/{delegation}"},
+		{http.MethodGet, "/api/targets/"},
+		{http.MethodPost, "/api/targets/"},
+		{http.MethodGet, "/api/targets/{target}"},
+		{http.MethodGet, "/api/targets/{target}/delegations/"},
+		{http.MethodPost, "/api/targets/{target}/delegations/"},
+		{http.MethodDelete, "/api/targets/{target}/delegations/{delegation}"},
 	}
 
 	router := bootstrapAPI()
