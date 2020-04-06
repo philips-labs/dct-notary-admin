@@ -12,8 +12,32 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+.App nav {
+  display: block;
+}
+.App nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #282c34;
+}
+.App nav ul li {
+  float: left;
+}
+.App nav ul li a {
+  display: block;
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+.App nav ul li a:hover {
+  background-color: #000;
+}
 
-.App-header {
+.App-content {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
