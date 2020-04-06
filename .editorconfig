@@ -19,3 +19,7 @@ indent_style = tab
 
 [*.yml]
 indent_size = 2
+
+[*.{ts*,css}]
+indent_size = 2
+tab_width = 2
