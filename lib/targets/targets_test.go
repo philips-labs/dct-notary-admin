@@ -31,7 +31,7 @@ var (
 	n            *notary.Service
 	router       *chi.Mux
 	ListResponse = []KeyResponse{
-		*NewKeyResponse(notary.Key{ID: "c3b49d8c15f339864a21c90a0b7c242e737e6a8a4d1ad73603bfdf0709f01241", GUN: "localhost:5000/dct-notary-admin", Role: "targets"}),
+		*NewKeyResponse(notary.Key{ID: "4ea1fec36392486d4bd99795ffc70f3ffa4a76185b39c8c2ab1d9cf5054dbbc9", GUN: "localhost:5000/dct-notary-admin", Role: "targets"}),
 	}
 )
 
@@ -85,7 +85,7 @@ func TestGetTargets(t *testing.T) {
 func TestGetTarget(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/targets/c3b49d8", nil)
+	req, err := http.NewRequest(http.MethodGet, "/targets/4ea1fec", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -164,7 +164,7 @@ func TestCreateTarget(t *testing.T) {
 func TestListTargetDelegates(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/targets/c3b49d8/delegates", nil)
+	req, err := http.NewRequest(http.MethodGet, "/targets/4ea1fec/delegates", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()

@@ -15,7 +15,7 @@ var (
 	trustStore      = "../../.notary"
 	rootKeyID       = "760e57b96f72ed27e523633d2ffafe45ae0ff804e78dfc014a50f01f823d161d"
 	expectedTargets = []Key{
-		Key{ID: "c3b49d8c15f339864a21c90a0b7c242e737e6a8a4d1ad73603bfdf0709f01241", GUN: "localhost:5000/dct-notary-admin", Role: "targets"},
+		Key{ID: "4ea1fec36392486d4bd99795ffc70f3ffa4a76185b39c8c2ab1d9cf5054dbbc9", GUN: "localhost:5000/dct-notary-admin", Role: "targets"},
 	}
 	expectedSigner = Key{ID: "eb9dd99255f91efeba139941fbfdb629f11c2353704de07a2ad653d22311c88b", Role: "marcofranssen"}
 	service        *Service
@@ -65,7 +65,7 @@ func TestGetTarget(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	target, err := service.GetTarget(ctx, "c3b49d8c15f339864a21c90a0b7c242e737e6a8a4d1ad73603bfdf0709f01241")
+	target, err := service.GetTarget(ctx, "4ea1fec36392486d4bd99795ffc70f3ffa4a76185b39c8c2ab1d9cf5054dbbc9")
 	assert.NoError(err)
 	assert.Equal(expectedTargets[0].ID, target.ID)
 	assert.Equal(expectedTargets[0].GUN, target.GUN)
