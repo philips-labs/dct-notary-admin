@@ -53,6 +53,21 @@
   color: white;
 }
 
+.list-view {
+  display: flexbox;
+  text-align: left;
+  margin: 0;
+  padding: 0;
+}
+
+.list-view li {
+  list-style-type: none;
+}
+
+.list-view li a:hover {
+  color: #61dafb;
+}
+
 .App-link {
   color: #61dafb;
 }

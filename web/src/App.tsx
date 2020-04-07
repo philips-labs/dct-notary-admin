@@ -21,12 +21,8 @@ function App() {
 
         <main className="App-content">
           <Switch>
-            <Route path="/targets">
-              <TargetsPage />
-            </Route>
-            <Route path="/">
-              <Home />
-            </Route>
+            <Route exact path="/" component={Home} />
+            <Route path="/targets" component={TargetsPage} />
           </Switch>
         </main>
       </div>
