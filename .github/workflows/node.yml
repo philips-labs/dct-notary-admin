@@ -1,0 +1,37 @@
+name: Node.js CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 13.x]
+
+      fail-fast: true
+
+    env:
+      CI: true
+
+    steps:
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        working-directory: web
+        run: yarn
+
+      - name: Build local packages
+        working-directory: web
+        run: yarn build
+
+      - name: Test
+        working-directory: web
+        run: yarn test

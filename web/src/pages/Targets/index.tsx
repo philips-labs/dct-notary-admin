@@ -28,7 +28,7 @@ export const TargetsPage: React.FC = () => {
       <ul className="Targets">
         {data.targets.map((item) => (
           <li key={item.id}>
-            <a href="">{item.gun}</a>
+            <a href="./">{item.gun}</a>
           </li>
         ))}
       </ul>
