@@ -1,7 +1,7 @@
 export interface Target {
   id: string;
-  gun?: string;
-  role?: string;
+  gun: string;
+  role: string;
 }
 
 export interface Delegation {

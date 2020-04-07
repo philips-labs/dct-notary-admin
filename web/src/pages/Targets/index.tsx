@@ -4,13 +4,16 @@ import { Link, Route } from 'react-router-dom';
 import { TargetListData, Target } from '../../models';
 import { DelegationList } from '../../components/DelegationList';
 
+const byGun = (a: Target, b: Target): number => (a.gun < b.gun ? -1 : a.gun > b.gun ? 1 : 0);
+
 export const TargetsPage: React.FC = () => {
   const [data, setData] = useState<TargetListData>({ targets: [] });
 
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get<Target[]>('/api/targets');
-      setData((prevState) => ({ ...prevState, targets: result.data }));
+      const targets = [...result.data].sort(byGun);
+      setData((prevState) => ({ ...prevState, targets }));
     };
 
     fetchData();

@@ -5,6 +5,9 @@ import { Delegation, DelegationListData } from '../../models';
 
 type TParams = { targetId: string };
 
+const byRole = (a: Delegation, b: Delegation): number =>
+  a.role < b.role ? -1 : a.role > b.role ? 1 : 0;
+
 export const DelegationList: FC<RouteComponentProps<TParams>> = ({ match }) => {
   const { targetId } = match.params;
   const [data, setData] = useState<DelegationListData>({
@@ -17,7 +20,7 @@ export const DelegationList: FC<RouteComponentProps<TParams>> = ({ match }) => {
         const delegationsResult = await axios.get<Delegation[]>(
           `/api/targets/${targetId}/delegations`,
         );
-        const delegations = [...delegationsResult.data];
+        const delegations = [...delegationsResult.data].sort(byRole);
         setData((prevState) => ({ ...prevState, delegations }));
       } catch (e) {
         setData((prevState) => ({ ...prevState, delegations: [] }));
