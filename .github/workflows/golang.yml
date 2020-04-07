@@ -1,18 +1,26 @@
-name: CI
+name: Go CI
 
 on: [push, pull_request]
 
 jobs:
   build:
-    name: Build
     runs-on: ubuntu-latest
+
+    name: CI  Backend
+
+    strategy:
+      matrix:
+        go-version: [1.14, 1.13]
+
+      fail-fast: true
+
     steps:
-      - name: Set up Go 1.13
+      - name: Set up Go ${{ matrix.node-version }}
         uses: actions/setup-go@v1
         with:
-          go-version: 1.13
+          go-version: ${{ matrix.node-version }}
 
-      - name: Check out code into the Go module directory
+      - name: Check out code
         uses: actions/checkout@v2
 
       - name: Lint
