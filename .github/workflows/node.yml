@@ -44,6 +44,16 @@ jobs:
         working-directory: web
         run: yarn build
 
-      - name: Test
+      - name: Test and coverage
         working-directory: web
-        run: yarn test
+        run: yarn test --coverage
+
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./web/coverage/clover.xml
+          flags: unittests
+          name: codecov-umbrella
+          yml: ./codecov.yml
+          fail_ci_if_error: true
