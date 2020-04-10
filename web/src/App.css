@@ -72,6 +72,61 @@
   color: #61dafb;
 }
 
+.form-container {
+  padding: 20px;
+  text-align: left;
+  border: 1px solid #fff;
+  border-radius: 10px;
+}
+
+label {
+  padding: 12px 12px 12px 0;
+  display: inline-block;
+}
+
+input[type=text], select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+button, input[type=submit] {
+  background-color: #61dafb;
+  font-weight: bold;
+  color: #282c34;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  float: right;
+}
+
+.col-25 {
+  float: left;
+  width: 25%;
+  margin-top: 6px;
+}
+
+.col-75 {
+  float: left;
+  width: 75%;
+  margin-top: 6px;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+@media screen and (max-width: 600px) {
+  .col-25, .col-75, input[type=submit] {
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

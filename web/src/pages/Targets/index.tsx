@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, Route } from 'react-router-dom';
 import { TargetListData, Target } from '../../models';
-import { DelegationList } from '../../components/DelegationList';
+import { RegisterDelegationKey, DelegationList } from '../../components';
 
 const byGun = (a: Target, b: Target): number => (a.gun < b.gun ? -1 : a.gun > b.gun ? 1 : 0);
 
@@ -30,6 +30,7 @@ export const TargetsPage: React.FC = () => {
         ))}
       </ul>
       <h3>Delegations</h3>
+      <Route path="/targets/:targetId" component={RegisterDelegationKey} />
       <Route path="/targets/:targetId" component={DelegationList} />
     </>
   );
