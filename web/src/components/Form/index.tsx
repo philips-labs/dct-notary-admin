@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, FormEvent, useState, createContext } from 'react';
+import React, { FC, FormEvent, useState, createContext } from 'react';
 import axios from 'axios';
 import { FieldProps } from './field';
 export interface IFormContext {
@@ -16,7 +16,6 @@ export interface Fields {
 export interface FormProps {
   action: string;
   fields: Fields;
-  render: () => ReactNode;
 }
 
 export interface FormValues {
@@ -33,7 +32,7 @@ export interface FormState {
   submitSuccess?: boolean;
 }
 
-export const Form: FC<FormProps> = ({ action, fields, render }) => {
+export const Form: FC<FormProps> = ({ action, fields, children }) => {
   const [state, setState] = useState<FormState>({
     values: {},
     errors: {},
@@ -111,7 +110,7 @@ export const Form: FC<FormProps> = ({ action, fields, render }) => {
     <FormContext.Provider value={context}>
       <div className="form-container">
         <form onSubmit={handleSubmit} noValidate={true}>
-          {render()}
+          {children}
           <button type="submit" disabled={hasErrors(errors)}>
             Submit
           </button>

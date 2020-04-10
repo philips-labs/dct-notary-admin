@@ -1,4 +1,4 @@
-import React, { FC, useState, FormEvent, useContext } from 'react';
+import React, { FC, FormEvent, useContext } from 'react';
 import { FormContext, FormValues, FormErrors } from '.';
 
 export type Editor = 'textbox' | 'multilinetextbox' | 'dropdown';

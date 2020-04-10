@@ -21,23 +21,21 @@ export const RegisterDelegationKey: FC<RouteComponentProps<TParams>> = ({ match 
   };
 
   return (
-    <Form
-      action={`/api/targets/${targetId}/delegations`}
-      fields={fields}
-      render={() => (
-        <>
-          <div className="row">
-            <p>Please paste your public signing key in the form below.</p>
-            <pre>cat ~/.docker/trust/your-key.pub | pbcopy</pre>
-          </div>
-          <div className="row">
-            <Field {...fields.delegationName} />
-          </div>
-          <div className="row">
-            <Field {...fields.delegationPublicKey} />
-          </div>
-        </>
-      )}
-    />
+    <Form action={`/api/targets/${targetId}/delegations`} fields={fields}>
+      <div className="row">
+        <p>First ensure you have a signing key or create a signing key.</p>
+        <code>
+          <pre>docker trust key generate marcofranssen --dir ~/.docker/trust</pre>
+        </code>
+        <p>Copy the contents of your public key to the clipboard.</p>
+        <pre>cat ~/.docker/trust/marcofranssen.pub | pbcopy</pre>
+      </div>
+      <div className="row">
+        <Field {...fields.delegationName} />
+      </div>
+      <div className="row">
+        <Field {...fields.delegationPublicKey} />
+      </div>
+    </Form>
   );
 };
