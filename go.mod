@@ -18,7 +18,7 @@ require (
 	github.com/docker/go-metrics v0.0.1 // indirect
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/go-chi/chi v4.0.2+incompatible
+	github.com/go-chi/chi v4.1.0+incompatible
 	github.com/go-chi/render v1.0.1
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
