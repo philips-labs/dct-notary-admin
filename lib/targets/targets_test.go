@@ -24,7 +24,8 @@ const (
 	NotImplementedResponse = "{\"status\":\"Not implemented.\"}\n"
 	NotFoundResponse       = "{\"status\":\"Resource not found.\"}\n"
 	InvalidIDResponse      = "{\"status\":\"Invalid request.\",\"error\":\"you must provide at least 7 characters of the path: invalid id\"}\n"
-	EmptyResponse          = "[]\n"
+	EmptyResponse          = ""
+	EmptyListResponse      = "[]\n"
 )
 
 var (
@@ -69,7 +70,7 @@ func init() {
 func TestGetTargets(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/api/targets", nil)
+	req, err := http.NewRequest(http.MethodGet, "/targets", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -85,7 +86,7 @@ func TestGetTargets(t *testing.T) {
 func TestGetTarget(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/api/targets/4ea1fec", nil)
+	req, err := http.NewRequest(http.MethodGet, "/targets/4ea1fec", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -101,7 +102,7 @@ func TestGetTarget(t *testing.T) {
 func TestGetUnknownTarget(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/api/targets/b635efe", nil)
+	req, err := http.NewRequest(http.MethodGet, "/targets/b635efe", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -114,7 +115,7 @@ func TestGetUnknownTarget(t *testing.T) {
 func TestGetTargetWithInvalidID(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/api/targets/c3b4", nil)
+	req, err := http.NewRequest(http.MethodGet, "/targets/c3b4", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -132,7 +133,7 @@ func TestCreateTarget(t *testing.T) {
 
 	reqData := RepositoryRequest{GUN: "localhost:5000/api-create-test/dct-notary-admin"}
 	jsonData, _ := json.Marshal(reqData)
-	req, err := http.NewRequest(http.MethodPost, "/api/targets", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(http.MethodPost, "/targets", bytes.NewBuffer(jsonData))
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
@@ -164,27 +165,38 @@ func TestCreateTarget(t *testing.T) {
 func TestListTargetDelegates(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodGet, "/api/targets/4ea1fec/delegates", nil)
+	req, err := http.NewRequest(http.MethodGet, "/targets/4ea1fec/delegations", nil)
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(http.StatusOK, rr.Code, "Invalid status code")
-	assert.Equal(EmptyResponse, rr.Body.String(), "Invalid response text")
+	assert.Equal(EmptyListResponse, rr.Body.String(), "Invalid response text")
 }
 
 func TestAddDelegation(t *testing.T) {
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodPost, "/targets/4ea1fec/delegations", nil)
+	data, _ := json.Marshal(DelegationRequest{
+		DelegationName: "marcofranssen",
+		DelegationPublicKey: `-----BEGIN PUBLIC KEY-----
+role: marcofranssen
+
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmI6bhcF0aqKobYIgBD/wHg/vhjW2
+E+C9PEdgfom/x+XxcrFLxvPz1jl7sH8yj315Tr3C5dcE9GhDDlNyJcNC/g==
+-----END PUBLIC KEY-----
+`,
+	})
+
+	req, err := http.NewRequest(http.MethodPost, "/targets/4ea1fec/delegations", bytes.NewReader(data))
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
 	router.ServeHTTP(rr, req)
 
-	assert.Equal(http.StatusNotImplemented, rr.Code, "Invalid status code")
-	assert.Equal(NotImplementedResponse, rr.Body.String(), "Expected empty response")
+	assert.Equal(http.StatusCreated, rr.Code, "Invalid status code")
+	assert.Equal(EmptyResponse, rr.Body.String(), "Expected empty response")
 }
 
 func TestRemoveDelegation(t *testing.T) {
