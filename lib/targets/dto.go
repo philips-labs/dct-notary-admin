@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/philips-labs/dct-notary-admin/lib/notary"
-
 	"github.com/go-chi/render"
+
+	"github.com/philips-labs/dct-notary-admin/lib/notary"
 )
 
 type RepositoryRequest struct {

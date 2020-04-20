@@ -3,13 +3,14 @@ package lib
 import (
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
+
 	"go.uber.org/zap"
 
+	m "github.com/philips-labs/dct-notary-admin/lib/middleware"
 	"github.com/philips-labs/dct-notary-admin/lib/notary"
 	"github.com/philips-labs/dct-notary-admin/lib/targets"
 )
@@ -18,7 +19,7 @@ func configureAPI(n *notary.Service, l *zap.Logger) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
-	r.Use(zapLogger(l))
+	r.Use(m.ZapLogger(l))
 	r.Use(middleware.RedirectSlashes)
 	r.Use(middleware.Recoverer)
 
@@ -41,28 +42,6 @@ func configureAPI(n *notary.Service, l *zap.Logger) *chi.Mux {
 	logRoutes(r, l)
 
 	return r
-}
-
-func zapLogger(l *zap.Logger) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
-
-			t1 := time.Now()
-			defer func() {
-				l.Info("Served",
-					zap.String("proto", r.Proto),
-					zap.String("path", r.URL.Path),
-					zap.Duration("lat", time.Since(t1)),
-					zap.Int("status", ww.Status()),
-					zap.Int("size", ww.BytesWritten()),
-					zap.String("reqId", middleware.GetReqID(r.Context())),
-				)
-			}()
-
-			next.ServeHTTP(ww, r)
-		})
-	}
 }
 
 func logRoutes(r *chi.Mux, logger *zap.Logger) {

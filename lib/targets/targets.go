@@ -2,17 +2,27 @@ package targets
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
-	"github.com/theupdateframework/notary/tuf/utils"
+	"go.uber.org/zap"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
 	"github.com/theupdateframework/notary/tuf/data"
+	"github.com/theupdateframework/notary/tuf/utils"
 
 	e "github.com/philips-labs/dct-notary-admin/lib/errors"
+	m "github.com/philips-labs/dct-notary-admin/lib/middleware"
 	"github.com/philips-labs/dct-notary-admin/lib/notary"
+)
+
+const (
+	ErrMsgFailedParseBody          = "failed to parse request body"
+	ErrMsgFailedListTargetKeys     = "failed to list target keys"
+	ErrMsgFailedListDelegationKeys = "faild to list delegation keys"
+	ErrMsgFailedGetTargetKey       = "failed getting target key"
 )
 
 // Resource holds api endpoints for the /targets urls
@@ -41,11 +51,13 @@ func (tr *Resource) RegisterRoutes(r chi.Router) {
 }
 
 func (tr *Resource) listTargets(w http.ResponseWriter, r *http.Request) {
+	log := m.GetZapLogger(r)
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
 	targets, err := tr.notary.ListTargets(ctx)
 	if err != nil {
+		log.Error(ErrMsgFailedListTargetKeys, zap.Error(err))
 		respond(w, r, e.ErrRender(err))
 		return
 	}
@@ -53,11 +65,13 @@ func (tr *Resource) listTargets(w http.ResponseWriter, r *http.Request) {
 }
 
 func (tr *Resource) createTarget(w http.ResponseWriter, r *http.Request) {
+	log := m.GetZapLogger(r)
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
 	body := &RepositoryRequest{}
 	if err := render.Bind(r, body); err != nil {
+		log.Error(ErrMsgFailedParseBody, zap.Error(err))
 		respond(w, r, e.ErrInvalidRequest(err))
 		return
 	}
@@ -67,12 +81,14 @@ func (tr *Resource) createTarget(w http.ResponseWriter, r *http.Request) {
 		AutoPublish:   true,
 	})
 	if err != nil {
+		log.Error("failed creating target", zap.Error(err))
 		respond(w, r, e.ErrInternalServer(err))
 		return
 	}
 
 	newKey, err := tr.notary.ListKeys(ctx, notary.AndFilter(notary.TargetsFilter, notary.GUNFilter(body.GUN)))
 	if err != nil {
+		log.Error(ErrMsgFailedListTargetKeys, zap.Error(err))
 		respond(w, r, e.ErrInternalServer(err))
 		return
 	}
@@ -82,6 +98,7 @@ func (tr *Resource) createTarget(w http.ResponseWriter, r *http.Request) {
 }
 
 func (tr *Resource) getTarget(w http.ResponseWriter, r *http.Request) {
+	log := m.GetZapLogger(r)
 	id := chi.URLParam(r, "target")
 
 	ctx, cancel := context.WithCancel(r.Context())
@@ -89,6 +106,7 @@ func (tr *Resource) getTarget(w http.ResponseWriter, r *http.Request) {
 
 	target, err := tr.notary.GetTarget(ctx, id)
 	if err != nil {
+		log.Error(ErrMsgFailedGetTargetKey, zap.Error(err))
 		respond(w, r, e.ErrInvalidRequest(err))
 		return
 	}
@@ -101,6 +119,7 @@ func (tr *Resource) getTarget(w http.ResponseWriter, r *http.Request) {
 }
 
 func (tr *Resource) listDelegates(w http.ResponseWriter, r *http.Request) {
+	log := m.GetZapLogger(r)
 	id := chi.URLParam(r, "target")
 
 	ctx, cancel := context.WithCancel(r.Context())
@@ -108,6 +127,7 @@ func (tr *Resource) listDelegates(w http.ResponseWriter, r *http.Request) {
 
 	target, err := tr.notary.GetTarget(ctx, id)
 	if err != nil {
+		log.Error(ErrMsgFailedGetTargetKey, zap.Error(err))
 		respond(w, r, e.ErrRender(err))
 		return
 	}
@@ -117,6 +137,7 @@ func (tr *Resource) listDelegates(w http.ResponseWriter, r *http.Request) {
 	}
 	delegates, err := tr.notary.ListDelegates(ctx, target)
 	if err != nil {
+		log.Error(ErrMsgFailedListDelegationKeys, zap.Error(err))
 		respond(w, r, e.ErrRender(err))
 		return
 	}
@@ -129,26 +150,32 @@ func (tr *Resource) listDelegates(w http.ResponseWriter, r *http.Request) {
 }
 
 func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
+	log := m.GetZapLogger(r)
 	id := chi.URLParam(r, "target")
+
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
 	target, err := tr.notary.GetTarget(ctx, id)
 	if err != nil {
+		log.Error(ErrMsgFailedGetTargetKey, zap.Error(err))
 		respond(w, r, e.ErrInvalidRequest(err))
 		return
 	}
 	body := &DelegationRequest{}
 	if err := render.Bind(r, body); err != nil {
+		log.Error(ErrMsgFailedParseBody, zap.Error(err))
 		respond(w, r, e.ErrInvalidRequest(err))
 		return
 	}
 
 	pubKey, err := utils.ParsePEMPublicKey([]byte(body.DelegationPublicKey))
 	if err != nil {
+		log.Error("failed to read public key", zap.Error(err))
 		respond(w, r, e.ErrInvalidRequest(err))
 		return
 	}
+
 	err = tr.notary.AddDelegation(ctx, notary.AddDelegationCommand{
 		AutoPublish:    true,
 		Role:           notary.DelegationPath(body.DelegationName),
@@ -157,9 +184,11 @@ func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
 		TargetCommand:  notary.TargetCommand{GUN: data.GUN(target.GUN)},
 	})
 	if err != nil {
+		log.Error("failed to add delegation", zap.Error(err))
 		respond(w, r, e.ErrInternalServer(err))
 		return
 	}
+
 	w.WriteHeader(http.StatusCreated)
 }
 
