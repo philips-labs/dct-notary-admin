@@ -123,7 +123,7 @@ func (s *Service) AddDelegation(ctx context.Context, cmd AddDelegationCommand) e
 	}
 	sanitizedGUN := cmd.SanitizedGUN()
 
-	fact := ConfigureRepo(s.config, s.retriever, true, readOnly)
+	fact := ConfigureRepo(s.config, s.retriever, false, readOnly)
 	nRepo, err := fact(sanitizedGUN)
 	if err != nil {
 		return err
@@ -131,10 +131,10 @@ func (s *Service) AddDelegation(ctx context.Context, cmd AddDelegationCommand) e
 
 	err = nRepo.AddDelegation(cmd.Role, cmd.DelegationKeys, cmd.Paths)
 	if err != nil {
-		return fmt.Errorf("failed to create delegation: %v", err)
+		return fmt.Errorf("failed to create delegation: %w", err)
 	}
 
-	return nil
+	return maybeAutoPublish(s.log, cmd.AutoPublish, sanitizedGUN, s.config, s.retriever)
 }
 
 // StreamKeys returns a Stream of Key
