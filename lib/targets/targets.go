@@ -169,7 +169,7 @@ func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pubKey, err := utils.ParsePEMPublicKey([]byte(body.DelegationPublicKey))
+	pubKey, pubKeyID, err := readPublicKey([]byte(body.DelegationPublicKey))
 	if err != nil {
 		log.Error("failed to read public key", zap.Error(err))
 		respond(w, r, e.ErrInvalidRequest(err))
@@ -190,6 +190,7 @@ func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(pubKeyID))
 }
 
 func (tr *Resource) removeDelegation(w http.ResponseWriter, r *http.Request) {
@@ -206,4 +207,18 @@ func respondList(w http.ResponseWriter, r *http.Request, renderers []render.Rend
 	if err := render.RenderList(w, r, renderers); err != nil {
 		render.Render(w, r, e.ErrRender(err))
 	}
+}
+
+func readPublicKey(pubKeyBytes []byte) (data.PublicKey, string, error) {
+	pubKey, err := utils.ParsePEMPublicKey(pubKeyBytes)
+	if err != nil {
+		return nil, "", fmt.Errorf("can't parse public key: %w", err)
+	}
+
+	pubKeyID, err := utils.CanonicalKeyID(pubKey)
+	if err != nil {
+		return pubKey, "", fmt.Errorf("can't determine public Key ID: %w", err)
+	}
+
+	return pubKey, pubKeyID, nil
 }
