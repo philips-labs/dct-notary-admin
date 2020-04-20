@@ -54,10 +54,13 @@
 }
 
 .list-view {
-  display: flexbox;
+  display: flex;
   text-align: left;
-  margin: 0;
-  padding: 0;
+  margin: 5px;
+  padding: 20px;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  flex-direction: column;
 }
 
 .list-view li {
@@ -73,6 +76,7 @@
 }
 
 .form-container {
+  margin: 5px;
   padding: 20px;
   text-align: left;
   border: 1px solid #fff;
@@ -118,6 +122,10 @@ button, input[type=submit] {
   content: "";
   display: table;
   clear: both;
+}
+
+.flex {
+  display: flex;
 }
 
 @media screen and (max-width: 600px) {
