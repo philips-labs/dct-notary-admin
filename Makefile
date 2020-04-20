@@ -19,7 +19,7 @@ all: build test
 
 .PHONY: run
 run: build
-	@bin/dctna --config .notary/config.json
+	@bin/static/dctna --config .notary/config.json
 
 .PHONY: build-sandbox
 build-sandbox:

@@ -132,6 +132,7 @@ func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "target")
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
+
 	target, err := tr.notary.GetTarget(ctx, id)
 	if err != nil {
 		respond(w, r, e.ErrInvalidRequest(err))
@@ -159,6 +160,7 @@ func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
 		respond(w, r, e.ErrInternalServer(err))
 		return
 	}
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (tr *Resource) removeDelegation(w http.ResponseWriter, r *http.Request) {

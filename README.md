@@ -107,6 +107,14 @@ make coverage-html
 
 ## Run
 
+> For the API to provide the key credentials following environment variables have to be set. Later on different credentials for different keys will be dynamically loaded from a secure storage.
+
+```bash
+export NOTARY_ROOT_PASSPHRASE=test1234
+export NOTARY_TARGETS_PASSPHRASE=test1234
+export NOTARY_SNAPSHOT_PASSPHRASE=test1234
+```
+
 Now you can start the server as following:
 
 ```bash
