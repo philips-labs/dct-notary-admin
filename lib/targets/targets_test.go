@@ -203,7 +203,7 @@ func TestAddDelegation(t *testing.T) {
 	assert.NotNil(resp)
 	assert.Equal(gun.String(), resp.GUN)
 	assert.NotEmpty(resp.ID)
-	assert.Equal(fmt.Sprintf("targets/%s", data.DelegationName), resp.Role)
+	assert.Equal(data.DelegationName, resp.Role)
 }
 
 func TestListTargetDelegates(t *testing.T) {

@@ -191,7 +191,7 @@ func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	respond(w, r, NewKeyResponse(notary.Key{ID: pubKeyID, GUN: target.GUN, Role: role.String()}))
+	respond(w, r, NewKeyResponse(notary.Key{ID: pubKeyID, GUN: target.GUN, Role: body.DelegationName}))
 }
 
 func (tr *Resource) removeDelegation(w http.ResponseWriter, r *http.Request) {
