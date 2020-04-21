@@ -24,13 +24,17 @@ export const TargetsPage: React.FC = () => {
       <h2>Targets</h2>
       <div className="flex">
         <Route path="/targets" component={CreateTarget} />
-        <ul className="list-view">
-          {data.targets.map((item) => (
-            <li key={item.id.substr(7)}>
-              <Link to={`/targets/${item.id.substr(0, 7)}`}>{item.gun}</Link>
-            </li>
-          ))}
-        </ul>
+        {data.targets.length !== 0 ? (
+          <ul className="list-view">
+            {data.targets.map((item) => (
+              <li key={item.id.substr(7)}>
+                <Link to={`/targets/${item.id.substr(0, 7)}`}>{item.gun}</Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          'Loading...'
+        )}
       </div>
       <h3>Delegations</h3>
       <div className="flex">
