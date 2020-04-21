@@ -86,15 +86,15 @@ func (tr *Resource) createTarget(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newKey, err := tr.notary.ListKeys(ctx, notary.AndFilter(notary.TargetsFilter, notary.GUNFilter(body.GUN)))
-	if err != nil {
-		log.Error(ErrMsgFailedListTargetKeys, zap.Error(err))
+	newKey, err := tr.notary.GetTargetByGUN(ctx, data.GUN(body.GUN))
+	if err != nil || newKey == nil {
+		log.Error(ErrMsgFailedGetTargetKey, zap.Error(err))
 		respond(w, r, e.ErrInternalServer(err))
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	respond(w, r, NewKeyResponse(newKey[0]))
+	respond(w, r, NewKeyResponse(*newKey))
 }
 
 func (tr *Resource) getTarget(w http.ResponseWriter, r *http.Request) {
@@ -176,9 +176,10 @@ func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	role := notary.DelegationPath(body.DelegationName)
 	err = tr.notary.AddDelegation(ctx, notary.AddDelegationCommand{
 		AutoPublish:    true,
-		Role:           notary.DelegationPath(body.DelegationName),
+		Role:           role,
 		DelegationKeys: []data.PublicKey{pubKey},
 		Paths:          []string{""},
 		TargetCommand:  notary.TargetCommand{GUN: data.GUN(target.GUN)},
@@ -190,7 +191,7 @@ func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(pubKeyID))
+	respond(w, r, NewKeyResponse(notary.Key{ID: pubKeyID, GUN: target.GUN, Role: role.String()}))
 }
 
 func (tr *Resource) removeDelegation(w http.ResponseWriter, r *http.Request) {

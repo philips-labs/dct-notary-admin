@@ -54,7 +54,7 @@ func (s *Service) CreateRepository(ctx context.Context, cmd CreateRepoCommand) e
 	}
 	sanitizedGUN := cmd.SanitizedGUN()
 
-	fact := ConfigureRepo(s.config, s.retriever, true, readOnly)
+	fact := ConfigureRepo(s.config, s.retriever, true, readWrite)
 	nRepo, err := fact(sanitizedGUN)
 	if err != nil {
 		return err
@@ -123,7 +123,7 @@ func (s *Service) AddDelegation(ctx context.Context, cmd AddDelegationCommand) e
 	}
 	sanitizedGUN := cmd.SanitizedGUN()
 
-	fact := ConfigureRepo(s.config, s.retriever, true, readOnly)
+	fact := ConfigureRepo(s.config, s.retriever, false, readOnly)
 	nRepo, err := fact(sanitizedGUN)
 	if err != nil {
 		return err
@@ -131,10 +131,10 @@ func (s *Service) AddDelegation(ctx context.Context, cmd AddDelegationCommand) e
 
 	err = nRepo.AddDelegation(cmd.Role, cmd.DelegationKeys, cmd.Paths)
 	if err != nil {
-		return fmt.Errorf("failed to create delegation: %v", err)
+		return fmt.Errorf("failed to create delegation: %w", err)
 	}
 
-	return nil
+	return maybeAutoPublish(s.log, cmd.AutoPublish, sanitizedGUN, s.config, s.retriever)
 }
 
 // StreamKeys returns a Stream of Key
@@ -176,6 +176,15 @@ func (s *Service) ListKeys(ctx context.Context, filter KeyFilter) ([]Key, error)
 	filtered := KeyChanToSlice(filteredChan)
 
 	return filtered, nil
+}
+
+// GetTargetByGUN retrieves a target by its GUN
+func (s *Service) GetTargetByGUN(ctx context.Context, gun data.GUN) (*Key, error) {
+	targetKeys, err := s.ListKeys(ctx, AndFilter(TargetsFilter, GUNFilter(gun.String())))
+	if err != nil && len(targetKeys) != 1 {
+		return nil, err
+	}
+	return &targetKeys[0], nil
 }
 
 // GetTarget retrieves a target by its path/id
@@ -249,7 +258,7 @@ func getDelegationRoleToKeyMap(rawDelegationRoles []data.Role) map[string][]Key 
 }
 
 func notaryRoleToSigner(tufRole data.RoleName) string {
-	//  don't show a signer for "targets" or "targets/releases"
+	// don't show a signer for "targets" or "targets/releases"
 	if isReleasedTarget(data.RoleName(tufRole.String())) {
 		return releasedRoleName
 	}
