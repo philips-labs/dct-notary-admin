@@ -179,6 +179,10 @@ func TestAddDelegation(t *testing.T) {
 	if !assert.NoError(err) {
 		return
 	}
+	defer func() {
+		err := cleanupTarget(ctx, gun, id)
+		assert.NoError(err)
+	}()
 
 	data := DelegationRequest{
 		DelegationName:      "marcofranssen",
@@ -200,9 +204,6 @@ func TestAddDelegation(t *testing.T) {
 	assert.Equal(gun.String(), resp.GUN)
 	assert.NotEmpty(resp.ID)
 	assert.Equal(fmt.Sprintf("targets/%s", data.DelegationName), resp.Role)
-
-	err = cleanupTarget(ctx, gun, id)
-	assert.NoError(err)
 }
 
 func TestListTargetDelegates(t *testing.T) {
@@ -214,6 +215,10 @@ func TestListTargetDelegates(t *testing.T) {
 	gun := randomGUN()
 	id, err := createTestTarget(ctx, gun)
 	assert.NoError(err)
+	defer func() {
+		err := cleanupTarget(ctx, gun, id)
+		assert.NoError(err)
+	}()
 	delID, delName, err := addDelegation(ctx, gun)
 	assert.NoError(err)
 
@@ -232,9 +237,6 @@ func TestListTargetDelegates(t *testing.T) {
 	assert.Empty(resp[0].GUN)
 	assert.Equal(delID, resp[0].ID)
 	assert.Equal(strings.TrimPrefix(delName.String(), "targets/"), resp[0].Role)
-
-	err = cleanupTarget(ctx, gun, id)
-	assert.NoError(err)
 }
 
 func TestRemoveDelegation(t *testing.T) {
