@@ -1,22 +1,40 @@
-import React, { FC, ClassAttributes, HTMLAttributes, useContext } from 'react';
-import { ResponsiveContext, BoxProps, Sidebar, Nav } from 'grommet';
-import { Home, Database, User } from 'grommet-icons';
+import React, { FC, ClassAttributes, HTMLAttributes } from 'react';
+import { BoxProps, Sidebar, Nav, Box, Avatar } from 'grommet';
+import { Home, Database } from 'grommet-icons';
 import { NavButton } from './NavButton';
+
+export const MainNavigation = () => (
+  <Nav pad={{ vertical: 'small' }}>
+    <NavButton path="/targets" icon={<Database />} label="Targets" />
+  </Nav>
+);
+
+export const SidebarHeader = () => (
+  <Nav gap="small">
+    <NavButton path="/" icon={<Home />} label="Home" />
+  </Nav>
+);
+
+export const SidebarFooter = () => (
+  <Box pad="small" border={{ color: 'white', side: 'top' }}>
+    <Avatar border={{ size: 'small', color: 'accent-2' }} background="white" flex={false}>
+      MF
+    </Avatar>
+  </Box>
+);
 
 export const NavBar: FC<
   BoxProps & ClassAttributes<HTMLDivElement> & HTMLAttributes<HTMLDivElement>
 > = () => {
-  const size = useContext(ResponsiveContext);
-
   return (
     <Sidebar
       background="brand"
-      header={<NavButton path="/" icon={<Home />} label="Home" />}
-      footer={<NavButton path="/" icon={<User />} label="User" />}
+      pad={{ left: 'none', right: 'none' }}
+      header={<SidebarHeader />}
+      footer={<SidebarFooter />}
+      gap="small"
     >
-      <Nav align="center" pad={{ vertical: 'small' }} gap={size === 'small' ? 'medium' : 'small'}>
-        <NavButton path="/targets" icon={<Database />} label="Targets" />
-      </Nav>
+      <MainNavigation />
     </Sidebar>
   );
 };

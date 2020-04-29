@@ -1,20 +1,25 @@
-import React, { FC } from 'react';
-import { Box, Text, RoutedButton } from 'grommet';
+import React, { FC, cloneElement } from 'react';
+import { Box, Text, RoutedButton, RoutedButtonProps, ButtonProps } from 'grommet';
 
-export interface NavButtonProps {
-  path: string;
-  icon: any;
+export interface IconButton {
   label: string;
+  icon: any;
 }
 
-export const NavButton: FC<NavButtonProps> = ({ path, icon, label }) => {
-  const tooltipColor = { color: 'accent-1', opacity: 0.9 };
+export const NavButton: FC<RoutedButtonProps & ButtonProps & IconButton> = ({
+  path,
+  label,
+  icon,
+  ...rest
+}) => {
   return (
-    <RoutedButton path={path} hoverIndicator={tooltipColor}>
-      <Box pad={{ vertical: 'small' }} gap="xsmall" align="center" justify="center">
-        {icon}
-        <Text size="xsmall">{label}</Text>
-      </Box>
+    <RoutedButton path={path} {...rest} hoverIndicator={{ color: 'accent-1' }} plain>
+      {({ hover }: { hover: boolean }) => (
+        <Box pad={{ vertical: 'small' }} gap="xsmall" align="center" justify="center">
+          {cloneElement(icon, { color: hover ? 'black' : 'white' })}
+          <Text size="xsmall">{label}</Text>
+        </Box>
+      )}
     </RoutedButton>
   );
 };
