@@ -1,32 +1,34 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Grommet, Main, Grid } from 'grommet';
 import logo from './logo.svg';
-import './App.css';
+import { customTheme } from './Theme';
 import { TargetsPage } from './pages';
+import { NavBar } from './components';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/targets">Targets</Link>
-            </li>
-          </ul>
-        </nav>
-
-        <main className="App-content">
-          <Switch>
-            <Route exact path="/" component={Home} />
-            <Route path="/targets" component={TargetsPage} />
-          </Switch>
-        </main>
-      </div>
-    </Router>
+    <Grommet theme={customTheme} full>
+      <Router>
+        <Grid
+          fill
+          rows={['auto']}
+          columns={['auto', 'flex']}
+          areas={[
+            { name: 'sidebar', start: [0, 0], end: [0, 0] },
+            { name: 'main', start: [1, 0], end: [1, 0] },
+          ]}
+        >
+          <NavBar gridArea="sidebar" />
+          <Main gridArea="main" overflow="auto" pad="medium">
+            <Switch>
+              <Route exact path="/" component={Home} />
+              <Route path="/targets" component={TargetsPage} />
+            </Switch>
+          </Main>
+        </Grid>
+      </Router>
+    </Grommet>
   );
 }
 

@@ -2,6 +2,7 @@ import React, { FC, useState, useEffect } from 'react';
 import axios from 'axios';
 import { RouteComponentProps } from 'react-router-dom';
 import { Delegation, DelegationListData } from '../../models';
+import { List } from 'grommet';
 
 type TParams = { targetId: string };
 
@@ -31,10 +32,6 @@ export const DelegationList: FC<RouteComponentProps<TParams>> = ({ match }) => {
   }, [targetId]);
 
   return (
-    <ul className="list-view">
-      {data.delegations.map((item) => (
-        <li key={item.id.substr(7)}>{item.role}</li>
-      ))}
-    </ul>
+    <List primaryKey="role" secondaryKey={(item) => item.id.substr(0, 7)} data={data.delegations} />
   );
 };
