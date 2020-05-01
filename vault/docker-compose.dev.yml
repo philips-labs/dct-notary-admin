@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+
+  vault:
+    image: vault:1.4.1
+    ports:
+      - "8200:8200"
+    restart: always
+    volumes:
+      - ./volumes/plugins:/vault/plugins
+    cap_add:
+      - IPC_LOCK
+    # command: server -dev
+    command: server -dev -dev-plugin-dir=/vault/plugins
