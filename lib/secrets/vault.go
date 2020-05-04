@@ -9,6 +9,8 @@ import (
 	"github.com/hashicorp/vault/api"
 )
 
+var ErrNotFound = errors.New("secret not found")
+
 type VaultPasswordGenerator struct {
 	client  *api.Client
 	options VaultPasswordOptions
@@ -28,6 +30,35 @@ type VaultKeyPassword struct {
 
 type VaultSecret struct {
 	Data interface{} `json:"data, omitempty"`
+}
+
+func NewAuthenticatedVaultClient(username, password string) (*api.Client, error) {
+	client, err := api.NewClient(api.DefaultConfig())
+	if err != nil {
+		return nil, err
+	}
+	token, err := userpassLogin(client, username, password)
+	if err != nil {
+		return client, err
+	}
+	client.SetToken(token)
+	return client, nil
+}
+
+func userpassLogin(client *api.Client, username, password string) (string, error) {
+	options := map[string]interface{}{
+		"password": password,
+	}
+	path := path.Join("auth", "userpass", "login", username)
+
+	// PUT call to get a token
+	secret, err := client.Logical().Write(path, options)
+	if err != nil {
+		return "", err
+	}
+
+	token := secret.Auth.ClientToken
+	return token, nil
 }
 
 func (g *VaultPasswordGenerator) Generate() (string, error) {
@@ -83,11 +114,13 @@ func (v *VaultCredentialsManager) ReadPassword(key string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if secret == nil {
+		return "", fmt.Errorf("%s: %w", path, ErrNotFound)
+	}
 	if secretData, ok := secret.Data["data"].(map[string]interface{}); ok {
 		if passwd, ok := secretData["password"].(string); ok {
 			return passwd, nil
 		}
-
 	}
 
 	return "", fmt.Errorf("failed to read secret, data in unexpected format")

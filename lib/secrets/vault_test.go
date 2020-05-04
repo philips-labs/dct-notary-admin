@@ -31,35 +31,6 @@ func init() {
 	}
 }
 
-func userpassLogin(client *api.Client, username, password string) (string, error) {
-	options := map[string]interface{}{
-		"password": password,
-	}
-	path := path.Join("auth", "userpass", "login", username)
-
-	// PUT call to get a token
-	secret, err := client.Logical().Write(path, options)
-	if err != nil {
-		return "", err
-	}
-
-	token := secret.Auth.ClientToken
-	return token, nil
-}
-
-func authenticatedClient() (*api.Client, error) {
-	client, err := api.NewClient(api.DefaultConfig())
-	if err != nil {
-		return nil, err
-	}
-	token, err := userpassLogin(client, "dctna", "topsecret")
-	if err != nil {
-		return client, err
-	}
-	client.SetToken(token)
-	return client, nil
-}
-
 func uintPtr(value uint) *uint {
 	return &value
 }
@@ -71,7 +42,7 @@ func boolPtr(value bool) *bool {
 func TestVaultPasswordGenerator(t *testing.T) {
 	assert := assert.New(t)
 
-	client, err := authenticatedClient()
+	client, err := NewAuthenticatedVaultClient("dctna", "topsecret")
 	if !assert.NoError(err, "failed to authenticate client") {
 		return
 	}
@@ -133,7 +104,7 @@ func TestVaultPasswordGenerator(t *testing.T) {
 func TestStoreKeyPassword(t *testing.T) {
 	assert := assert.New(t)
 
-	client, err := authenticatedClient()
+	client, err := NewAuthenticatedVaultClient("dctna", "topsecret")
 	if !assert.NoError(err, "failed to authenticate vault client") {
 		return
 	}
@@ -146,7 +117,7 @@ func TestStoreKeyPassword(t *testing.T) {
 func TestReadSecret(t *testing.T) {
 	assert := assert.New(t)
 
-	client, err := authenticatedClient()
+	client, err := NewAuthenticatedVaultClient("dctna", "topsecret")
 	if !assert.NoError(err) {
 		return
 	}
@@ -157,8 +128,18 @@ func TestReadSecret(t *testing.T) {
 		return
 	}
 
-	passwd, err := cm.ReadPassword("root")
+	t.Run("get existing secret", func(t *testing.T) {
+		passwd, err := cm.ReadPassword("root")
 
-	assert.NoError(err)
-	assert.NotEmpty(passwd)
+		assert.NoError(err)
+		assert.NotEmpty(passwd)
+	})
+
+	t.Run("get non existing secret", func(t *testing.T) {
+		passwd, err := cm.ReadPassword("unknown-secret")
+
+		assert.Error(err)
+		assert.IsType(ErrNotFound, errors.Unwrap(err))
+		assert.Empty(passwd)
+	})
 }
