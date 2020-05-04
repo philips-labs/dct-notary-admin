@@ -1,21 +1,16 @@
-package secrets_test
+package secrets
 
 import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/hashicorp/vault/api"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/philips-labs/dct-notary-admin/lib/secrets"
-)
-
-var (
-	client *api.Client
 )
 
 func init() {
@@ -40,7 +35,7 @@ func userpassLogin(client *api.Client, username, password string) (string, error
 	options := map[string]interface{}{
 		"password": password,
 	}
-	path := fmt.Sprintf("auth/userpass/login/%s", username)
+	path := path.Join("auth", "userpass", "login", username)
 
 	// PUT call to get a token
 	secret, err := client.Logical().Write(path, options)
@@ -83,38 +78,38 @@ func TestVaultPasswordGenerator(t *testing.T) {
 
 	testCases := []struct {
 		name    string
-		options secrets.VaultPasswordOptions
+		options VaultPasswordOptions
 		expLen  int
 		exp     *regexp.Regexp
 	}{
 		{
 			name: "all explicit", expLen: 12, exp: regexp.MustCompile("^[a-z]+$"),
-			options: secrets.VaultPasswordOptions{
+			options: VaultPasswordOptions{
 				Len: uintPtr(12), Digits: uintPtr(0), Symbols: uintPtr(0), AllowUppercase: boolPtr(false), AllowRepeat: boolPtr(true),
 			},
 		},
 		{name: "defaults", expLen: 64, exp: nil},
 		{
 			name: "lowercase alpha numeric only", expLen: 64, exp: regexp.MustCompile("^[a-z]+$"),
-			options: secrets.VaultPasswordOptions{
+			options: VaultPasswordOptions{
 				AllowUppercase: boolPtr(false), Digits: uintPtr(0), Symbols: uintPtr(0),
 			},
 		},
 		{
 			name: "alpha numeric only", expLen: 64, exp: regexp.MustCompile("^[A-Za-z]+$"),
-			options: secrets.VaultPasswordOptions{
+			options: VaultPasswordOptions{
 				Digits: uintPtr(0), Symbols: uintPtr(0),
 			},
 		},
 		{
 			name: "alpha numeric and digits only", expLen: 64, exp: regexp.MustCompile("^[A-Za-z\\d]+$"),
-			options: secrets.VaultPasswordOptions{
+			options: VaultPasswordOptions{
 				Digits: uintPtr(5), Symbols: uintPtr(0),
 			},
 		},
 		{
 			name: "alpha numeric only shorter Length", expLen: 32, exp: regexp.MustCompile("^[a-zA-Z]+$"),
-			options: secrets.VaultPasswordOptions{
+			options: VaultPasswordOptions{
 				Len: uintPtr(32), Digits: uintPtr(0), Symbols: uintPtr(0),
 			},
 		},
@@ -122,7 +117,7 @@ func TestVaultPasswordGenerator(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			pgen := secrets.NewVaultPasswordGenerator(client, tt.options)
+			pgen := NewVaultPasswordGenerator(client, tt.options)
 			password, err := pgen.Generate()
 			if !assert.NoError(err) {
 				return
@@ -133,4 +128,37 @@ func TestVaultPasswordGenerator(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestStoreKeyPassword(t *testing.T) {
+	assert := assert.New(t)
+
+	client, err := authenticatedClient()
+	if !assert.NoError(err, "failed to authenticate vault client") {
+		return
+	}
+
+	cm := NewVaultCredentialsManager(client, NewVaultPasswordGenerator(client, VaultPasswordOptions{}))
+	err = cm.StorePassword("localhost:5000/dctna", "super secret")
+	assert.NoError(err)
+}
+
+func TestReadSecret(t *testing.T) {
+	assert := assert.New(t)
+
+	client, err := authenticatedClient()
+	if !assert.NoError(err) {
+		return
+	}
+
+	cm := NewVaultCredentialsManager(client, NewVaultPasswordGenerator(client, VaultPasswordOptions{}))
+	err = cm.StorePassword("root", "super secret")
+	if !assert.NoError(err) {
+		return
+	}
+
+	passwd, err := cm.ReadPassword("root")
+
+	assert.NoError(err)
+	assert.NotEmpty(passwd)
 }
