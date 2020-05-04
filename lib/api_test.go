@@ -26,7 +26,7 @@ func bootstrapAPI() *chi.Mux {
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,
 		},
-	}, zap.NewNop())
+	}, notary.GetPassphraseRetriever(), zap.NewNop())
 	return configureAPI(n, zap.NewNop())
 }
 

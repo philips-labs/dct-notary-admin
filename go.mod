@@ -45,6 +45,7 @@ require (
 	github.com/pierrec/lz4 v2.4.0+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.4.0 // indirect
+	github.com/smartystreets/assertions v1.0.0 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/cobra v0.0.7

@@ -71,7 +71,7 @@ func init() {
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,
 		},
-	}, zap.NewNop())
+	}, notary.GetPassphraseRetriever(), zap.NewNop())
 
 	router = chi.NewRouter()
 

@@ -43,8 +43,8 @@ type Service struct {
 }
 
 // NewService creates a new notary service object
-func NewService(config *Config, log *zap.Logger) *Service {
-	return &Service{config, getPassphraseRetriever(), log}
+func NewService(config *Config, passRetriever notary.PassRetriever, log *zap.Logger) *Service {
+	return &Service{config, passRetriever, log}
 }
 
 // CreateRepository creates a new repository with the given id
@@ -140,7 +140,7 @@ func (s *Service) AddDelegation(ctx context.Context, cmd AddDelegationCommand) e
 // StreamKeys returns a Stream of Key
 func (s *Service) StreamKeys(ctx context.Context) (<-chan Key, error) {
 	keysChan := make(chan Key, 2)
-	fileKeyStore, err := trustmanager.NewKeyFileStore(s.config.TrustDir, getPassphraseRetriever())
+	fileKeyStore, err := trustmanager.NewKeyFileStore(s.config.TrustDir, GetPassphraseRetriever())
 	if err != nil {
 		return nil, err
 	}

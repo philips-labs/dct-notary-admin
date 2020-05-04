@@ -16,6 +16,7 @@ import (
 
 	"github.com/philips-labs/dct-notary-admin/lib"
 	"github.com/philips-labs/dct-notary-admin/lib/notary"
+	"github.com/philips-labs/dct-notary-admin/lib/secrets"
 )
 
 var cfgFile string
@@ -51,7 +52,12 @@ centralized to better manage backups.`,
 		}
 		logger.Debug("Unmarshalled NotaryConfig", zap.Any("config", notaryCfg))
 
-		n := notary.NewService(notaryCfg, logger)
+		os.Setenv("VAULT_ADDR", "http://localhost:8200")
+		vc, err := secrets.NewAuthenticatedVaultClient("dctna", "topsecret")
+		pg := secrets.NewVaultPasswordGenerator(vc, secrets.VaultPasswordOptions{})
+		cm := secrets.NewVaultCredentialsManager(vc, pg, logger)
+
+		n := notary.NewService(notaryCfg, cm.PassRetriever(), logger)
 		server := lib.NewServer(serverCfg, n, logger)
 		server.Start()
 	},

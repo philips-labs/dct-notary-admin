@@ -44,8 +44,8 @@ func init() {
 		},
 	}
 
-	fact = ConfigureRepo(config, getPassphraseRetriever(), true, readOnly)
-	service = NewService(config, zap.NewNop())
+	fact = ConfigureRepo(config, GetPassphraseRetriever(), true, readOnly)
+	service = NewService(config, GetPassphraseRetriever(), zap.NewNop())
 }
 
 func TestListRootKeys(t *testing.T) {
@@ -240,7 +240,7 @@ func TestListDelegates(t *testing.T) {
 }
 
 func createDelgKey(role data.RoleName) (data.PublicKey, error) {
-	fileKeyStore, err := trustmanager.NewKeyFileStore(trustStore, getPassphraseRetriever())
+	fileKeyStore, err := trustmanager.NewKeyFileStore(trustStore, GetPassphraseRetriever())
 	if err != nil {
 		return nil, err
 	}

@@ -13,7 +13,7 @@ import (
 	"github.com/theupdateframework/notary/tuf/data"
 )
 
-func getPassphraseRetriever() notary.PassRetriever {
+func GetPassphraseRetriever() notary.PassRetriever {
 	baseRetriever := passphrase.PromptRetriever()
 	env := map[string]string{
 		"root":       os.Getenv("NOTARY_ROOT_PASSPHRASE"),

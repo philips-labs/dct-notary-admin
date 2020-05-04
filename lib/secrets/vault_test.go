@@ -1,16 +1,17 @@
 package secrets
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
-	"path"
 	"regexp"
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/vault/api"
 	"github.com/stretchr/testify/assert"
+
+	"go.uber.org/zap"
 )
 
 func init() {
@@ -109,8 +110,8 @@ func TestStoreKeyPassword(t *testing.T) {
 		return
 	}
 
-	cm := NewVaultCredentialsManager(client, NewVaultPasswordGenerator(client, VaultPasswordOptions{}))
-	err = cm.StorePassword("localhost:5000/dctna", "super secret")
+	cm := NewVaultCredentialsManager(client, NewVaultPasswordGenerator(client, VaultPasswordOptions{}), zap.NewNop())
+	err = cm.StorePassword("localhost:5000/dctna", "super secret", "")
 	assert.NoError(err)
 }
 
@@ -122,17 +123,19 @@ func TestReadSecret(t *testing.T) {
 		return
 	}
 
-	cm := NewVaultCredentialsManager(client, NewVaultPasswordGenerator(client, VaultPasswordOptions{}))
-	err = cm.StorePassword("root", "super secret")
+	cm := NewVaultCredentialsManager(client, NewVaultPasswordGenerator(client, VaultPasswordOptions{}), zap.NewNop())
+	err = cm.StorePassword("760e57b96f72ed27e523633d2ffafe45ae0ff804e78dfc014a50f01f823d161d", "test1234", "root")
 	if !assert.NoError(err) {
 		return
 	}
 
 	t.Run("get existing secret", func(t *testing.T) {
-		passwd, err := cm.ReadPassword("root")
+		secret, err := cm.ReadPassword("760e57b96f72ed27e523633d2ffafe45ae0ff804e78dfc014a50f01f823d161d")
 
 		assert.NoError(err)
-		assert.NotEmpty(passwd)
+		assert.NotNil(secret)
+		assert.Equal("test1234", secret.Password)
+		assert.Equal("root", secret.Alias)
 	})
 
 	t.Run("get non existing secret", func(t *testing.T) {
@@ -140,6 +143,6 @@ func TestReadSecret(t *testing.T) {
 
 		assert.Error(err)
 		assert.IsType(ErrNotFound, errors.Unwrap(err))
-		assert.Empty(passwd)
+		assert.Nil(passwd)
 	})
 }
