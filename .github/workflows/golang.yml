@@ -20,6 +20,10 @@ jobs:
         with:
           go-version: ${{ matrix.node-version }}
 
+      - uses: volcano-coffee-company/setup-vault@v1
+        with:
+          version: '1.4'
+
       - name: Check out code
         uses: actions/checkout@v2
 
