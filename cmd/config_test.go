@@ -21,6 +21,7 @@ var (
   server.listen_addr:             :8086
   server.listen_addr_tls:         :8443
   trust_dir:                      %s
+  vault.addr:                     http://localhost:8200
 `
 	expCfg = "\nconfig:\n" + expSettings
 )
@@ -134,4 +135,13 @@ func TestUnmarshalNotaryConfig(t *testing.T) {
 	assert.Equal("", cfg.RemoteServer.TLSClientCert)
 	assert.Equal("", cfg.RemoteServer.TLSClientKey)
 	assert.Equal("https://localhost:4443", cfg.RemoteServer.URL)
+}
+
+func TestUnmarshalVaultConfig(t *testing.T) {
+	assert := assert.New(t)
+
+	cfg, err := unmarshalVaultConfig()
+	assert.NoError(err)
+	assert.NotNil(cfg)
+	assert.Equal("http://localhost:8200", cfg.Address)
 }

@@ -52,7 +52,13 @@ centralized to better manage backups.`,
 		}
 		logger.Debug("Unmarshalled NotaryConfig", zap.Any("config", notaryCfg))
 
-		os.Setenv("VAULT_ADDR", "http://localhost:8200")
+		vaultCfg, err := unmarshalVaultConfig()
+		if err != nil {
+			logger.Fatal("Could not parse configuration", zap.Error(err))
+		}
+		logger.Debug("Unmarshalled VaultConfig", zap.Any("config", vaultCfg))
+
+		os.Setenv("VAULT_ADDR", vaultCfg.Address)
 		vc, err := secrets.NewAuthenticatedVaultClient("dctna", "topsecret")
 		pg := secrets.NewVaultPasswordGenerator(vc, secrets.VaultPasswordOptions{})
 		cm := secrets.NewVaultCredentialsManager(vc, pg, logger)
@@ -69,6 +75,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is ./.notary/config.json or $HOME/.notary/config.json)")
 	rootCmd.PersistentFlags().String("listen-addr", "", "http listen address of server")
 	rootCmd.PersistentFlags().String("listen-addr-tls", "", "https listen address of server")
+	rootCmd.PersistentFlags().String("vault-addr", "", "vault address")
 
 	rootCmd.Flags().BoolP("version", "v", false, "shows version information")
 }
@@ -92,6 +99,7 @@ func initConfig() {
 
 	setDefaultAndFlagBinding("server.listen_addr", "listen-addr", ":8086")
 	setDefaultAndFlagBinding("server.listen_addr_tls", "listen-addr-tls", ":8443")
+	setDefaultAndFlagBinding("vault.addr", "vault-addr", "http://localhost:8200")
 
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()

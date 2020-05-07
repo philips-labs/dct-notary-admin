@@ -10,13 +10,13 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"github.com/hashicorp/vault/command/agent/config"
 	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/philips-labs/dct-notary-admin/lib"
 	"github.com/philips-labs/dct-notary-admin/lib/notary"
-
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -92,6 +92,14 @@ func unmarshalNotaryConfig() (*notary.Config, error) {
 		return nil, err
 	}
 	return &notaryCfg, nil
+}
+
+func unmarshalVaultConfig() (*config.Vault, error) {
+	var vaultCfg config.Vault
+
+	vaultCfg.Address = viper.GetString("vault.addr")
+
+	return &vaultCfg, nil
 }
 
 func resolveConfigPathsRelativeToConfig(configKeys ...string) {
