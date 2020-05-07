@@ -60,7 +60,7 @@ centralized to better manage backups.`,
 
 		os.Setenv("VAULT_ADDR", vaultCfg.Address)
 		vc, err := secrets.NewAuthenticatedVaultClient("dctna", "topsecret")
-		pg := secrets.NewVaultPasswordGenerator(vc, secrets.VaultPasswordOptions{})
+		pg := secrets.NewDefaultPasswordGenerator(secrets.DefaultPasswordOptions{})
 		cm := secrets.NewVaultCredentialsManager(vc, pg, logger)
 
 		n := notary.NewService(notaryCfg, cm.PassRetriever(), logger)

@@ -36,10 +36,6 @@ func uintPtr(value uint) *uint {
 	return &value
 }
 
-func boolPtr(value bool) *bool {
-	return &value
-}
-
 func TestVaultPasswordGenerator(t *testing.T) {
 	assert := assert.New(t)
 
