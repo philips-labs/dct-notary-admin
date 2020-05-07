@@ -79,6 +79,23 @@ To shutdown the sandbox you can run the `stop-sandbox` make target.
 make stop-sandbox
 ```
 
+## Run vault development server
+
+To boot the Hashicorp Vault development server run the following.
+
+```bash
+docker-compose -f vault/docker-compose.dev.yml up -d
+vault/prepare.sh dev
+```
+
+The vault admin dashboard is available at http://localhost:8200.
+
+The token can be found in the server logs.
+
+```bash
+docker-compose -f vault/docker-compose.dev.yml logs | grep "Root Token"
+```
+
 ## Build binary
 
 ```bash
@@ -107,18 +124,16 @@ make coverage-html
 
 ## Run
 
-> For the API to provide the key credentials following environment variables have to be set. Later on different credentials for different keys will be dynamically loaded from a secure storage.
-
-```bash
-export NOTARY_ROOT_PASSPHRASE=test1234
-export NOTARY_TARGETS_PASSPHRASE=test1234
-export NOTARY_SNAPSHOT_PASSPHRASE=test1234
-```
+> The API utilizes hashicorp vault to generate and store passwords for private keys. The endpoint to hashicorp vault can be configured via the environment variable `VAULT_ADDR` or as a commandline flag. The default value points to http://localhost:8200 (the address of the development server).
 
 Now you can start the server as following:
 
 ```bash
+# environment variable
+export VAULT_ADDR=https://vault-server.internal
 bin/dctna
+# commandline option
+bin/dctna --vault-addr https://vault-server.internal
 ```
 
 > **NOTE:** you can pass the sandbox `.notary/config.json` as following. `bin/dctna --config .notary/config.json`.
