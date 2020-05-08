@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Box, List } from 'grommet';
@@ -27,9 +27,10 @@ export const Delegations: FC = () => {
     }
   };
 
+  const fetchDataCallback = useCallback(fetchData, [targetId]);
   useEffect(() => {
-    fetchData();
-  }, [targetId]);
+    fetchDataCallback();
+  }, [fetchDataCallback]);
 
   return targetId ? (
     <DelegationContext.Provider value={{ refresh: fetchData }}>
