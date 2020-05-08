@@ -1,27 +1,11 @@
 import React, { FC, useState, useEffect } from 'react';
 import axios from 'axios';
-import { Route, useHistory, useParams } from 'react-router-dom';
+import { Route, useHistory } from 'react-router-dom';
 import { Heading, Box, List, Grid } from 'grommet';
 import { TargetListData, Target } from '../../models';
-import { CreateTarget, RegisterDelegationKey, DelegationList } from '../../components';
+import { CreateTarget, Delegations } from '../../components';
 
 const byGun = (a: Target, b: Target): number => (a.gun < b.gun ? -1 : a.gun > b.gun ? 1 : 0);
-
-const Delegations: FC = () => {
-  const { targetId } = useParams();
-  return targetId ? (
-    <>
-      <Box margin={{ bottom: 'medium' }} elevation="medium" pad="medium" flex={false}>
-        <RegisterDelegationKey targetId={targetId} />
-      </Box>
-      <Box>
-        <DelegationList targetId={targetId} />
-      </Box>
-    </>
-  ) : (
-    <></>
-  );
-};
 
 export const TargetsPage: FC = () => {
   const history = useHistory();

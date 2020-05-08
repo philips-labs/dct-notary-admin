@@ -1,6 +1,7 @@
-import React, { FC, FormEvent, useState } from 'react';
+import React, { FC, FormEvent, useState, useContext } from 'react';
 import { Box, Text, Form, TextInput, TextArea, Button, Paragraph } from 'grommet';
 import axios from 'axios';
+import { DelegationContext } from './DelegationContext';
 import { FormFieldLabel } from '../Form';
 
 interface TargetParams {
@@ -17,8 +18,10 @@ const defaultFormValue = {
   delegationPublicKey: '',
   errorMessage: '',
 };
+
 export const RegisterDelegationKey: FC<TargetParams> = ({ targetId }) => {
   const [value, setValue] = useState<RegisterDelegationKey>(defaultFormValue);
+  const { refresh } = useContext(DelegationContext);
   const delegationNameMsg = 'may only contain a-z and _';
   const submitForm = async (event: FormEvent) => {
     event.preventDefault();
@@ -30,6 +33,7 @@ export const RegisterDelegationKey: FC<TargetParams> = ({ targetId }) => {
         }),
       });
       setValue(defaultFormValue);
+      refresh();
     } catch (e) {
       const response = e.response;
       const errorMessage = `${response.data.status} ${response.data.error}`;
