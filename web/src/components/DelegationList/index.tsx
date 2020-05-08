@@ -1,16 +1,15 @@
 import React, { FC, useState, useEffect } from 'react';
 import axios from 'axios';
-import { RouteComponentProps } from 'react-router-dom';
 import { Delegation, DelegationListData } from '../../models';
 import { List } from 'grommet';
 
-type TParams = { targetId: string };
-
+interface TargetParams {
+  targetId: string;
+}
 const byRole = (a: Delegation, b: Delegation): number =>
   a.role < b.role ? -1 : a.role > b.role ? 1 : 0;
 
-export const DelegationList: FC<RouteComponentProps<TParams>> = ({ match }) => {
-  const { targetId } = match.params;
+export const DelegationList: FC<TargetParams> = ({ targetId }) => {
   const [data, setData] = useState<DelegationListData>({
     delegations: [],
   });

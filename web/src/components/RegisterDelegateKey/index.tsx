@@ -1,10 +1,11 @@
 import React, { FC, FormEvent, useState } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
 import { Box, Text, Form, TextInput, TextArea, Button, Paragraph } from 'grommet';
 import axios from 'axios';
 import { FormFieldLabel } from '../Form';
 
-type TParams = { targetId: string };
+interface TargetParams {
+  targetId: string;
+}
 type RegisterDelegationKey = {
   delegationName: string;
   delegationPublicKey: string;
@@ -16,9 +17,8 @@ const defaultFormValue = {
   delegationPublicKey: '',
   errorMessage: '',
 };
-export const RegisterDelegationKey: FC<RouteComponentProps<TParams>> = ({ match }) => {
+export const RegisterDelegationKey: FC<TargetParams> = ({ targetId }) => {
   const [value, setValue] = useState<RegisterDelegationKey>(defaultFormValue);
-  const { targetId } = match.params;
   const delegationNameMsg = 'may only contain a-z and _';
   const submitForm = async (event: FormEvent) => {
     event.preventDefault();
