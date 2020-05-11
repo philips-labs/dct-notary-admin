@@ -1,16 +1,15 @@
-import React, { FC, useState, FormEvent } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import React, { FC, useState, useContext, FormEvent } from 'react';
 import { Box, Form, TextInput, Button, Text } from 'grommet';
 import axios from 'axios';
 import { FormFieldLabel } from '..';
-
-type TParams = { targetId: string };
+import { TargetContext } from './TargetContext';
 
 type CreateTarget = { gun: string; errorMessage: string };
 const defaultFormValue = { gun: '', errorMessage: '' };
 
-export const CreateTarget: FC<RouteComponentProps<TParams>> = () => {
+export const CreateTarget: FC = () => {
   const [value, setValue] = useState<CreateTarget>(defaultFormValue);
+  const { refresh } = useContext(TargetContext);
   const submitForm = async (event: FormEvent) => {
     event.preventDefault();
     try {
@@ -21,6 +20,7 @@ export const CreateTarget: FC<RouteComponentProps<TParams>> = () => {
         }),
       });
       setValue(defaultFormValue);
+      refresh();
     } catch (e) {
       const response = e.response;
       const errorMessage = `${response.data.status} ${response.data.error}`;
