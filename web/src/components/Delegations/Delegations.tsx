@@ -45,7 +45,5 @@ export const Delegations: FC = () => {
         />
       </Box>
     </DelegationContext.Provider>
-  ) : (
-    <></>
-  );
+  ) : null;
 };
