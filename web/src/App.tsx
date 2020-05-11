@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Grommet, Main, Grid } from 'grommet';
 import logo from './logo.svg';
 import { customTheme } from './Theme';
 import { TargetsPage } from './pages';
-import { NavBar } from './components';
+import { NavBar, ApplicationContext, Notification } from './components';
+import { setTimeout } from 'timers';
 
 function App() {
+  const [error, setError] = useState('');
+
+  const displayError = (message: string, autoHide: boolean) => {
+    setError(message);
+    if (autoHide) {
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+
   return (
     <Grommet theme={customTheme} full>
       <Router>
@@ -19,13 +29,16 @@ function App() {
             { name: 'main', start: [1, 0], end: [1, 0] },
           ]}
         >
-          <NavBar gridArea="sidebar" />
-          <Main gridArea="main" overflow="auto" pad="medium">
-            <Switch>
-              <Route exact path="/" component={Home} />
-              <Route path="/targets" component={TargetsPage} />
-            </Switch>
-          </Main>
+          <ApplicationContext.Provider value={{ displayError }}>
+            <NavBar gridArea="sidebar" />
+            <Main gridArea="main" overflow="auto" pad="medium">
+              {error ? <Notification type="error" message={error} /> : null}
+              <Switch>
+                <Route exact path="/" component={Home} />
+                <Route path="/targets" component={TargetsPage} />
+              </Switch>
+            </Main>
+          </ApplicationContext.Provider>
         </Grid>
       </Router>
     </Grommet>

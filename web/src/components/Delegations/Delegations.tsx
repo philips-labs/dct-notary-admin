@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState, useCallback } from 'react';
+import React, { FC, useEffect, useState, useCallback, useContext } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Box, List } from 'grommet';
@@ -6,12 +6,14 @@ import { DelegationContext } from './DelegationContext';
 import { RegisterDelegationKey } from './RegisterDelegationKey';
 import { Delegation, DelegationListData } from '../../models';
 import { TrashButton } from '..';
+import { ApplicationContext } from '../Application';
 
 const byRole = (a: Delegation, b: Delegation): number =>
   a.role < b.role ? -1 : a.role > b.role ? 1 : 0;
 
 export const Delegations: FC = () => {
   const { targetId } = useParams();
+  const { displayError } = useContext(ApplicationContext);
   const [data, setData] = useState<DelegationListData>({
     delegations: [],
   });
@@ -32,7 +34,9 @@ export const Delegations: FC = () => {
     try {
       await axios.delete(`/api/targets/${targetId}/delegations/${delegationId}`);
       fetchData();
-    } catch (e) {}
+    } catch (e) {
+      displayError(`${e.message}: ${e.response.data}`, true);
+    }
   };
 
   const fetchDataCallback = useCallback(fetchData, [targetId]);

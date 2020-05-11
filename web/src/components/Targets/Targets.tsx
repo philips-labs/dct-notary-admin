@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { Route, useHistory } from 'react-router-dom';
 import { Box, List } from 'grommet';
@@ -6,11 +6,13 @@ import { TargetListData, Target } from '../../models';
 import { CreateTarget } from './CreateTarget';
 import { TargetContext } from './TargetContext';
 import { TrashButton } from '..';
+import { ApplicationContext } from '../Application';
 
 const byGun = (a: Target, b: Target): number => (a.gun < b.gun ? -1 : a.gun > b.gun ? 1 : 0);
 
 export const Targets: FC = () => {
   const history = useHistory();
+  const { displayError } = useContext(ApplicationContext);
   const [data, setData] = useState<TargetListData>({ targets: [] });
   const [selected, setSelected] = useState<number | undefined>();
 
@@ -24,7 +26,9 @@ export const Targets: FC = () => {
     try {
       await axios.delete(`/api/targets/${targetId}`);
       fetchData();
-    } catch (e) {}
+    } catch (e) {
+      displayError(`${e.message}: ${e.response.data}`, true);
+    }
   };
 
   useEffect(() => {
