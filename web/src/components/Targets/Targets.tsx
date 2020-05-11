@@ -5,6 +5,7 @@ import { Box, List } from 'grommet';
 import { TargetListData, Target } from '../../models';
 import { CreateTarget } from './CreateTarget';
 import { TargetContext } from './TargetContext';
+import { TrashButton } from '..';
 
 const byGun = (a: Target, b: Target): number => (a.gun < b.gun ? -1 : a.gun > b.gun ? 1 : 0);
 
@@ -18,6 +19,14 @@ export const Targets: FC = () => {
     const targets = [...result.data].sort(byGun);
     setData((prevState) => ({ ...prevState, targets }));
   };
+
+  const remove = async (targetId: string) => {
+    try {
+      await axios.delete(`/api/targets/${targetId}`);
+      fetchData();
+    } catch (e) {}
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -33,13 +42,16 @@ export const Targets: FC = () => {
         {data.targets.length !== 0 ? (
           <List
             primaryKey="gun"
-            secondaryKey={(item) => item.id.substr(0, 7)}
+            secondaryKey={(item) => item.remove}
             itemProps={
               typeof selected !== 'undefined' && selected >= 0
                 ? { [selected]: { background: 'accent-1' } }
                 : undefined
             }
-            data={data.targets}
+            data={data.targets.map((item) => ({
+              ...item,
+              remove: <TrashButton action={() => remove(item.id.substr(0, 7))} />,
+            }))}
             onClickItem={(event: { item?: {}; index?: number }) => {
               setSelected(selected === event.index ? undefined : event.index);
               const item: { id: string } | undefined = event.item as { id: string };

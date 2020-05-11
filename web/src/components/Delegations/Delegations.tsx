@@ -5,6 +5,7 @@ import { Box, List } from 'grommet';
 import { DelegationContext } from './DelegationContext';
 import { RegisterDelegationKey } from './RegisterDelegationKey';
 import { Delegation, DelegationListData } from '../../models';
+import { TrashButton } from '..';
 
 const byRole = (a: Delegation, b: Delegation): number =>
   a.role < b.role ? -1 : a.role > b.role ? 1 : 0;
@@ -27,6 +28,13 @@ export const Delegations: FC = () => {
     }
   };
 
+  const remove = async (delegationId: string) => {
+    try {
+      await axios.delete(`/api/targets/${targetId}/delegations/${delegationId}`);
+      fetchData();
+    } catch (e) {}
+  };
+
   const fetchDataCallback = useCallback(fetchData, [targetId]);
   useEffect(() => {
     fetchDataCallback();
@@ -40,8 +48,11 @@ export const Delegations: FC = () => {
       <Box>
         <List
           primaryKey="role"
-          secondaryKey={(item) => item.id.substr(0, 7)}
-          data={data.delegations}
+          secondaryKey={(item) => item.remove}
+          data={data.delegations.map((item) => ({
+            ...item,
+            remove: <TrashButton action={() => remove(item.id.substr(0, 7))} />,
+          }))}
         />
       </Box>
     </DelegationContext.Provider>
