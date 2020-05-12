@@ -159,7 +159,7 @@ func (s *Service) RemoveDelegation(ctx context.Context, cmd RemoveDelegationComm
 // StreamKeys returns a Stream of Key
 func (s *Service) StreamKeys(ctx context.Context) (<-chan Key, error) {
 	keysChan := make(chan Key, 2)
-	fileKeyStore, err := trustmanager.NewKeyFileStore(s.config.TrustDir, GetPassphraseRetriever())
+	fileKeyStore, err := trustmanager.NewKeyFileStore(s.config.TrustDir, s.retriever)
 	if err != nil {
 		return nil, err
 	}
