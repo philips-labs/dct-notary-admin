@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState, useCallback, useContext } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Box, List } from 'grommet';
+import { Box, List, Text } from 'grommet';
 import { DelegationContext } from './DelegationContext';
 import { RegisterDelegationKey } from './RegisterDelegationKey';
 import { Delegation, DelegationListData } from '../../models';
@@ -13,7 +13,7 @@ const byRole = (a: Delegation, b: Delegation): number =>
 
 export const Delegations: FC = () => {
   const { targetId } = useParams();
-  const { displayError } = useContext(ApplicationContext);
+  const { displayError, displayInfo } = useContext(ApplicationContext);
   const [data, setData] = useState<DelegationListData>({
     delegations: [],
   });
@@ -32,11 +32,18 @@ export const Delegations: FC = () => {
 
   const remove = async (delegation: Delegation) => {
     try {
-      await axios.delete(`/api/targets/${targetId}/delegations/${delegation.id.substr(0, 7)}`, {
-        data: {
-          delegationName: delegation.role,
+      const response = await axios.delete(
+        `/api/targets/${targetId}/delegations/${delegation.id.substr(0, 7)}`,
+        {
+          data: {
+            delegationName: delegation.role,
+          },
         },
-      });
+      );
+      displayInfo(
+        `Removed delegation key with ID "${response.data.id}" for role "${response.data.role}"`,
+        true,
+      );
       fetchData();
     } catch (e) {
       displayError(`${e.message}: ${e.response.data}`, true);
@@ -55,10 +62,15 @@ export const Delegations: FC = () => {
       </Box>
       <Box>
         <List
-          primaryKey="role"
+          primaryKey="display"
           secondaryKey={(item) => item.remove}
           data={data.delegations.map((item) => ({
-            ...item,
+            display: (
+              <Box gap="small" direction="row" align="center">
+                <Text>{item.role}</Text>
+                <Text size="x-small">({item.id.substr(0, 7)})</Text>
+              </Box>
+            ),
             remove: <TrashButton action={() => remove(item)} />,
           }))}
         />

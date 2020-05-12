@@ -9,11 +9,18 @@ import { setTimeout } from 'timers';
 
 function App() {
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
 
   const displayError = (message: string, autoHide: boolean) => {
     setError(message);
     if (autoHide) {
       setTimeout(() => setError(''), 3000);
+    }
+  };
+  const displayInfo = (message: string, autoHide: boolean) => {
+    setInfo(message);
+    if (autoHide) {
+      setTimeout(() => setInfo(''), 3000);
     }
   };
 
@@ -29,10 +36,11 @@ function App() {
             { name: 'main', start: [1, 0], end: [1, 0] },
           ]}
         >
-          <ApplicationContext.Provider value={{ displayError }}>
+          <ApplicationContext.Provider value={{ displayInfo, displayError }}>
             <NavBar gridArea="sidebar" />
             <Main gridArea="main" overflow="auto" pad="medium">
               {error ? <Notification type="error" message={error} /> : null}
+              {info ? <Notification type="info" message={info} /> : null}
               <Switch>
                 <Route exact path="/" component={Home} />
                 <Route path="/targets" component={TargetsPage} />
