@@ -137,6 +137,25 @@ func (s *Service) AddDelegation(ctx context.Context, cmd AddDelegationCommand) e
 	return maybeAutoPublish(s.log, cmd.AutoPublish, sanitizedGUN, s.config, s.retriever)
 }
 
+// RemoveDelegation remove a delegation from specified GUN
+func (s *Service) RemoveDelegation(ctx context.Context, cmd RemoveDelegationCommand) error {
+	if err := cmd.GuardHasGUN(); err != nil {
+		return err
+	}
+	sanitizedGUN := cmd.SanitizedGUN()
+	fact := ConfigureRepo(s.config, s.retriever, false, readOnly)
+	nRepo, err := fact(sanitizedGUN)
+	if err != nil {
+		return err
+	}
+
+	err = nRepo.RemoveDelegationKeys(cmd.Role, []string{cmd.KeyID})
+	if err != nil {
+		return fmt.Errorf("failed to create delegation: %w", err)
+	}
+	return maybeAutoPublish(s.log, cmd.AutoPublish, sanitizedGUN, s.config, s.retriever)
+}
+
 // StreamKeys returns a Stream of Key
 func (s *Service) StreamKeys(ctx context.Context) (<-chan Key, error) {
 	keysChan := make(chan Key, 2)
@@ -187,8 +206,8 @@ func (s *Service) GetTargetByGUN(ctx context.Context, gun data.GUN) (*Key, error
 	return &targetKeys[0], nil
 }
 
-// GetTarget retrieves a target by its path/id
-func (s *Service) GetTarget(ctx context.Context, id string) (*Key, error) {
+// GetKeyByID retrieves a by its id
+func (s *Service) GetKeyByID(ctx context.Context, id string) (*Key, error) {
 	if len(id) < 7 {
 		return nil, fmt.Errorf("you must provide at least 7 characters of the path: %w", ErrInvalidID)
 	}
@@ -197,20 +216,55 @@ func (s *Service) GetTarget(ctx context.Context, id string) (*Key, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve keys: %w", err)
 	}
-	targetChan := Reduce(ctx, keysChan, IDFilter(id))
+	filteredChan := Reduce(ctx, keysChan, IDFilter(id))
 
-	target, open := <-targetChan
+	key, open := <-filteredChan
 	if !open {
 		return nil, nil
 	}
-	return &target, nil
+	return &key, nil
 }
 
 // ListDelegates returns delegate keys for the given target
 func (s *Service) ListDelegates(ctx context.Context, target *Key) (map[string][]Key, error) {
 	var delegates map[string][]Key
+	delegationRoles, err := s.getTargetDelegationRoles(ctx, target)
+	if err != nil {
+		return nil, err
+	}
+	delegates = getDelegationRoleToKeyMap(delegationRoles)
+
+	return delegates, err
+}
+
+func (s *Service) GetDelegation(ctx context.Context, target *Key, role data.RoleName, keyID string) (*Key, error) {
+	delegationRoles, err := s.getTargetDelegationRoles(ctx, target)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, delRole := range delegationRoles {
+		switch delRole.Name {
+		case releasesRole, data.CanonicalRootRole, data.CanonicalSnapshotRole, data.CanonicalTargetsRole, data.CanonicalTimestampRole:
+			continue
+		default:
+			if delRole.Name == role {
+				signer := notaryRoleToSigner(delRole.Name)
+				for _, delKeyID := range delRole.KeyIDs {
+					key := &Key{ID: delKeyID, Role: signer}
+					if IDFilter(keyID)(*key) {
+						return key, nil
+					}
+				}
+			}
+		}
+	}
+	return nil, nil
+}
+
+func (s *Service) getTargetDelegationRoles(ctx context.Context, target *Key) ([]data.Role, error) {
 	if target == nil {
-		return delegates, nil
+		return nil, nil
 	}
 
 	gun := data.GUN(target.GUN)
@@ -230,13 +284,7 @@ func (s *Service) ListDelegates(ctx context.Context, target *Key) (map[string][]
 	if err != nil {
 		return nil, err
 	}
-	delegationRoles, err := repo.GetDelegationRoles()
-	if err != nil {
-		return delegates, err
-	}
-	delegates = getDelegationRoleToKeyMap(delegationRoles)
-
-	return delegates, err
+	return repo.GetDelegationRoles()
 }
 
 func getDelegationRoleToKeyMap(rawDelegationRoles []data.Role) map[string][]Key {

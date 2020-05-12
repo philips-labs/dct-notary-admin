@@ -30,9 +30,13 @@ export const Delegations: FC = () => {
     }
   };
 
-  const remove = async (delegationId: string) => {
+  const remove = async (delegation: Delegation) => {
     try {
-      await axios.delete(`/api/targets/${targetId}/delegations/${delegationId}`);
+      await axios.delete(`/api/targets/${targetId}/delegations/${delegation.id.substr(0, 7)}`, {
+        data: {
+          delegationName: delegation.role,
+        },
+      });
       fetchData();
     } catch (e) {
       displayError(`${e.message}: ${e.response.data}`, true);
@@ -55,7 +59,7 @@ export const Delegations: FC = () => {
           secondaryKey={(item) => item.remove}
           data={data.delegations.map((item) => ({
             ...item,
-            remove: <TrashButton action={() => remove(item.id.substr(0, 7))} />,
+            remove: <TrashButton action={() => remove(item)} />,
           }))}
         />
       </Box>

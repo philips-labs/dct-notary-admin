@@ -78,7 +78,7 @@ func TestGetTarget(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	target, err := service.GetTarget(ctx, "4ea1fec36392486d4bd99795ffc70f3ffa4a76185b39c8c2ab1d9cf5054dbbc9")
+	target, err := service.GetKeyByID(ctx, "4ea1fec36392486d4bd99795ffc70f3ffa4a76185b39c8c2ab1d9cf5054dbbc9")
 	assert.NoError(err)
 	assert.NotNil(target)
 	assert.Equal(expectedTargets[0].ID, target.ID)
@@ -194,6 +194,56 @@ func TestAddDelegation(t *testing.T) {
 	assert.NoError(err)
 }
 
+func TestRemoveDelegation(t *testing.T) {
+	assert := assert.New(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	role := data.RoleName(randomString(8))
+	gun := randomGUN()
+	signerRole := DelegationPath(role.String())
+
+	id, err := createTestTarget(ctx, gun)
+	if !assert.NoError(err) {
+		return
+	}
+	defer func() {
+		err := cleanupTarget(ctx, gun, id)
+		assert.NoError(err)
+	}()
+
+	nRepo, err := fact(gun)
+	defer nRepo.RemoveDelegationRole(signerRole)
+	delgKey, err := createDelgKey(role)
+	if !assert.NoError(err) {
+		return
+	}
+	defer CleanupKeys(trustStore, delgKey.ID())
+
+	if !assert.NotNil(delgKey) {
+		return
+	}
+
+	cmd := AddDelegationCommand{
+		TargetCommand:  TargetCommand{GUN: data.GUN(gun)},
+		Role:           signerRole,
+		DelegationKeys: []data.PublicKey{delgKey},
+		Paths:          []string{""},
+		AutoPublish:    true,
+	}
+	err = service.AddDelegation(ctx, cmd)
+	assert.NoError(err)
+
+	err = service.RemoveDelegation(ctx, RemoveDelegationCommand{
+		TargetCommand: TargetCommand{GUN: data.GUN(gun)},
+		Role:          signerRole,
+		KeyID:         delgKey.ID(),
+		AutoPublish:   true,
+	})
+	assert.NoError(err)
+}
+
 func TestDeleteRepositoryInvalidGUN(t *testing.T) {
 	assert := assert.New(t)
 
@@ -224,7 +274,7 @@ func TestListDelegates(t *testing.T) {
 	delID, delName, err := addDelegation(ctx, gun)
 	assert.NoError(err)
 
-	target, err := service.GetTarget(ctx, id)
+	target, err := service.GetKeyByID(ctx, id)
 	if !assert.NoError(err) {
 		return
 	}
