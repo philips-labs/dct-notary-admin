@@ -18,7 +18,7 @@ require (
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/frankban/quicktest v1.7.2 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/go-chi/chi v4.1.0+incompatible
+	github.com/go-chi/chi v4.1.1+incompatible
 	github.com/go-chi/render v1.0.1
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
@@ -41,13 +41,13 @@ require (
 	github.com/smartystreets/assertions v1.0.0 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
-	github.com/spf13/cobra v0.0.7
+	github.com/spf13/cobra v1.0.0
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.6.3
+	github.com/spf13/viper v1.7.0
 	github.com/stretchr/testify v1.5.1
 	github.com/theupdateframework/notary v0.6.1
-	go.uber.org/zap v1.14.1
+	go.uber.org/zap v1.15.0
 	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
 	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
