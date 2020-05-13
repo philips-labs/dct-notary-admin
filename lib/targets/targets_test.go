@@ -27,13 +27,10 @@ import (
 )
 
 const (
-	chars                  = "abcdefghijklmnopqrstuvwxyz_"
-	NotImplementedResponse = "{\"status\":\"Not implemented.\"}\n"
-	NotFoundResponse       = "{\"status\":\"Resource not found.\"}\n"
-	InvalidIDResponse      = "{\"status\":\"Invalid request.\",\"error\":\"you must provide at least 7 characters of the path: invalid id\"}\n"
-	EmptyResponse          = ""
-	EmptyListResponse      = "[]\n"
-	pubKey                 = `-----BEGIN PUBLIC KEY-----
+	chars             = "abcdefghijklmnopqrstuvwxyz_"
+	NotFoundResponse  = "{\"status\":\"Resource not found.\"}\n"
+	InvalidIDResponse = "{\"status\":\"Invalid request.\",\"error\":\"you must provide at least 7 characters of the path: invalid id\"}\n"
+	pubKey            = `-----BEGIN PUBLIC KEY-----
 role: marcofranssen
 
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmI6bhcF0aqKobYIgBD/wHg/vhjW2
