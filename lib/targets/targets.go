@@ -2,6 +2,7 @@ package targets
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -104,7 +105,7 @@ func (tr *Resource) getTarget(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
-	target, err := tr.notary.GetTarget(ctx, id)
+	target, err := tr.notary.GetKeyByID(ctx, id)
 	if err != nil {
 		log.Error(ErrMsgFailedGetTargetKey, zap.Error(err))
 		respond(w, r, e.ErrInvalidRequest(err))
@@ -125,7 +126,7 @@ func (tr *Resource) listDelegates(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
-	target, err := tr.notary.GetTarget(ctx, id)
+	target, err := tr.notary.GetKeyByID(ctx, id)
 	if err != nil {
 		log.Error(ErrMsgFailedGetTargetKey, zap.Error(err))
 		respond(w, r, e.ErrRender(err))
@@ -156,7 +157,7 @@ func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
-	target, err := tr.notary.GetTarget(ctx, id)
+	target, err := tr.notary.GetKeyByID(ctx, id)
 	if err != nil {
 		log.Error(ErrMsgFailedGetTargetKey, zap.Error(err))
 		respond(w, r, e.ErrInvalidRequest(err))
@@ -195,7 +196,61 @@ func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
 }
 
 func (tr *Resource) removeDelegation(w http.ResponseWriter, r *http.Request) {
-	respond(w, r, e.ErrNotImplemented)
+	log := m.GetZapLogger(r)
+
+	targetID := chi.URLParam(r, "target")
+	delegationID := chi.URLParam(r, "delegation")
+
+	if targetID == "" || delegationID == "" {
+		err := errors.New("no target or delegation provided")
+		log.Error("", zap.Error(err))
+		respond(w, r, e.ErrInvalidRequest(err))
+	}
+
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	target, err := tr.notary.GetKeyByID(ctx, targetID)
+	if err != nil {
+		log.Error(ErrMsgFailedGetTargetKey, zap.Error(err))
+		respond(w, r, e.ErrInvalidRequest(err))
+		return
+	}
+	if target == nil {
+		respond(w, r, e.ErrNotFound)
+		return
+	}
+
+	body := &DelegationRequest{}
+	if err := render.Bind(r, body); err != nil {
+		log.Error(ErrMsgFailedParseBody, zap.Error(err))
+		respond(w, r, e.ErrInvalidRequest(err))
+		return
+	}
+
+	role := notary.DelegationPath(body.DelegationName)
+	delegation, err := tr.notary.GetDelegation(ctx, target, role, delegationID)
+	if err != nil {
+		respond(w, r, e.ErrInternalServer(err))
+		return
+	}
+	if delegation == nil {
+		respond(w, r, e.ErrNotFound)
+		return
+	}
+
+	err = tr.notary.RemoveDelegation(ctx, notary.RemoveDelegationCommand{
+		TargetCommand: notary.TargetCommand{GUN: data.GUN(target.GUN)},
+		AutoPublish:   true,
+		KeyID:         delegation.ID,
+		Role:          notary.DelegationPath(delegation.Role),
+	})
+	if err != nil {
+		log.Error("failed to remove delegation", zap.Error(err))
+		respond(w, r, e.ErrInternalServer(err))
+		return
+	}
+	respond(w, r, NewKeyResponse(notary.Key{ID: delegation.ID, GUN: target.GUN, Role: delegation.Role}))
 }
 
 func respond(w http.ResponseWriter, r *http.Request, renderer render.Renderer) {

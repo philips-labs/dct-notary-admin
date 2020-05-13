@@ -27,13 +27,10 @@ import (
 )
 
 const (
-	chars                  = "abcdefghijklmnopqrstuvwxyz_"
-	NotImplementedResponse = "{\"status\":\"Not implemented.\"}\n"
-	NotFoundResponse       = "{\"status\":\"Resource not found.\"}\n"
-	InvalidIDResponse      = "{\"status\":\"Invalid request.\",\"error\":\"you must provide at least 7 characters of the path: invalid id\"}\n"
-	EmptyResponse          = ""
-	EmptyListResponse      = "[]\n"
-	pubKey                 = `-----BEGIN PUBLIC KEY-----
+	chars             = "abcdefghijklmnopqrstuvwxyz_"
+	NotFoundResponse  = "{\"status\":\"Resource not found.\"}\n"
+	InvalidIDResponse = "{\"status\":\"Invalid request.\",\"error\":\"you must provide at least 7 characters of the path: invalid id\"}\n"
+	pubKey            = `-----BEGIN PUBLIC KEY-----
 role: marcofranssen
 
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmI6bhcF0aqKobYIgBD/wHg/vhjW2
@@ -65,18 +62,20 @@ func init() {
 	os.Setenv("NOTARY_TARGETS_PASSPHRASE", "test1234")
 	os.Setenv("NOTARY_SNAPSHOT_PASSPHRASE", "test1234")
 
+	nopLogger := zap.NewNop()
+
 	n = notary.NewService(&notary.Config{
 		TrustDir: "../../.notary",
 		RemoteServer: notary.RemoteServerConfig{
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,
 		},
-	}, notary.GetPassphraseRetriever(), zap.NewNop())
+	}, notary.GetPassphraseRetriever(), nopLogger)
 
 	router = chi.NewRouter()
 
 	router.Use(middleware.RequestID)
-	router.Use(m.ZapLogger(zap.NewNop()))
+	router.Use(m.ZapLogger(nopLogger))
 	router.Use(middleware.Recoverer)
 
 	tr := NewResource(n)
@@ -240,16 +239,37 @@ func TestListTargetDelegates(t *testing.T) {
 }
 
 func TestRemoveDelegation(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	assert := assert.New(t)
 
-	req, err := http.NewRequest(http.MethodDelete, "/targets/4ea1fec/delegations/1234567", nil)
+	gun := randomGUN()
+	id, err := createTestTarget(ctx, gun)
+	assert.NoError(err)
+	defer func() {
+		err := cleanupTarget(ctx, gun, id)
+		assert.NoError(err)
+	}()
+	delID, delName, err := addDelegation(ctx, gun)
+	assert.NoError(err)
+
+	dr := DelegationRequest{DelegationName: string(delName[8:])}
+	body, _ := json.Marshal(dr)
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/targets/%s/delegations/%s", id, delID), bytes.NewReader(body))
 	assert.NoError(err, "Failed to create request")
 
 	rr := httptest.NewRecorder()
 	router.ServeHTTP(rr, req)
 
-	assert.Equal(http.StatusNotImplemented, rr.Code, "Invalid status code")
-	assert.Equal(NotImplementedResponse, rr.Body.String(), "Expected empty response")
+	assert.Equal(http.StatusOK, rr.Code, "Invalid status code")
+	resp, err := parseSingle(rr.Body)
+
+	if assert.NoError(err) && assert.NotNil(resp) {
+		assert.Equal(delName[8:], data.RoleName(resp.Role))
+		assert.Equal(delID, resp.ID)
+		assert.Equal(gun, data.GUN(resp.GUN))
+	}
 }
 
 func randomString(length int) string {

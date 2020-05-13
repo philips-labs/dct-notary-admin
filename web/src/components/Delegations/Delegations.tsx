@@ -1,16 +1,19 @@
-import React, { FC, useEffect, useState, useCallback } from 'react';
+import React, { FC, useEffect, useState, useCallback, useContext } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Box, List } from 'grommet';
+import { Box, List, Text } from 'grommet';
 import { DelegationContext } from './DelegationContext';
 import { RegisterDelegationKey } from './RegisterDelegationKey';
 import { Delegation, DelegationListData } from '../../models';
+import { TrashButton } from '..';
+import { ApplicationContext } from '../Application';
 
 const byRole = (a: Delegation, b: Delegation): number =>
   a.role < b.role ? -1 : a.role > b.role ? 1 : 0;
 
 export const Delegations: FC = () => {
   const { targetId } = useParams();
+  const { displayError, displayInfo } = useContext(ApplicationContext);
   const [data, setData] = useState<DelegationListData>({
     delegations: [],
   });
@@ -27,6 +30,26 @@ export const Delegations: FC = () => {
     }
   };
 
+  const remove = async (delegation: Delegation) => {
+    try {
+      const response = await axios.delete(
+        `/api/targets/${targetId}/delegations/${delegation.id.substr(0, 7)}`,
+        {
+          data: {
+            delegationName: delegation.role,
+          },
+        },
+      );
+      displayInfo(
+        `Removed delegation key with ID "${response.data.id}" for role "${response.data.role}"`,
+        true,
+      );
+      fetchData();
+    } catch (e) {
+      displayError(`${e.message}: ${e.response.data}`, true);
+    }
+  };
+
   const fetchDataCallback = useCallback(fetchData, [targetId]);
   useEffect(() => {
     fetchDataCallback();
@@ -39,9 +62,17 @@ export const Delegations: FC = () => {
       </Box>
       <Box>
         <List
-          primaryKey="role"
-          secondaryKey={(item) => item.id.substr(0, 7)}
-          data={data.delegations}
+          primaryKey="display"
+          secondaryKey={(item) => item.remove}
+          data={data.delegations.map((item) => ({
+            display: (
+              <Box gap="small" direction="row" align="center">
+                <Text>{item.role}</Text>
+                <Text size="x-small">({item.id.substr(0, 7)})</Text>
+              </Box>
+            ),
+            remove: <TrashButton action={() => remove(item)} />,
+          }))}
         />
       </Box>
     </DelegationContext.Provider>

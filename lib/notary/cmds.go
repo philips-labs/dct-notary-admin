@@ -34,6 +34,14 @@ type AddDelegationCommand struct {
 	AutoPublish    bool
 }
 
+// RemoveDelegationCommand holds parameters to remove a delegation
+type RemoveDelegationCommand struct {
+	TargetCommand
+	Role        data.RoleName
+	KeyID       string
+	AutoPublish bool
+}
+
 // GuardHasGUN guards that a valid GUN has been provided
 func (cmd TargetCommand) GuardHasGUN() error {
 	if cmd.SanitizedGUN() == "" {
