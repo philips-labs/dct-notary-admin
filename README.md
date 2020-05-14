@@ -45,8 +45,7 @@ To run in an isolated environment to do some testing you should run the sandbox.
 Initializing the notary git submodule.
 
 ```bash
-git submodule init
-git submodule update
+git submodule update --init --recursive
 ```
 
 Build the sandbox
@@ -61,7 +60,7 @@ Run the sandbox
 make run-sandbox
 ```
 
-To provision the notary sandbox with some signed images you can use the `bootstrap-sandbox` make target.
+To provision the notary sandbox with some signed images you can use the `bootstrap-sandbox` make target (optional).
 
 ```bash
 make bootstrap-sandbox
@@ -81,7 +80,7 @@ make stop-sandbox
 
 ## Run vault development server
 
-To boot the Hashicorp Vault development server run the following.
+To boot the [Hashicorp Vault](https://www.vaultproject.io/) development server run the following. Requires vault installed, (e.g. `brew install vault`).
 
 ```bash
 docker-compose -f vault/docker-compose.dev.yml up -d
@@ -96,7 +95,14 @@ The token can be found in the server logs.
 docker-compose -f vault/docker-compose.dev.yml logs | grep "Root Token"
 ```
 
-## Build binary
+For test purpose we have provided a root test certificate. At this moment you have to add the credentials manually. Go to the admin portal, select `dctna`, and add a secret with the following properties:
+
+- path: `dev/760e57b96f72ed27e523633d2ffafe45ae0ff804e78dfc014a50f01f823d161d`
+- version data
+  - `alias`: `root`
+  - `password`: `test1234`
+
+## Build binary (api)
 
 ```bash
 make build
@@ -124,27 +130,41 @@ make coverage-html
 
 ## Run
 
-> The API utilizes hashicorp vault to generate and store passwords for private keys. The endpoint to hashicorp vault can be configured via the environment variable `VAULT_ADDR` or as a commandline flag. The default value points to http://localhost:8200 (the address of the development server).
+> The API utilizes Hashicorp vault to generate and store passwords for private keys. The endpoint to Hashicorp vault can be configured via the environment variable `VAULT_ADDR` or as a commandline flag. The default value points to http://localhost:8200 (the address of the development server).
 
-Now you can start the server as following:
+### API Server
+
+Now you can start the API server as following:
 
 ```bash
 # environment variable
-export VAULT_ADDR=https://vault-server.internal
-bin/dctna
-# commandline option
-bin/dctna --vault-addr https://vault-server.internal
+export VAULT_ADDR=http://localhost:8200
+bin/dctna --config .notary/config.json
 ```
 
-> **NOTE:** you can pass the sandbox `.notary/config.json` as following. `bin/dctna --config .notary/config.json`.
+Alternatively you provide the vault server address as parameter.
 
-Or via the Make shorthand which also builds the solution.
+```bash
+# commandline option
+bin/dctna --vault-addr http://localhost:8200 --config .notary/config.json
+```
+
+> **NOTE:** you can pass the sandbox `.notary/config.json` as above, without this setting the default notary folder will be used (`$USER/.natary/config.json`).
+
+Or via the Make shorthand which also builds the solution, which will use the sandbox config for notary.
 
 ```bash
 make run
 ```
 
 > **NOTE:** via make we will also use our sandboxed `.notary/config.json` automatically to prevent you from messing arround with your current notary (Production) settings.
+
+### Web Frontend
+
+```bash
+cd web
+yarn install && yarn start
+```
 
 [cmake-3.16.2-win64-x64.msi]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-win64-x64.msi "Download cmake-3.16.2-win64-x64.msi"
 [cmake-3.16.2-darwin-x86_64.dmg]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Darwin-x86_64.dmg "Download cmake-3.16.2-Darwin-x86_64.dmg"
