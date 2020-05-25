@@ -9,7 +9,7 @@ It allows you to create new **Target** certificates for your Docker repositories
 
 This way the certificates can be stored in a secured environment where backups are managed.
 
-This project makes use of a [Notary sandbox][NotaryForkSandbox] which is an in progress development setup, which is intended to be contributed [upstream][Notary]. The [Fork][NotaryFork] is by no means a hard Fork of [Notary][Notary] and is solely there to bridge a period of time to get this back in the upstream.
+This project makes use of a [Notary sandbox][notaryforksandbox] which is an in progress development setup, which is intended to be contributed [upstream][notary]. The [Fork][notaryfork] is by no means a hard Fork of [Notary][notary] and is solely there to bridge a period of time to get this back in the upstream.
 
 ## API endpoints
 
@@ -125,7 +125,7 @@ make coverage-html
 
 ## Run
 
-> The API utilizes Hashicorp vault to generate and store passwords for private keys. The endpoint to Hashicorp vault can be configured via the environment variable `VAULT_ADDR` or as a commandline flag. The default value points to http://localhost:8200 (the address of the development server).
+> The API utilizes Hashicorp vault to generate and store passwords for private keys. The endpoint to Hashicorp vault can be configured via the environment variable `VAULT_ADDR` or as a commandline flag. The default value points to [http://localhost:8200] (the address of the development server).
 
 ### API Server
 
@@ -163,6 +163,8 @@ yarn install && yarn start
 
 [cmake-3.16.2-win64-x64.msi]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-win64-x64.msi "Download cmake-3.16.2-win64-x64.msi"
 [cmake-3.16.2-darwin-x86_64.dmg]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Darwin-x86_64.dmg "Download cmake-3.16.2-Darwin-x86_64.dmg"
-[Notary]: https://github.com/theupdateframework/notary "Notary is a project that allows anyone to have trust over arbitrary collections of data"
-[NotaryFork]: https://github.com/philips-labs/notary/blob/feature/sandbox "This Fork is only to support the submodule which contains the sandbox setup"
-[NotaryForkSandbox]: https://github.com/philips-labs/notary/blob/feature/sandbox/docker-compose.sandbox.yml "Notary docker-compose sandbox setup"
+[notary]: https://github.com/theupdateframework/notary "Notary is a project that allows anyone to have trust over arbitrary collections of data"
+[notaryfork]: https://github.com/philips-labs/notary/blob/feature/sandbox "This Fork is only to support the submodule which contains the sandbox setup"
+[notaryforksandbox]: https://github.com/philips-labs/notary/blob/feature/sandbox/docker-compose.sandbox.yml "Notary docker-compose sandbox setup"
+[http://localhost:8200]: http://localhost:8200 "Vault address"
+[http://localhost:3000]: http://localhost:3000 "DCTNA dashboard address"
