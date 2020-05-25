@@ -163,6 +163,47 @@ cd web
 yarn install && yarn start
 ```
 
+## Testing end to end
+
+Now you can create new targets for signing docker images [http://localhost:3000] using the webinterface.
+
+E.g.:
+
+- Target: `localhost:5000/nginx`
+- Target: `localhost:5000/stuff`
+
+Then on one of the targets we will authorize our personal delegation key. If you don't have one yet you can generate it via the docker trust cli.
+
+```bash
+docker trust key generate johndoe --dir ~/.docker/trust
+```
+
+Then simply copy the contents of the public key to your clipboard.
+
+```bash
+cat ~/.docker/trust/johndoe.pub | pbcopy
+```
+
+In the webinterface you can now add your delegation on the target `localhost:5000/nginx`.
+
+| name     | key                      |
+| -------- | ------------------------ |
+| john_doe | paste_clipboard_contents |
+
+Now to be able to sign an image all signing keys have to be available on your local system. In Notary v2 this will be improved to also be able to work with remote signing keys. You will only need the passphrase for your delegation key.
+
+> To get the signing keys locally a feature will be added to dctna to fetch and put the signing keys locally in correct folder structure.
+
+This will now allow us to sign docker images for `localhost:5000/nginx`. In below example we first pull an image from the public registry. Then tag it to push to our sandbox registry. Then we enable content trust and configure our sandbox notary endpoint. Upon pushing to the repository you will be prompted for the password of your signing key.
+
+```bash
+docker pull nginx:alpine
+docker tag nginx:alpine localhost:5000/nginx:alpine
+export DOCKER_CONTENT_TRUST=1
+export DOCKER_CONTENT_TRUST_SERVER=https://localhost:4443
+docker push localhost:5000/nginx:alpine
+```
+
 [cmake-3.16.2-win64-x64.msi]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-win64-x64.msi "Download cmake-3.16.2-win64-x64.msi"
 [cmake-3.16.2-darwin-x86_64.dmg]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Darwin-x86_64.dmg "Download cmake-3.16.2-Darwin-x86_64.dmg"
 [Hashicorp Vault]: https://vaultproject.io "Manage secrets and protect sensitive data"
