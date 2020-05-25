@@ -25,12 +25,14 @@ This project makes use of a [Notary sandbox][notaryforksandbox] which is an in p
 
 ## Prerequisites
 
-For a easier development workflow it is recommended to install **CMake**.
+For a easier development workflow it is recommended to install **CMake**. To interact with [Hashicorp Vault] the `vault cli` is convenient.
 
-| platform | install                  | url                                |
-| -------- | ------------------------ | ---------------------------------- |
-| Windows  | `choco install -y cmake` | [cmake-3.16.2-win64-x64.msi][]     |
-| MacOSX   | `brew install cmake`     | [cmake-3.16.2-Darwin-x86_64.dmg][] |
+| platform | install                  | url                              |
+| -------- | ------------------------ | -------------------------------- |
+| Windows  | `choco install -y cmake` | [cmake-3.16.2-win64-x64.msi]     |
+| MacOSX   | `brew install cmake`     | [cmake-3.16.2-Darwin-x86_64.dmg] |
+| Windows  | `choco install -y vault` | [vault_1.4.2_windows_amd64.zip]  |
+| MacOSX   | `brew install vault`     | [vault_1.4.2_darwin_amd64.zip]   |
 
 ### Accept Self signed certs in Google Chrome
 
@@ -163,6 +165,9 @@ yarn install && yarn start
 
 [cmake-3.16.2-win64-x64.msi]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-win64-x64.msi "Download cmake-3.16.2-win64-x64.msi"
 [cmake-3.16.2-darwin-x86_64.dmg]: https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Darwin-x86_64.dmg "Download cmake-3.16.2-Darwin-x86_64.dmg"
+[Hashicorp Vault]: https://vaultproject.io "Manage secrets and protect sensitive data"
+[vault_1.4.2_windows_amd64.zip]: https://releases.hashicorp.com/vault/1.4.2/vault_1.4.2_windows_amd64.zip "Download vault_1.4.2_windows_amd64.zip"
+[vault_1.4.2_darwin_amd64.zip]: https://releases.hashicorp.com/vault/1.4.2/vault_1.4.2_darwin_amd64.zip "Download vault_1.4.2_darwin_amd64.zip"
 [notary]: https://github.com/theupdateframework/notary "Notary is a project that allows anyone to have trust over arbitrary collections of data"
 [notaryfork]: https://github.com/philips-labs/notary/blob/feature/sandbox "This Fork is only to support the submodule which contains the sandbox setup"
 [notaryforksandbox]: https://github.com/philips-labs/notary/blob/feature/sandbox/docker-compose.sandbox.yml "Notary docker-compose sandbox setup"
