@@ -87,20 +87,15 @@ docker-compose -f vault/docker-compose.dev.yml up -d
 vault/prepare.sh dev
 ```
 
-The vault admin dashboard is available at http://localhost:8200.
+`prepare.sh` boots vault server and provisions the secret engine with required policies, secret engines etc.
+
+The vault admin dashboard is available at [http://localhost:8200].
 
 The token can be found in the server logs.
 
 ```bash
 docker-compose -f vault/docker-compose.dev.yml logs | grep "Root Token"
 ```
-
-For test purpose we have provided a root test certificate. At this moment you have to add the credentials manually. Go to the admin portal, select `dctna`, and add a secret with the following properties:
-
-- path: `dev/760e57b96f72ed27e523633d2ffafe45ae0ff804e78dfc014a50f01f823d161d`
-- version data
-  - `alias`: `root`
-  - `password`: `test1234`
 
 ## Build binary (api)
 

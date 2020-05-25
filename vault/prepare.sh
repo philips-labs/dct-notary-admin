@@ -62,3 +62,6 @@ enable_kv dctna 720h "Docker Content Trust Notary Admin"
 enable_userpass_auth
 add_vault_user dctna topsecret dctna
 install_plugin_secrets_gen
+
+echo Add root token credential
+vault kv put dctna/dev/760e57b96f72ed27e523633d2ffafe45ae0ff804e78dfc014a50f01f823d161d password=test1234 alias=root
