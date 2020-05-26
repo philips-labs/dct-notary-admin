@@ -1,10 +1,13 @@
 package notary
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"go.uber.org/zap"
@@ -14,6 +17,7 @@ import (
 	"github.com/theupdateframework/notary/trustmanager"
 	"github.com/theupdateframework/notary/trustpinning"
 	"github.com/theupdateframework/notary/tuf/data"
+	"github.com/theupdateframework/notary/tuf/signed"
 )
 
 const (
@@ -35,16 +39,24 @@ type Key struct {
 	Role string `json:"role"`
 }
 
+// KeyData holds private, public keydata
+type KeyData struct {
+	Key  []byte        `json:"key,omitempty"`
+	Role data.RoleName `json:"role,omitempty"`
+	GUN  data.GUN      `json:"gun,omitempty"`
+}
+
 // Service notary service exposes notary operations
 type Service struct {
-	config    *Config
-	retriever notary.PassRetriever
-	log       *zap.Logger
+	config         *Config
+	storageFactory func() (trustmanager.KeyStore, error)
+	retriever      notary.PassRetriever
+	log            *zap.Logger
 }
 
 // NewService creates a new notary service object
-func NewService(config *Config, passRetriever notary.PassRetriever, log *zap.Logger) *Service {
-	return &Service{config, passRetriever, log}
+func NewService(config *Config, storageFactory func() (trustmanager.KeyStore, error), passRetriever notary.PassRetriever, log *zap.Logger) *Service {
+	return &Service{config, storageFactory, passRetriever, log}
 }
 
 // CreateRepository creates a new repository with the given id
@@ -163,14 +175,14 @@ func (s *Service) RemoveDelegation(ctx context.Context, cmd RemoveDelegationComm
 // StreamKeys returns a Stream of Key
 func (s *Service) StreamKeys(ctx context.Context) (<-chan Key, error) {
 	keysChan := make(chan Key, 2)
-	fileKeyStore, err := trustmanager.NewKeyFileStore(s.config.TrustDir, s.retriever)
+	storage, err := s.storageFactory()
 	if err != nil {
 		return nil, err
 	}
 
 	go func() {
 		defer close(keysChan)
-		keys := fileKeyStore.ListKeys()
+		keys := storage.ListKeys()
 		for keyID, keyInfo := range keys {
 			keysChan <- Key{ID: keyID, Role: keyInfo.Role.String(), GUN: keyInfo.Gun.String()}
 		}
@@ -265,6 +277,81 @@ func (s *Service) GetDelegation(ctx context.Context, target *Key, role data.Role
 		}
 	}
 	return nil, nil
+}
+
+// FetchKeys fetches the keys for a given GUN.
+func (s *Service) FetchKeys(ctx context.Context, gun data.GUN) (map[string]KeyData, error) {
+	rt, err := getTransport(s.config, gun, readOnly)
+	if err != nil {
+		return nil, err
+	}
+
+	storage, err := s.storageFactory()
+	if err != nil {
+		return nil, err
+	}
+
+	repo, err := client.NewFileCachedRepository(
+		s.config.TrustDir,
+		gun,
+		s.config.RemoteServer.URL,
+		rt,
+		s.retriever,
+		trustpinning.TrustPinConfig{})
+
+	if err != nil {
+		return nil, err
+	}
+	cs := repo.GetCryptoService()
+
+	rootKeyIDs := cs.ListKeys(data.CanonicalRootRole)
+	targetKeyIDs := cs.ListKeys(data.CanonicalTargetsRole)
+
+	keys := make(map[string]KeyData)
+	for _, v := range rootKeyIDs {
+		key, err := s.fetchKeys(cs, v, "")
+		if err != nil {
+			return nil, err
+		}
+		keys[v] = *key
+	}
+	for _, v := range targetKeyIDs {
+		ki, err := storage.GetKeyInfo(v)
+		if err != nil {
+			return nil, err
+		}
+		if ki.Gun == gun {
+			key, err := s.fetchKeys(cs, v, gun)
+			if err != nil {
+				return nil, err
+			}
+			keys[v] = *key
+		}
+	}
+	return keys, nil
+}
+
+func (s *Service) fetchKeys(cs signed.CryptoService, keyID string, gun data.GUN) (*KeyData, error) {
+	_, role, err := cs.GetPrivateKey(keyID)
+	if err != nil {
+		return nil, err
+	}
+	privKeyFile, err := os.Open(filepath.Join(s.config.TrustDir, "private", keyID+".key"))
+	if err != nil {
+		return nil, err
+	}
+	defer privKeyFile.Close()
+	privKeyFileInfo, _ := privKeyFile.Stat()
+	data := make([]byte, privKeyFileInfo.Size())
+
+	buffer := bufio.NewReader(privKeyFile)
+	_, err = buffer.Read(data)
+
+	return &KeyData{
+		Key:  data,
+		Role: role,
+		GUN:  gun,
+	}, err
 }
 
 func (s *Service) getTargetDelegationRoles(ctx context.Context, target *Key) ([]data.Role, error) {

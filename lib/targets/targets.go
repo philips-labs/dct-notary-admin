@@ -42,6 +42,7 @@ func (tr *Resource) RegisterRoutes(r chi.Router) {
 		rr.Use(render.SetContentType(render.ContentTypeJSON))
 		rr.Get("/", tr.listTargets)
 		rr.Post("/", tr.createTarget)
+		rr.Post("/fetchkeys", tr.fetchTargetKeys)
 		rr.Get("/{target}", tr.getTarget)
 		rr.Route("/{target}/delegations", func(rrr chi.Router) {
 			rrr.Get("/", tr.listDelegates)
@@ -96,6 +97,27 @@ func (tr *Resource) createTarget(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	respond(w, r, NewKeyResponse(*newKey))
+}
+
+func (tr *Resource) fetchTargetKeys(w http.ResponseWriter, r *http.Request) {
+	log := m.GetZapLogger(r)
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	body := &RepositoryRequest{}
+	if err := render.Bind(r, body); err != nil {
+		log.Error(ErrMsgFailedParseBody, zap.Error(err))
+		respond(w, r, e.ErrInvalidRequest(err))
+		return
+	}
+
+	keys, err := tr.notary.FetchKeys(ctx, data.GUN(body.GUN))
+	if err != nil {
+		respond(w, r, e.ErrInternalServer(err))
+		return
+	}
+
+	respond(w, r, &KeyDataResponse{Data: keys})
 }
 
 func (tr *Resource) getTarget(w http.ResponseWriter, r *http.Request) {

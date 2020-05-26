@@ -18,6 +18,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
+	"github.com/theupdateframework/notary/trustmanager"
 	"github.com/theupdateframework/notary/tuf/data"
 
 	"github.com/stretchr/testify/assert"
@@ -47,6 +48,11 @@ var (
 	}
 )
 
+func parseKeyDataResponse(body *bytes.Buffer) (KeyDataResponse, error) {
+	var resp KeyDataResponse
+	return resp, json.Unmarshal(body.Bytes(), &resp)
+}
+
 func parseSingle(body *bytes.Buffer) (KeyResponse, error) {
 	var resp KeyResponse
 	return resp, json.Unmarshal(body.Bytes(), &resp)
@@ -64,13 +70,17 @@ func init() {
 
 	nopLogger := zap.NewNop()
 
-	n = notary.NewService(&notary.Config{
+	config := &notary.Config{
 		TrustDir: "../../.notary",
 		RemoteServer: notary.RemoteServerConfig{
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,
 		},
-	}, notary.GetPassphraseRetriever(), nopLogger)
+	}
+	passphraseRetriever := notary.GetPassphraseRetriever()
+	n = notary.NewService(config, func() (trustmanager.KeyStore, error) {
+		return trustmanager.NewKeyFileStore(config.TrustDir, passphraseRetriever)
+	}, passphraseRetriever, nopLogger)
 
 	router = chi.NewRouter()
 
@@ -139,6 +149,40 @@ func TestGetTargetWithInvalidID(t *testing.T) {
 
 	assert.Equal(http.StatusBadRequest, rr.Code, "Invalid status code")
 	assert.Equal(InvalidIDResponse, rr.Body.String(), "Invalid response")
+}
+
+func TestFetchKeys(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	assert := assert.New(t)
+
+	gun := randomGUN()
+	id, err := createTestTarget(ctx, gun)
+	if !assert.NoError(err) {
+		return
+	}
+	defer func() {
+		err := cleanupTarget(ctx, gun, id)
+		assert.NoError(err)
+	}()
+
+	jsonData, _ := json.Marshal(RepositoryRequest{GUN: gun.String()})
+	req, err := http.NewRequest(http.MethodPost, "/targets/fetchkeys", bytes.NewBuffer(jsonData))
+	assert.NoError(err, "Failed to create request")
+
+	rr := httptest.NewRecorder()
+	router.ServeHTTP(rr, req)
+
+	rootKeyID := "760e57b96f72ed27e523633d2ffafe45ae0ff804e78dfc014a50f01f823d161d"
+
+	resp, err := parseKeyDataResponse(rr.Body)
+	assert.NoError(err)
+	assert.NotNil(resp)
+	assert.NotNil(resp.Data)
+	assert.Len(resp.Data, 2)
+	assertKeyData(assert, resp.Data[rootKeyID], "root", "")
+	assertKeyData(assert, resp.Data[id], "targets", "localhost")
 }
 
 func TestCreateTarget(t *testing.T) {
@@ -317,6 +361,20 @@ func addDelegation(ctx context.Context, gun data.GUN) (string, data.RoleName, er
 		return "", data.RoleName(""), nil
 	}
 	return pubKeyID, role, nil
+}
+
+func assertKeyData(assert *assert.Assertions, keyData notary.KeyData, role, gun string) {
+	assert.NotNil(keyData.Key)
+	assert.Equal(data.RoleName(role), keyData.Role)
+	if gun == "" {
+		assert.Equal(data.GUN(gun), keyData.GUN)
+	} else {
+		assert.Contains(keyData.GUN.String(), gun)
+	}
+	assert.Contains(string(keyData.Key), "role: "+role)
+	if gun != "" {
+		assert.Contains(string(keyData.Key), "gun: "+gun)
+	}
 }
 
 func cleanupTarget(ctx context.Context, gun data.GUN, keyID string) error {

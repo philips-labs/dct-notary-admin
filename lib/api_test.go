@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/assert"
+	"github.com/theupdateframework/notary/trustmanager"
 
 	"go.uber.org/zap"
 
@@ -20,14 +21,20 @@ type registeredRoute struct {
 }
 
 func bootstrapAPI() *chi.Mux {
-	n := notary.NewService(&notary.Config{
-		TrustDir: "./.notary",
+	config := &notary.Config{
+		TrustDir: "../.notary",
 		RemoteServer: notary.RemoteServerConfig{
 			URL:           "https://localhost:4443",
 			SkipTLSVerify: true,
 		},
-	}, notary.GetPassphraseRetriever(), zap.NewNop())
-	return configureAPI(n, zap.NewNop())
+	}
+	nopLogger := zap.NewNop()
+	passphraseRetriever := notary.GetPassphraseRetriever()
+	n := notary.NewService(config, func() (trustmanager.KeyStore, error) {
+		return trustmanager.NewKeyFileStore(config.TrustDir, passphraseRetriever)
+	}, passphraseRetriever, nopLogger)
+
+	return configureAPI(n, nopLogger)
 }
 
 func TestRoutes(t *testing.T) {
@@ -37,6 +44,7 @@ func TestRoutes(t *testing.T) {
 		{http.MethodGet, "/ping"},
 		{http.MethodGet, "/api/targets/"},
 		{http.MethodPost, "/api/targets/"},
+		{http.MethodPost, "/api/targets/fetchkeys"},
 		{http.MethodGet, "/api/targets/{target}"},
 		{http.MethodGet, "/api/targets/{target}/delegations/"},
 		{http.MethodPost, "/api/targets/{target}/delegations/"},

@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/theupdateframework/notary/trustmanager"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
@@ -63,7 +64,13 @@ centralized to better manage backups.`,
 		pg := secrets.NewDefaultPasswordGenerator(secrets.DefaultPasswordOptions{})
 		cm := secrets.NewVaultCredentialsManager(vc, pg, logger)
 
-		n := notary.NewService(notaryCfg, cm.PassRetriever(), logger)
+		if err != nil {
+			logger.Fatal("Could not initialize keystorage", zap.Error(err))
+		}
+
+		n := notary.NewService(notaryCfg, func() (trustmanager.KeyStore, error) {
+			return trustmanager.NewKeyFileStore(notaryCfg.TrustDir, cm.PassRetriever())
+		}, cm.PassRetriever(), logger)
 		server := lib.NewServer(serverCfg, n, logger)
 		server.Start()
 	},

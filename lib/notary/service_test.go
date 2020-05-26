@@ -45,7 +45,11 @@ func init() {
 	}
 
 	fact = ConfigureRepo(config, GetPassphraseRetriever(), true, readOnly)
-	service = NewService(config, GetPassphraseRetriever(), zap.NewNop())
+	passphraseRetriever := GetPassphraseRetriever()
+
+	service = NewService(config, func() (trustmanager.KeyStore, error) {
+		return trustmanager.NewKeyFileStore(config.TrustDir, passphraseRetriever)
+	}, passphraseRetriever, zap.NewNop())
 }
 
 func TestListRootKeys(t *testing.T) {
@@ -286,6 +290,51 @@ func TestListDelegates(t *testing.T) {
 		assert.Len(delegates[delName.String()], 1)
 		assert.Equal(delID, delegates[delName.String()][0].ID)
 		assert.Equal(delName.String(), delegates[delName.String()][0].Role)
+	}
+}
+
+func TestFetchKeys(t *testing.T) {
+	assert := assert.New(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	gun := randomGUN()
+
+	id, err := createTestTarget(ctx, gun)
+	if !assert.NoError(err) {
+		return
+	}
+	defer func() {
+		err := cleanupTarget(ctx, gun, id)
+		assert.NoError(err)
+	}()
+
+	keys, err := service.FetchKeys(ctx, gun)
+	if !assert.NoError(err) {
+		return
+	}
+
+	rootKeyID := "760e57b96f72ed27e523633d2ffafe45ae0ff804e78dfc014a50f01f823d161d"
+
+	assert.NotEmpty(keys)
+	assert.Len(keys, 2)
+	assert.Contains(keys, rootKeyID)
+	assert.Contains(keys, id)
+	assertKeyData(assert, keys[rootKeyID], "root", "")
+	assertKeyData(assert, keys[id], "targets", "localhost")
+}
+
+func assertKeyData(assert *assert.Assertions, keyData KeyData, role, gun string) {
+	assert.NotNil(keyData.Key)
+	assert.Equal(data.RoleName(role), keyData.Role)
+	if gun == "" {
+		assert.Equal(data.GUN(gun), keyData.GUN)
+	} else {
+		assert.Contains(keyData.GUN.String(), gun)
+	}
+	assert.Contains(string(keyData.Key), "role: "+role)
+	if gun != "" {
+		assert.Contains(string(keyData.Key), "gun: "+gun)
 	}
 }
 
