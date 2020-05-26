@@ -92,11 +92,11 @@ coverage-html: coverage ## Output code coverage as HTML
 
 build: download ## Build the binary
 	@echo Building binary
-	@go build -a ${GO_LDFLAGS} -o bin/dctna .
+	@go build -a ${GO_LDFLAGS} -o bin/dctna-server ./cmd/dctna-server
 
 build-static: download ## Build the static binary
 	@echo Building binary
-	@go build -a -installsuffix cgo ${GO_LDFLAGS_STATIC} -o bin/static/dctna .
+	@go build -a -installsuffix cgo ${GO_LDFLAGS_STATIC} -o bin/static/dctna-server ./cmd/dctna-server
 
 certs: ## Creates selfsigned TLS certificates
 	@echo Create TLS certificates

@@ -23,7 +23,7 @@ RUN go mod download
 FROM base as builder
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o dctna ./cmd
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o dctna-server ./cmd/dctna-server
 
 # Collect certificates and binary
 FROM alpine
@@ -38,5 +38,5 @@ RUN mkdir -p .notary/certs && mkdir -p .docker/trust && mkdir -p certs
 VOLUME [ "/root/.notary", "/root/.docker/trust", "/root/certs" ]
 COPY certs/ /root/certs/
 COPY .notary/config.json /root/.notary/config.json
-COPY --from=builder /build/dctna /root/
-CMD [ "./dctna" ]
+COPY --from=builder /build/dctna-server /root/
+CMD [ "./dctna-server" ]
