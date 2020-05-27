@@ -46,6 +46,7 @@ require (
 	github.com/spf13/viper v1.7.0
 	github.com/stretchr/testify v1.6.1
 	github.com/theupdateframework/notary v0.6.1
+	github.com/urfave/cli/v2 v2.2.0
 	go.uber.org/zap v1.15.0
 	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
 	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa // indirect
