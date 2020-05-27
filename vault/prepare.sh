@@ -65,3 +65,4 @@ install_plugin_secrets_gen
 
 echo Add root token credential
 vault kv put dctna/dev/760e57b96f72ed27e523633d2ffafe45ae0ff804e78dfc014a50f01f823d161d password=test1234 alias=root
+vault kv put dctna/dev/4ea1fec36392486d4bd99795ffc70f3ffa4a76185b39c8c2ab1d9cf5054dbbc9 password=test1234 alias=localhost:5000/dct-notary-admin
