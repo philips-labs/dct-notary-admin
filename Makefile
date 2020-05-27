@@ -92,10 +92,12 @@ coverage-html: coverage ## Output code coverage as HTML
 
 build: download ## Build the binary
 	@echo Building binary
+	@go build -a ${GO_LDFLAGS} -o bin/dctna ./cmd/dctna
 	@go build -a ${GO_LDFLAGS} -o bin/dctna-server ./cmd/dctna-server
 
-build-static: download ## Build the static binary
-	@echo Building binary
+build-static: download
+	@echo Building binaries
+	@go build -a -installsuffix cgo ${GO_LDFLAGS_STATIC} -o bin/static/dctna ./cmd/dctna
 	@go build -a -installsuffix cgo ${GO_LDFLAGS_STATIC} -o bin/static/dctna-server ./cmd/dctna-server
 
 certs: ## Creates selfsigned TLS certificates
@@ -103,7 +105,7 @@ certs: ## Creates selfsigned TLS certificates
 	@mkdir -p certs
 	@openssl req \
        -newkey rsa:2048 -nodes -keyout certs/server.key \
-	   -subj "/C=NL/O=Philips Labs/CN=localhost:8443" \
+	   -subj "/C=NL/O=Philips Labs/CN=localhost" \
        -new -out certs/server.csr
 	@openssl x509 \
        -signkey certs/server.key \
