@@ -306,6 +306,7 @@ func (s *Service) FetchKeys(ctx context.Context, gun data.GUN) (map[string]KeyDa
 
 	rootKeyIDs := cs.ListKeys(data.CanonicalRootRole)
 	targetKeyIDs := cs.ListKeys(data.CanonicalTargetsRole)
+	snapshotKeyIDs := cs.ListKeys(data.CanonicalSnapshotRole)
 
 	keys := make(map[string]KeyData)
 	for _, v := range rootKeyIDs {
@@ -316,6 +317,19 @@ func (s *Service) FetchKeys(ctx context.Context, gun data.GUN) (map[string]KeyDa
 		keys[v] = *key
 	}
 	for _, v := range targetKeyIDs {
+		ki, err := storage.GetKeyInfo(v)
+		if err != nil {
+			return nil, err
+		}
+		if ki.Gun == gun {
+			key, err := s.fetchKeys(cs, v, gun)
+			if err != nil {
+				return nil, err
+			}
+			keys[v] = *key
+		}
+	}
+	for _, v := range snapshotKeyIDs {
 		ki, err := storage.GetKeyInfo(v)
 		if err != nil {
 			return nil, err

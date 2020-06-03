@@ -180,9 +180,11 @@ func TestFetchKeys(t *testing.T) {
 	assert.NoError(err)
 	assert.NotNil(resp)
 	assert.NotNil(resp.Data)
-	assert.Len(resp.Data, 2)
+	assert.Len(resp.Data, 3)
 	assertKeyData(assert, resp.Data[rootKeyID], "root", "")
 	assertKeyData(assert, resp.Data[id], "targets", "localhost")
+	snapshotID := getSnapshotID(resp.Data, rootKeyID, id)
+	assertKeyData(assert, resp.Data[snapshotID], "snapshot", "localhost")
 }
 
 func TestCreateTarget(t *testing.T) {
@@ -392,4 +394,19 @@ func cleanupTarget(ctx context.Context, gun data.GUN, keyID string) error {
 		keyIds[i] = key.ID
 	}
 	return notary.CleanupKeys("../../.notary", append(keyIds, keyID)...)
+}
+
+func getSnapshotID(data map[string]notary.KeyData, otherIds ...string) string {
+	for k := range data {
+		found := false
+		for _, id := range otherIds {
+			if id == k {
+				found = true
+			}
+		}
+		if !found {
+			return k
+		}
+	}
+	return ""
 }

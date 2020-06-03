@@ -317,11 +317,14 @@ func TestFetchKeys(t *testing.T) {
 	rootKeyID := "760e57b96f72ed27e523633d2ffafe45ae0ff804e78dfc014a50f01f823d161d"
 
 	assert.NotEmpty(keys)
-	assert.Len(keys, 2)
+	assert.Len(keys, 3)
 	assert.Contains(keys, rootKeyID)
 	assert.Contains(keys, id)
+	t.Log(keys)
 	assertKeyData(assert, keys[rootKeyID], "root", "")
 	assertKeyData(assert, keys[id], "targets", "localhost")
+	snapshotID := getSnapshotID(keys, rootKeyID, id)
+	assertKeyData(assert, keys[snapshotID], "snapshot", "localhost")
 }
 
 func assertKeyData(assert *assert.Assertions, keyData KeyData, role, gun string) {
@@ -424,4 +427,19 @@ func randomString(length int) string {
 
 func randomGUN() data.GUN {
 	return data.GUN(fmt.Sprintf("localhost:5000/random-test-guns/dctna-%s", randomString(10)))
+}
+
+func getSnapshotID(data map[string]KeyData, otherIds ...string) string {
+	for k := range data {
+		found := false
+		for _, id := range otherIds {
+			if id == k {
+				found = true
+			}
+		}
+		if !found {
+			return k
+		}
+	}
+	return ""
 }
