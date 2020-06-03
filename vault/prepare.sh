@@ -50,7 +50,7 @@ function install_plugin_secrets_gen {
 
 download_plugin_secrets_gen
 docker-compose -f $compose_file up -d
-sleep 1
+sleep 2
 export VAULT_ADDR=http://127.0.0.1:8200
 export VAULT_UNSEAL_KEY="$(docker-compose -f $compose_file logs | grep "Unseal Key" | cut -d ':' -f2 | xargs)"
 export VAULT_TOKEN="$(docker-compose -f $compose_file logs | grep "Root Token" | cut -d ':' -f2 | xargs)"
