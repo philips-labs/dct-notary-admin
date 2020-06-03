@@ -53,7 +53,9 @@ jobs:
         run: go mod download
 
       - name: Build
-        run: go build -v .
+        run: |
+          go build -v -o bin/dctna ./cmd/dctna
+          go build -v -o bin/dctna-server ./cmd/dctna-server
 
       - name: Build sandbox
         run: |
