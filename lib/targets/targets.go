@@ -43,6 +43,7 @@ func (tr *Resource) RegisterRoutes(r chi.Router) {
 		rr.Get("/", tr.listTargets)
 		rr.Post("/", tr.createTarget)
 		rr.Post("/fetchkeys", tr.fetchTargetKeys)
+		rr.Post("/fetchmeta", tr.fetchMetadata)
 		rr.Get("/{target}", tr.getTarget)
 		rr.Route("/{target}/delegations", func(rrr chi.Router) {
 			rrr.Get("/", tr.listDelegates)
@@ -118,6 +119,9 @@ func (tr *Resource) fetchTargetKeys(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respond(w, r, &KeyDataResponse{Data: keys})
+}
+
+func (tr *Resource) fetchMetadata(w http.ResponseWriter, r *http.Request) {
 }
 
 func (tr *Resource) getTarget(w http.ResponseWriter, r *http.Request) {
