@@ -15,7 +15,6 @@ require (
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-metrics v0.0.1 // indirect
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
-	github.com/fatih/color v1.9.0 // indirect
 	github.com/frankban/quicktest v1.7.2 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-chi/chi v4.1.1+incompatible
@@ -24,7 +23,7 @@ require (
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/hashicorp/go-retryablehttp v0.6.4 // indirect
-	github.com/hashicorp/vault v1.4.1
+	github.com/hashicorp/vault v1.4.2
 	github.com/hashicorp/vault/api v1.0.5-0.20200317185738-82f498082f02
 	github.com/jinzhu/gorm v1.9.12 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
