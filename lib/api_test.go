@@ -37,6 +37,7 @@ func TestRoutes(t *testing.T) {
 		{http.MethodGet, "/ping"},
 		{http.MethodGet, "/api/targets/"},
 		{http.MethodPost, "/api/targets/"},
+		{http.MethodPost, "/api/targets/fetchmeta"},
 		{http.MethodGet, "/api/targets/{target}"},
 		{http.MethodGet, "/api/targets/{target}/delegations/"},
 		{http.MethodPost, "/api/targets/{target}/delegations/"},

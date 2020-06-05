@@ -289,6 +289,36 @@ func TestListDelegates(t *testing.T) {
 	}
 }
 
+func TestFetchMetadata(t *testing.T) {
+	assert := assert.New(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	gun := randomGUN()
+
+	id, err := createTestTarget(ctx, gun)
+	if !assert.NoError(err) {
+		return
+	}
+	defer func() {
+		err := cleanupTarget(ctx, gun, id)
+		assert.NoError(err)
+	}()
+
+	meta, err := service.FetchMetadata(ctx, gun)
+	if !assert.NoError(err) {
+		return
+	}
+
+	if assert.NotNil(meta) {
+		assert.NotNil(meta.Root)
+		assert.NotNil(meta.Root.Signed.Keys[id])
+		assert.NotNil(meta.Targets)
+		assert.NotNil(meta.Snapshot)
+		assert.NotNil(meta.Timestamp)
+	}
+}
+
 func createDelgKey(role data.RoleName) (data.PublicKey, error) {
 	fileKeyStore, err := trustmanager.NewKeyFileStore(trustStore, GetPassphraseRetriever())
 	if err != nil {

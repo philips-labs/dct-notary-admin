@@ -21,6 +21,7 @@ import (
 
 const (
 	ErrMsgFailedParseBody          = "failed to parse request body"
+	ErrMsgFailedFetchMetadata      = "failed fetching TUF metadata"
 	ErrMsgFailedListTargetKeys     = "failed to list target keys"
 	ErrMsgFailedListDelegationKeys = "faild to list delegation keys"
 	ErrMsgFailedGetTargetKey       = "failed getting target key"
@@ -42,6 +43,7 @@ func (tr *Resource) RegisterRoutes(r chi.Router) {
 		rr.Use(render.SetContentType(render.ContentTypeJSON))
 		rr.Get("/", tr.listTargets)
 		rr.Post("/", tr.createTarget)
+		rr.Post("/fetchmeta", tr.fetchMetadata)
 		rr.Get("/{target}", tr.getTarget)
 		rr.Route("/{target}/delegations", func(rrr chi.Router) {
 			rrr.Get("/", tr.listDelegates)
@@ -96,6 +98,28 @@ func (tr *Resource) createTarget(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	respond(w, r, NewKeyResponse(*newKey))
+}
+
+func (tr *Resource) fetchMetadata(w http.ResponseWriter, r *http.Request) {
+	log := m.GetZapLogger(r)
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	body := &RepositoryRequest{}
+	if err := render.Bind(r, body); err != nil {
+		log.Error(ErrMsgFailedParseBody, zap.Error(err))
+		respond(w, r, e.ErrInvalidRequest(err))
+		return
+	}
+
+	metadata, err := tr.notary.FetchMetadata(ctx, data.GUN(body.GUN))
+	if err != nil {
+		log.Error(ErrMsgFailedFetchMetadata, zap.Error(err))
+		respond(w, r, e.ErrInternalServer(err))
+		return
+	}
+
+	respond(w, r, &MetadataResponse{Data: metadata})
 }
 
 func (tr *Resource) getTarget(w http.ResponseWriter, r *http.Request) {
