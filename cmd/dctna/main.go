@@ -74,16 +74,98 @@ func Run(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	meta, err := fetchMetadata(serverAddr, args.Slice())
+	if err != nil {
+		return err
+	}
 
 	home, err := homedir.Dir()
 	if err != nil {
 		return err
 	}
-	keydir := filepath.Join(home, ".docker", "trust", "private")
+	trustdir := filepath.Join(home, ".docker", "trust")
+	keydir := filepath.Join(trustdir, "private")
+	tufdir := filepath.Join(trustdir, "tuf")
 	fmt.Println("Saving keys to: ", keydir)
 	err = storeKeys(keydir, keys)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Saving metadata to: ", tufdir)
+	err = storeMetadata(tufdir, meta)
 
 	return err
+}
+
+func storeMetadata(tufdir string, metadata map[string]notary.TUFMetadata) error {
+	for k, v := range metadata {
+		metadir := filepath.Join(tufdir, k, "metadata")
+
+		err := os.MkdirAll(metadir, 0700)
+		if err != nil {
+			return err
+		}
+
+		if v.Root != nil {
+			rootfile := filepath.Join(metadir, "root.json")
+			fmt.Printf("\t%s\n", rootfile)
+			json, err := v.Root.MarshalJSON()
+			if err != nil {
+				return err
+			}
+			err = writeMetadataJSON(rootfile, json)
+			if err != nil {
+				return err
+			}
+		}
+		if v.Targets != nil {
+			for k, v := range v.Targets {
+				err := os.MkdirAll(filepath.Join(metadir, "targets"), 0700)
+				if err != nil {
+					return err
+				}
+				targetsfile := filepath.Join(metadir, k.String()+".json")
+				fmt.Printf("\t%s\n", targetsfile)
+				json, err := v.MarshalJSON()
+				if err != nil {
+					return err
+				}
+				err = writeMetadataJSON(targetsfile, json)
+				if err != nil {
+					return err
+				}
+			}
+		}
+		if v.Snapshot != nil {
+			snapshotfile := filepath.Join(metadir, "snapshot.json")
+			fmt.Printf("\t%s\n", snapshotfile)
+			json, err := v.Snapshot.MarshalJSON()
+			if err != nil {
+				return err
+			}
+			err = writeMetadataJSON(snapshotfile, json)
+			if err != nil {
+				return err
+			}
+		}
+		if v.Timestamp != nil {
+			timestampfile := filepath.Join(metadir, "timestamp.json")
+			fmt.Printf("\t%s\n", timestampfile)
+			json, err := v.Timestamp.MarshalJSON()
+			if err != nil {
+				return err
+			}
+			err = writeMetadataJSON(timestampfile, json)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func writeMetadataJSON(file string, json []byte) error {
+	return ioutil.WriteFile(file, json, 0600)
 }
 
 func storeKeys(keydir string, keys map[string]notary.KeyData) error {
@@ -96,6 +178,27 @@ func storeKeys(keydir string, keys map[string]notary.KeyData) error {
 		}
 	}
 	return nil
+}
+
+func fetchMetadata(serverAddr string, targets []string) (map[string]notary.TUFMetadata, error) {
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+
+	meta := make(map[string]notary.TUFMetadata)
+	for _, target := range targets {
+		metadata, err := fetchTargetMetadata(client, serverAddr, target)
+		if err != nil {
+			return meta, err
+		}
+		if metadata.Data != nil {
+			meta[target] = *metadata.Data
+		}
+	}
+
+	return meta, nil
 }
 
 func fetchKeys(serverAddr string, targets []string) (map[string]notary.KeyData, error) {
@@ -120,26 +223,45 @@ func fetchKeys(serverAddr string, targets []string) (map[string]notary.KeyData, 
 	return keys, nil
 }
 
-func fetchTargetKeys(client *http.Client, serverAddr, target string) (*targets.KeyDataResponse, error) {
+func fetchFromAPI(client *http.Client, addr, target string, respBody interface{}) error {
 	jsonData, err := json.Marshal(targets.RepositoryRequest{GUN: target})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	req, err := http.NewRequest(http.MethodPost, serverAddr+"/api/targets/fetchkeys", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(http.MethodPost, addr, bytes.NewBuffer(jsonData))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer resp.Body.Close()
 
+	err = json.NewDecoder(resp.Body).Decode(respBody)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func fetchTargetKeys(client *http.Client, serverAddr, target string) (*targets.KeyDataResponse, error) {
 	var keydata targets.KeyDataResponse
-	err = json.NewDecoder(resp.Body).Decode(&keydata)
+	err := fetchFromAPI(client, serverAddr+"/api/targets/fetchkeys", target, &keydata)
 	if err != nil {
 		return nil, err
 	}
 
 	return &keydata, nil
+}
+
+func fetchTargetMetadata(client *http.Client, serverAddr, target string) (*targets.MetadataResponse, error) {
+	var metadata targets.MetadataResponse
+	err := fetchFromAPI(client, serverAddr+"/api/targets/fetchmeta", target, &metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return &metadata, nil
 }
