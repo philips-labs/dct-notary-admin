@@ -14,6 +14,7 @@ import (
 
 	"github.com/theupdateframework/notary"
 	"github.com/theupdateframework/notary/client"
+	"github.com/theupdateframework/notary/storage"
 	"github.com/theupdateframework/notary/trustmanager"
 	"github.com/theupdateframework/notary/trustpinning"
 	"github.com/theupdateframework/notary/tuf/data"
@@ -44,6 +45,14 @@ type KeyData struct {
 	Key  []byte        `json:"key,omitempty"`
 	Role data.RoleName `json:"role,omitempty"`
 	GUN  data.GUN      `json:"gun,omitempty"`
+}
+
+// TUFMetadata holds tuf metadata
+type TUFMetadata struct {
+	Root      *data.SignedRoot
+	Targets   map[data.RoleName]*data.SignedTargets
+	Snapshot  *data.SignedSnapshot
+	Timestamp *data.SignedTimestamp
 }
 
 // Service notary service exposes notary operations
@@ -277,6 +286,47 @@ func (s *Service) GetDelegation(ctx context.Context, target *Key, role data.Role
 		}
 	}
 	return nil, nil
+}
+
+// FetchMetadata fetches the TUF metadata for a given GUN.
+func (s *Service) FetchMetadata(ctx context.Context, gun data.GUN) (*TUFMetadata, error) {
+	rt, err := getTransport(s.config, gun, readOnly)
+	if err != nil {
+		return nil, err
+	}
+
+	trustPinning := trustpinning.TrustPinConfig{}
+
+	repo, err := client.NewFileCachedRepository(
+		s.config.TrustDir,
+		gun,
+		s.config.RemoteServer.URL,
+		rt,
+		s.retriever,
+		trustPinning)
+
+	remote, err := storage.NewNotaryServerStore(s.config.RemoteServer.URL, gun, rt)
+	if err != nil {
+		return nil, err
+	}
+
+	tufRepo, _, err := client.LoadTUFRepo(client.TUFLoadOptions{
+		GUN:                    repo.GetGUN(),
+		TrustPinning:           trustPinning,
+		CryptoService:          repo.GetCryptoService(),
+		RemoteStore:            remote,
+		AlwaysCheckInitialized: false,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &TUFMetadata{
+		tufRepo.Root,
+		tufRepo.Targets,
+		tufRepo.Snapshot,
+		tufRepo.Timestamp,
+	}, nil
 }
 
 // FetchKeys fetches the keys for a given GUN.

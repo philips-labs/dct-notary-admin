@@ -53,6 +53,11 @@ func parseKeyDataResponse(body *bytes.Buffer) (KeyDataResponse, error) {
 	return resp, json.Unmarshal(body.Bytes(), &resp)
 }
 
+func parseMetadataResponse(body *bytes.Buffer) (MetadataResponse, error) {
+	var resp MetadataResponse
+	return resp, json.Unmarshal(body.Bytes(), &resp)
+}
+
 func parseSingle(body *bytes.Buffer) (KeyResponse, error) {
 	var resp KeyResponse
 	return resp, json.Unmarshal(body.Bytes(), &resp)
@@ -185,6 +190,40 @@ func TestFetchKeys(t *testing.T) {
 	assertKeyData(assert, resp.Data[id], "targets", "localhost")
 	snapshotID := getSnapshotID(resp.Data, rootKeyID, id)
 	assertKeyData(assert, resp.Data[snapshotID], "snapshot", "localhost")
+}
+
+func TestFetchMetadata(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	assert := assert.New(t)
+
+	gun := randomGUN()
+	id, err := createTestTarget(ctx, gun)
+	if !assert.NoError(err) {
+		return
+	}
+	defer func() {
+		err := cleanupTarget(ctx, gun, id)
+		assert.NoError(err)
+	}()
+
+	jsonData, _ := json.Marshal(RepositoryRequest{GUN: gun.String()})
+	req, err := http.NewRequest(http.MethodPost, "/targets/fetchmeta", bytes.NewBuffer(jsonData))
+	assert.NoError(err, "Failed to create request")
+
+	rr := httptest.NewRecorder()
+	router.ServeHTTP(rr, req)
+
+	resp, err := parseMetadataResponse(rr.Body)
+	assert.NoError(err)
+	assert.NotNil(resp)
+	assert.NotNil(resp.Data)
+	assert.NotNil(resp.Data.Root)
+	assert.NotNil(resp.Data.Root.Signed.Keys[id])
+	assert.NotNil(resp.Data.Targets)
+	assert.NotNil(resp.Data.Snapshot)
+	assert.NotNil(resp.Data.Timestamp)
 }
 
 func TestCreateTarget(t *testing.T) {

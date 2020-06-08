@@ -38,9 +38,14 @@ type KeyResponse struct {
 	*notary.Key
 }
 
-// KeyDataResponse returns the key data
+// KeyDataResponse holds the key data
 type KeyDataResponse struct {
 	Data map[string]notary.KeyData `json:"data,omitempty"`
+}
+
+// MetadataResponse holds the TUF metadata
+type MetadataResponse struct {
+	Data *notary.TUFMetadata `json:"data,omitempty"`
 }
 
 // NewKeyResponse creates a KeyResponse from a notary.Key structure
@@ -67,6 +72,12 @@ func NewKeyListResponse(targets []notary.Key) []render.Renderer {
 
 // Render renders a KeyDataResponse
 func (t *KeyDataResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	// preprocessing possible here
+	return nil
+}
+
+// Render renders a MetadataResponse
+func (t *MetadataResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	// preprocessing possible here
 	return nil
 }
