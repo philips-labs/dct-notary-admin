@@ -27,13 +27,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Lint
-        run: |
-          go install golang.org/x/tools/cmd/goimports
-          result=$($(go env GOPATH)/bin/goimports -d -e -local github.com/philips-labs .)
-          echo $result
-          [ -n "$result" ] && exit 1 || exit 0
-
       - name: Checkout submodules
         run: |
           git config --global url."https://github.com/".insteadOf "git@github.com:"
@@ -51,6 +44,13 @@ jobs:
 
       - name: Get dependencies
         run: go mod download
+
+      - name: Lint
+        run: |
+          go install golang.org/x/tools/cmd/goimports
+          result=$($(go env GOPATH)/bin/goimports -d -e -local github.com/philips-labs $(go list -f {{.Dir}} ./...))
+          echo $result
+          [ -n "$result" ] && exit 1 || exit 0
 
       - name: Build
         run: |
