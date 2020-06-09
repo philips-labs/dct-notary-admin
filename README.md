@@ -192,15 +192,13 @@ In the webinterface you can now add your delegation on the target `localhost:500
 
 Now to be able to sign an image all signing keys have to be available on your local system. In Notary v2 this will be improved to also be able to work with remote signing keys. You will only need the passphrase for your delegation key.
 
-> To get the signing keys locally a feature will be added to dctna to fetch and put the signing keys locally in correct folder structure.
-
-This will now allow us to sign docker images for `localhost:5000/nginx`. In below example we first pull an image from the public registry. Then tag it to push to our sandbox registry. Then we enable content trust and configure our sandbox notary endpoint. Upon pushing to the repository you will be prompted for the password of your signing key.
+This will now allow us to sign docker images for `localhost:5000/nginx`. In below example we first pull an image from the public registry. Then tag it to push to our sandbox registry. Then we enable content trust and configure our sandbox notary endpoint. Then we use the `dctna` cli to download the signing keys and tuf metadata. Upon pushing to the repository you will be prompted for the password of your signing key.
 
 ```bash
 docker pull nginx:alpine
 docker tag nginx:alpine localhost:5000/nginx:alpine
-export DOCKER_CONTENT_TRUST=1
-export DOCKER_CONTENT_TRUST_SERVER=https://localhost:4443
+export DOCKER_CONTENT_TRUST=1 DOCKER_CONTENT_TRUST_SERVER=https://localhost:4443
+bin/dctna --server-address https://localhost:8443 localhost:5000/nginx
 docker push localhost:5000/nginx:alpine
 ```
 
