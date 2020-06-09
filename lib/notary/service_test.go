@@ -350,7 +350,7 @@ func TestFetchKeys(t *testing.T) {
 	assert.Len(keys, 3)
 	assert.Contains(keys, rootKeyID)
 	assert.Contains(keys, id)
-	t.Log(keys)
+
 	assertKeyData(assert, keys[rootKeyID], "root", "")
 	assertKeyData(assert, keys[id], "targets", "localhost")
 	snapshotID := getSnapshotID(keys, rootKeyID, id)
