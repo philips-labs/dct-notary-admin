@@ -136,14 +136,14 @@ Now you can start the API server as following:
 ```bash
 # environment variable
 export VAULT_ADDR=http://localhost:8200
-bin/dctna --config .notary/config.json
+bin/dctna-server --config .notary/config.json
 ```
 
 Alternatively you provide the vault server address as parameter.
 
 ```bash
 # commandline option
-bin/dctna --vault-addr http://localhost:8200 --config .notary/config.json
+bin/dctna-server --vault-addr http://localhost:8200 --config .notary/config.json
 ```
 
 > **NOTE:** you can pass the sandbox `.notary/config.json` as above, without this setting the default notary folder will be used (`$USER/.natary/config.json`).
@@ -192,15 +192,12 @@ In the webinterface you can now add your delegation on the target `localhost:500
 
 Now to be able to sign an image all signing keys have to be available on your local system. In Notary v2 this will be improved to also be able to work with remote signing keys. You will only need the passphrase for your delegation key.
 
-> To get the signing keys locally a feature will be added to dctna to fetch and put the signing keys locally in correct folder structure.
-
-This will now allow us to sign docker images for `localhost:5000/nginx`. In below example we first pull an image from the public registry. Then tag it to push to our sandbox registry. Then we enable content trust and configure our sandbox notary endpoint. Upon pushing to the repository you will be prompted for the password of your signing key.
+This will now allow us to sign docker images for `localhost:5000/nginx`. In below example we first pull an image from the public registry. Then tag it to push to our sandbox registry. Then we enable content trust and configure our sandbox notary endpoint. Upon pushing to the repository you will be prompted for the password of your signing delegation key. Please note if you haven't added your delegation key in dctna, you will not be able to sign.
 
 ```bash
 docker pull nginx:alpine
 docker tag nginx:alpine localhost:5000/nginx:alpine
-export DOCKER_CONTENT_TRUST=1
-export DOCKER_CONTENT_TRUST_SERVER=https://localhost:4443
+export DOCKER_CONTENT_TRUST=1 DOCKER_CONTENT_TRUST_SERVER=https://localhost:4443
 docker push localhost:5000/nginx:alpine
 ```
 
