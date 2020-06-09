@@ -225,10 +225,9 @@ func (tr *Resource) addDelegation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	role := notary.DelegationPath(body.DelegationName)
 	err = tr.notary.AddDelegation(ctx, notary.AddDelegationCommand{
 		AutoPublish:    true,
-		Role:           role,
+		Role:           notary.DelegationPath(body.DelegationName),
 		DelegationKeys: []data.PublicKey{pubKey},
 		Paths:          []string{""},
 		TargetCommand:  notary.TargetCommand{GUN: data.GUN(target.GUN)},
