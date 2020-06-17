@@ -241,6 +241,7 @@ func (s *Service) ListDelegates(ctx context.Context, target *Key) (map[string][]
 	return delegates, err
 }
 
+// GetDelegation retrieves a single delegation
 func (s *Service) GetDelegation(ctx context.Context, target *Key, role data.RoleName, keyID string) (*Key, error) {
 	delegationRoles, err := s.getTargetDelegationRoles(ctx, target)
 	if err != nil {

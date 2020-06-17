@@ -13,6 +13,7 @@ import (
 	"github.com/theupdateframework/notary/tuf/data"
 )
 
+// GetPassphraseRetriever retrieves password from env or interactively on the cli
 func GetPassphraseRetriever() notary.PassRetriever {
 	baseRetriever := passphrase.PromptRetriever()
 	env := map[string]string{
