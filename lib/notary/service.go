@@ -123,13 +123,17 @@ func (s *Service) AddDelegation(ctx context.Context, cmd AddDelegationCommand) e
 	}
 	sanitizedGUN := cmd.SanitizedGUN()
 
-	fact := ConfigureRepo(s.config, s.retriever, false, readOnly)
+	fact := ConfigureRepo(s.config, s.retriever, false, readWrite)
 	nRepo, err := fact(sanitizedGUN)
 	if err != nil {
 		return err
 	}
 
 	err = nRepo.AddDelegation(cmd.Role, cmd.DelegationKeys, cmd.Paths)
+	if err != nil {
+		return fmt.Errorf("failed to create delegation: %w", err)
+	}
+	err = nRepo.AddDelegation(DelegationPath("releases"), cmd.DelegationKeys, cmd.Paths)
 	if err != nil {
 		return fmt.Errorf("failed to create delegation: %w", err)
 	}
@@ -143,7 +147,7 @@ func (s *Service) RemoveDelegation(ctx context.Context, cmd RemoveDelegationComm
 		return err
 	}
 	sanitizedGUN := cmd.SanitizedGUN()
-	fact := ConfigureRepo(s.config, s.retriever, false, readOnly)
+	fact := ConfigureRepo(s.config, s.retriever, false, readWrite)
 	nRepo, err := fact(sanitizedGUN)
 	if err != nil {
 		return err
