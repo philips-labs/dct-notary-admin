@@ -14,24 +14,27 @@ CTIMEVAR=-X main.commit=$(GITCOMMIT) -X main.version=$(VERSION) -X main.date=$(s
 GO_LDFLAGS=-ldflags "-w $(CTIMEVAR)"
 GO_LDFLAGS_STATIC=-ldflags "-w $(CTIMEVAR) -extldflags -static"
 
+help:
+		@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
+
 .PHONY: all
-all: build test
+all: build test ## Build and test
 
 .PHONY: run
-run: build
+run: build ## Run dctna server
 	@bin/dctna --config .notary/config.json
 
 .PHONY: build-sandbox
-build-sandbox:
+build-sandbox: ## build Docker images for notary sandbox
 	@(cd $(NOTARY_REPO) ; make cross ; docker-compose -f docker-compose.sandbox.yml build)
 	@docker-compose build
 
 .PHONY: clean-dangling-images
-clean-dangling-images:
+clean-dangling-images: ## Clean dangling Docker images
 	@docker rmi $$(docker images -qf dangling=true)
 
 .PHONY: run-sandbox
-run-sandbox:
+run-sandbox: ## Run notary sandbox in Docker
 	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml up -d
 	@echo
 	@echo Too get logs:
@@ -41,7 +44,7 @@ run-sandbox:
 	@echo "  docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml exec sandbox sh"
 
 .PHONY: check-sandbox
-check-sandbox:
+check-sandbox: ## Check if the notary sandbox is up and running
 	@while [[ "$$(curl --insecure -sLSo /dev/null -w ''%{http_code}'' $(SANDBOX_HEALTH))" != "200" ]]; \
 	do echo "Waiting for $(SANDBOX_HEALTH)" && sleep 1; \
 	done
@@ -49,65 +52,65 @@ check-sandbox:
 	@curl -X GET -IL --insecure ${SANDBOX_HEALTH}
 
 .PHONY: bootstrap-sandbox
-bootstrap-sandbox:
+bootstrap-sandbox: ## Bootstrap the notary sandbox with some certificates for content trust
 	@docker cp bootstrap-sandbox.sh notary_sandbox_1:/root/
 	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml exec sandbox ./bootstrap-sandbox.sh
 
 .PHONY: sandbox-logs
-sandbox-logs:
+sandbox-logs: ## Tail the Docker logs
 	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml logs -f
 
 .PHONY: sandbox-logs
-stop-sandbox:
+stop-sandbox: ## Stop the vault notary sandbox environment
 	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml down
 
 .PHONY: reset-sandbox
-reset-sandbox:
+reset-sandbox: ## Reset the Notary sandbox
 	@echo Shutting down sandbox
 	@docker-compose -f $(SANDBOX_COMPOSE) down &> /dev/null
 	@echo Cleaning volumes
 	@docker volume rm $$(docker-compose -f $(SANDBOX_COMPOSE) config --volumes | sed 's/^/notary_/g') 2> /dev/null || true
 
 .PHONY: download
-download:
+download: ## Download go dependencies
 	@echo Downloading dependencies
 	@go mod download
 
 .PHONY: test
-test: reset-sandbox
+test: reset-sandbox ## Run the tests
 	@echo Testing
 	@docker-compose -f $(SANDBOX_COMPOSE) up -d
 	@make check-sandbox
 	@go test -race -v -count=1 ./...
 
 .PHONY: coverage
-coverage: reset-sandbox
+coverage: reset-sandbox ## Run the tests with coverage
 	@echo Testing with code coverage
 	@docker-compose -f $(SANDBOX_COMPOSE) up -d
 	@make check-sandbox
 	@go test -race -v -count=1 -covermode=atomic -coverprofile=coverage.out ./...
 
 .PHONY: coverage-out
-coverage-out: coverage
+coverage-out: coverage ## Output code coverage at the CLI
 	@echo Coverage details
 	@go tool cover -func=coverage.out
 
 .PHONY: coverage-htlm
-coverage-html: coverage
+coverage-html: coverage ## Output code coverage as HTML
 	@go tool cover -html=coverage.out
 
 .PHONY: build
-build: download
+build: download ## Build the binary
 	@echo Building binary
 	@go build -a ${GO_LDFLAGS} -o bin/dctna .
 
-build-static: download
+build-static: download ## Build the static binary
 	@echo Building binary
 	@go build -a -installsuffix cgo ${GO_LDFLAGS_STATIC} -o bin/static/dctna .
 
 .PHONY: certs
-certs:
-	@echo Create SSL certificates
+certs: ## Creates selfsigned TLS certificates
+	@echo Create TLS certificates
 	@mkdir -p certs
 	@openssl req \
        -newkey rsa:2048 -nodes -keyout certs/server.key \
