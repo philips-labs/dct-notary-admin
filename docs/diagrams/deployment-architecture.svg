@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="799px" preserveAspectRatio="none" style="width:669px;height:799px;" version="1.1" viewBox="0 0 669 799" width="669px" zoomAndPan="magnify"><defs><filter height="300%" id="fzk9zyjpa6o89" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><text fill="#888888" font-family="sans-serif" font-size="10" lengthAdjust="spacingAndGlyphs" textLength="115" x="268.25" y="9.668">Author: Marco Franssen</text><text fill="#000000" font-family="sans-serif" font-size="18" lengthAdjust="spacingAndGlyphs" textLength="282" x="184.75" y="29.1797">DCTNA Deployment Architecture</text><!--MD5=[97ab183161fd5d1db7fba7485cf76add]
+entity Admin--><ellipse cx="176.5" cy="46.9766" fill="#D3D3D3" filter="url(#fzk9zyjpa6o89)" rx="8" ry="8" style="stroke: #000000; stroke-width: 1.5;"/><path d="M176.5,54.9766 L176.5,81.9766 M163.5,62.9766 L189.5,62.9766 M176.5,81.9766 L163.5,96.9766 M176.5,81.9766 L189.5,96.9766 " fill="none" filter="url(#fzk9zyjpa6o89)" style="stroke: #000000; stroke-width: 1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="137" x="108" y="116.0117">Docker Trust Admin</text><!--MD5=[0f21ac238e421892d29d061233fc52b1]
+entity CiJob--><ellipse cx="629.5" cy="349.9766" fill="#D3D3D3" filter="url(#fzk9zyjpa6o89)" rx="8" ry="8" style="stroke: #000000; stroke-width: 1.5;"/><path d="M629.5,357.9766 L629.5,384.9766 M616.5,365.9766 L642.5,365.9766 M629.5,384.9766 L616.5,399.9766 M629.5,384.9766 L642.5,399.9766 " fill="none" filter="url(#fzk9zyjpa6o89)" style="stroke: #000000; stroke-width: 1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="40" x="609.5" y="419.0117">CI Job</text><!--MD5=[e876e1ec5b38dbf02c3a8dd3902b8618]
+entity ServerDB--><path d="M175.5,734.4766 C175.5,724.4766 219.5,724.4766 219.5,724.4766 C219.5,724.4766 263.5,724.4766 263.5,734.4766 L263.5,759.9648 C263.5,769.9648 219.5,769.9648 219.5,769.9648 C219.5,769.9648 175.5,769.9648 175.5,759.9648 L175.5,734.4766 " fill="#D3D3D3" filter="url(#fzk9zyjpa6o89)" style="stroke: #000000; stroke-width: 1.5;"/><path d="M175.5,734.4766 C175.5,744.4766 219.5,744.4766 219.5,744.4766 C219.5,744.4766 263.5,744.4766 263.5,734.4766 " fill="none" style="stroke: #000000; stroke-width: 1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="68" x="185.5" y="762.0117">server-db</text><!--MD5=[e834ab3daed066426c91d2e7962575e2]
+entity SignerDB--><path d="M25,734.4766 C25,724.4766 69.5,724.4766 69.5,724.4766 C69.5,724.4766 114,724.4766 114,734.4766 L114,759.9648 C114,769.9648 69.5,769.9648 69.5,769.9648 C69.5,769.9648 25,769.9648 25,759.9648 L25,734.4766 " fill="#D3D3D3" filter="url(#fzk9zyjpa6o89)" style="stroke: #000000; stroke-width: 1.5;"/><path d="M25,734.4766 C25,744.4766 69.5,744.4766 69.5,744.4766 C69.5,744.4766 114,744.4766 114,734.4766 " fill="none" style="stroke: #000000; stroke-width: 1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="69" x="35" y="762.0117">signer-db</text><!--MD5=[3cdee3fb10447e3063109a1e3adeaed8]
+entity dctna-web--><rect fill="#ADD8E6" filter="url(#fzk9zyjpa6o89)" height="52.9766" style="stroke: #0000FF; stroke-width: 1.5;" width="94" x="129.5" y="210.4766"/><rect fill="#ADD8E6" height="5" style="stroke: #0000FF; stroke-width: 1.5;" width="10" x="124.5" y="215.4766"/><rect fill="#ADD8E6" height="5" style="stroke: #0000FF; stroke-width: 1.5;" width="10" x="124.5" y="253.4531"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="52" x="150.5" y="234.0117">«dctna»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="74" x="139.5" y="250.5">dctna-web</text><!--MD5=[59db4e4ddd1771cab1e8e0bbbfa3dfbc]
+entity dctna--><rect fill="#ADD8E6" filter="url(#fzk9zyjpa6o89)" height="52.9766" style="stroke: #0000FF; stroke-width: 1.5;" width="72" x="415.5" y="354.4766"/><rect fill="#ADD8E6" height="5" style="stroke: #0000FF; stroke-width: 1.5;" width="10" x="410.5" y="359.4766"/><rect fill="#ADD8E6" height="5" style="stroke: #0000FF; stroke-width: 1.5;" width="10" x="410.5" y="397.4531"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="52" x="425.5" y="378.0117">«dctna»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="38" x="432.5" y="394.5">dctna</text><!--MD5=[85755fb388a4e1207ad8110119be07b8]
+entity dctna-server--><rect fill="#ADD8E6" filter="url(#fzk9zyjpa6o89)" height="52.9766" style="stroke: #0000FF; stroke-width: 1.5;" width="108" x="122.5" y="354.4766"/><rect fill="#ADD8E6" height="5" style="stroke: #0000FF; stroke-width: 1.5;" width="10" x="117.5" y="359.4766"/><rect fill="#ADD8E6" height="5" style="stroke: #0000FF; stroke-width: 1.5;" width="10" x="117.5" y="397.4531"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="52" x="150.5" y="378.0117">«dctna»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="88" x="132.5" y="394.5">dctna-server</text><!--MD5=[ac3b039df1697e8bc347be5b6e583776]
+entity notary-signer--><rect fill="#90EE90" filter="url(#fzk9zyjpa6o89)" height="52.9766" style="stroke: #008000; stroke-width: 1.5;" width="115" x="12" y="610.4766"/><rect fill="#90EE90" height="5" style="stroke: #008000; stroke-width: 1.5;" width="10" x="7" y="615.4766"/><rect fill="#90EE90" height="5" style="stroke: #008000; stroke-width: 1.5;" width="10" x="7" y="653.4531"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="58" x="40.5" y="634.0117">«notary»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="95" x="22" y="650.5">notary-signer</text><!--MD5=[44b8e4f1839a5091b2c2b407dd3e2522]
+entity notary-server--><rect fill="#90EE90" filter="url(#fzk9zyjpa6o89)" height="52.9766" style="stroke: #008000; stroke-width: 1.5;" width="114" x="162.5" y="610.4766"/><rect fill="#90EE90" height="5" style="stroke: #008000; stroke-width: 1.5;" width="10" x="157.5" y="615.4766"/><rect fill="#90EE90" height="5" style="stroke: #008000; stroke-width: 1.5;" width="10" x="157.5" y="653.4531"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="58" x="190.5" y="634.0117">«notary»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="94" x="172.5" y="650.5">notary-server</text><!--MD5=[73351eec1af30f4ba42b75789db7d31a]
+entity docker-cli--><rect fill="#D3D3D3" filter="url(#fzk9zyjpa6o89)" height="36.4883" style="stroke: #000000; stroke-width: 1.5;" width="90" x="373.5" y="513.4766"/><rect fill="#D3D3D3" height="5" style="stroke: #000000; stroke-width: 1.5;" width="10" x="368.5" y="518.4766"/><rect fill="#D3D3D3" height="5" style="stroke: #000000; stroke-width: 1.5;" width="10" x="368.5" y="539.9648"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="70" x="383.5" y="537.0117">docker-cli</text><!--MD5=[3c011c0981936cb6ea6d7f5e08cba4bb]
+entity docker-registry--><rect fill="#D3D3D3" filter="url(#fzk9zyjpa6o89)" height="36.4883" style="stroke: #000000; stroke-width: 1.5;" width="127" x="355" y="618.9766"/><rect fill="#D3D3D3" height="5" style="stroke: #000000; stroke-width: 1.5;" width="10" x="350" y="623.9766"/><rect fill="#D3D3D3" height="5" style="stroke: #000000; stroke-width: 1.5;" width="10" x="350" y="645.4648"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="107" x="365" y="642.5117">docker-registry</text><!--MD5=[238af37904abd2debf67da0af9788ab4]
+entity vault--><rect fill="#D3D3D3" filter="url(#fzk9zyjpa6o89)" height="36.4883" style="stroke: #000000; stroke-width: 1.5;" width="53" x="230" y="513.4766"/><rect fill="#D3D3D3" height="5" style="stroke: #000000; stroke-width: 1.5;" width="10" x="225" y="518.4766"/><rect fill="#D3D3D3" height="5" style="stroke: #000000; stroke-width: 1.5;" width="10" x="225" y="539.9648"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="33" x="240" y="537.0117">vault</text><!--MD5=[933c15b7da79d383a146e0dca159e195]
+reverse link dctna to CiJob--><path d="M492.78,380.9766 C529.22,380.9766 580.82,380.9766 609.06,380.9766 " fill="none" id="dctna&lt;-CiJob" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="487.52,380.9766,496.52,384.9766,492.52,380.9766,496.52,376.9766,487.52,380.9766" style="stroke: #000000; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="67" x="515" y="359.5449">fetch certs</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="85" x="506" y="374.8555">and metadata</text><!--MD5=[17e7245a5051f99ff7ea3b6826af8454]
+link CiJob to docker-cli--><path d="M609.27,396.2166 C571.57,422.7466 490.5,479.8066 447.18,510.2966 " fill="none" id="CiJob-&gt;docker-cli" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="442.85,513.3366,452.5121,511.4275,446.9388,510.4587,447.9076,504.8855,442.85,513.3366" style="stroke: #000000; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="116" x="536" y="465.0449">sign docker image</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="127" x="530.5" y="480.3555">and push to registry</text><!--MD5=[d8109539f0ba5c12f8bddbbf103e76ce]
+link docker-cli to docker-registry--><path d="M418.5,549.5666 C418.5,567.0966 418.5,594.4466 418.5,613.6666 " fill="none" id="docker-cli-&gt;docker-registry" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="418.5,618.8566,422.5,609.8566,418.5,613.8566,414.5,609.8566,418.5,618.8566" style="stroke: #000000; stroke-width: 1.0;"/><!--MD5=[70dcf7e5074f2b523156c34f944fb7f2]
+link docker-cli to notary-server--><path d="M385.64,549.5666 C355.21,565.3966 309.4,589.2166 273.58,607.8466 " fill="none" id="docker-cli-&gt;notary-server" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="268.82,610.3266,278.6507,609.7282,273.2573,608.0221,274.9635,602.6286,268.82,610.3266" style="stroke: #000000; stroke-width: 1.0;"/><!--MD5=[67fd223a63b780f336e492803847f903]
+reverse link dctna-server to dctna--><path d="M235.7,380.9766 C290.24,380.9766 369.42,380.9766 415.16,380.9766 " fill="none" id="dctna-server&lt;-dctna" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="230.5,380.9766,239.5,384.9766,235.5,380.9766,239.5,376.9766,230.5,380.9766" style="stroke: #000000; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="136" x="255" y="359.5449">fetches TUF metadata</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="148" x="249" y="374.8555">and signing certificates</text><!--MD5=[ad0c602faea5d20831f910a5a1a504b4]
+link Admin to dctna-web--><path d="M176.5,118.5966 C176.5,145.3966 176.5,180.2766 176.5,205.0366 " fill="none" id="Admin-&gt;dctna-web" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="176.5,210.1566,180.5,201.1566,176.5,205.1566,172.5,201.1566,176.5,210.1566" style="stroke: #000000; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="193" x="177.5" y="162.0449">administer docker repositories</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="100" x="224" y="177.3555">and delegations</text><!--MD5=[eac716ce7f6ba0a1c0fefd71350f554a]
+link dctna-web to dctna-server--><path d="M176.5,263.6966 C176.5,287.7166 176.5,323.6166 176.5,349.1666 " fill="none" id="dctna-web-&gt;dctna-server" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="176.5,354.4566,180.5,345.4566,176.5,349.4566,172.5,345.4566,176.5,354.4566" style="stroke: #000000; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="47" x="177.5" y="307.0449">rest api</text><!--MD5=[ba66d9aa50fea81c92df6fb24e025a61]
+link dctna-server to vault--><path d="M190.25,407.5066 C205.62,436.0366 230.26,481.7666 244.76,508.6866 " fill="none" id="dctna-server-&gt;vault" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="247.17,513.1566,246.4212,503.3362,244.7978,508.7551,239.3789,507.1317,247.17,513.1566" style="stroke: #000000; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="176" x="232.5" y="472.5449">stores passphrases for keys</text><!--MD5=[04d5f20d3ebb6bde72f1e7d757492898]
+link dctna-server to notary-server--><path d="M180.86,407.7266 C188.83,454.7966 205.71,554.5066 214.28,605.1166 " fill="none" id="dctna-server-&gt;notary-server" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="215.13,610.1566,217.5825,600.618,214.3011,605.2258,209.6933,601.9443,215.13,610.1566" style="stroke: #000000; stroke-width: 1.0;"/><!--MD5=[0578db5896fcefddbad1653d4718d47e]
+reverse link notary-signer to notary-server--><path d="M132.41,636.9766 C142.33,636.9766 152.26,636.9766 162.18,636.9766 " fill="none" id="notary-signer&lt;-notary-server" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="127.21,636.9766,136.21,640.9766,132.21,636.9766,136.21,632.9766,127.21,636.9766" style="stroke: #000000; stroke-width: 1.0;"/><!--MD5=[258ebf9151d0d8d27764e7d14467f592]
+link notary-server to ServerDB--><path d="M219.5,663.5666 C219.5,680.3066 219.5,702.1266 219.5,719.1066 " fill="none" id="notary-server-&gt;ServerDB" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="219.5,724.2066,223.5,715.2066,219.5,719.2066,215.5,715.2066,219.5,724.2066" style="stroke: #000000; stroke-width: 1.0;"/><!--MD5=[00fdb7c8c1c23c77c6e544d553fd7cbc]
+link notary-signer to SignerDB--><path d="M69.5,663.5666 C69.5,680.3066 69.5,702.1266 69.5,719.1066 " fill="none" id="notary-signer-&gt;SignerDB" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#000000" points="69.5,724.2066,73.5,715.2066,69.5,719.2066,65.5,715.2066,69.5,724.2066" style="stroke: #000000; stroke-width: 1.0;"/><text fill="#888888" font-family="sans-serif" font-size="10" lengthAdjust="spacingAndGlyphs" textLength="115" x="268.25" y="785.6328">Author: Marco Franssen</text><!--MD5=[f8f36fc7f8325c4b4897397eed089436]
+@startuml
+
+!$authors = "Marco Franssen"
+
+title DCTNA Deployment Architecture
+center header Author: $authors
+center footer Author: $authors
+
+skinparam sequence {
+	ArrowColor black
+	ActorBorderColor DeepSkyBlue
+	LifeLineBorderColor black
+	LifeLineBackgroundColor grey
+}
+
+skinparam component<<dctna>> {
+  BackgroundColor lightblue
+  BorderColor blue
+}
+
+skinparam component<<notary>> {
+  BackgroundColor lightgreen
+  BorderColor green
+}
+
+skinparam actor {
+  BackgroundColor lightgrey
+  BorderColor black
+}
+
+skinparam database {
+  BackgroundColor lightgrey
+  BorderColor black
+}
+
+skinparam component {
+  BackgroundColor lightgrey
+  BorderColor black
+}
+
+actor "Docker Trust Admin" as Admin
+actor "CI Job" as CiJob
+
+database ServerDB [
+    server-db
+]
+database SignerDB [
+    signer-db
+]
+
+[dctna-web] <<dctna>>
+[dctna] <<dctna>>
+[dctna-server] <<dctna>>
+[notary-signer] <<notary>>
+[notary-server] <<notary>>
+
+CiJob .left.> [dctna] : fetch certs\nand metadata
+CiJob ..> [docker-cli] : sign docker image\nand push to registry
+[docker-cli] ..> [docker-registry]
+[docker-cli] ..> [notary-server]
+[dctna] .left.> [dctna-server] : fetches TUF metadata\nand signing certificates
+Admin ..> [dctna-web] : administer docker repositories\nand delegations
+[dctna-web] ..> [dctna-server] : rest api
+[dctna-server] ..> [vault] : stores passphrases for keys
+[dctna-server] ..> [notary-server]
+
+[notary-server] .left.> [notary-signer]
+[notary-server] ..> [ServerDB]
+[notary-signer] ..> [SignerDB]
+
+@enduml
+
+@startuml
+
+
+title DCTNA Deployment Architecture
+center header Author: Marco Franssen
+center footer Author: Marco Franssen
+
+skinparam sequence {
+	ArrowColor black
+	ActorBorderColor DeepSkyBlue
+	LifeLineBorderColor black
+	LifeLineBackgroundColor grey
+}
+
+skinparam component<<dctna>> {
+  BackgroundColor lightblue
+  BorderColor blue
+}
+
+skinparam component<<notary>> {
+  BackgroundColor lightgreen
+  BorderColor green
+}
+
+skinparam actor {
+  BackgroundColor lightgrey
+  BorderColor black
+}
+
+skinparam database {
+  BackgroundColor lightgrey
+  BorderColor black
+}
+
+skinparam component {
+  BackgroundColor lightgrey
+  BorderColor black
+}
+
+actor "Docker Trust Admin" as Admin
+actor "CI Job" as CiJob
+
+database ServerDB [
+    server-db
+]
+database SignerDB [
+    signer-db
+]
+
+[dctna-web] <<dctna>>
+[dctna] <<dctna>>
+[dctna-server] <<dctna>>
+[notary-signer] <<notary>>
+[notary-server] <<notary>>
+
+CiJob .left.> [dctna] : fetch certs\nand metadata
+CiJob ..> [docker-cli] : sign docker image\nand push to registry
+[docker-cli] ..> [docker-registry]
+[docker-cli] ..> [notary-server]
+[dctna] .left.> [dctna-server] : fetches TUF metadata\nand signing certificates
+Admin ..> [dctna-web] : administer docker repositories\nand delegations
+[dctna-web] ..> [dctna-server] : rest api
+[dctna-server] ..> [vault] : stores passphrases for keys
+[dctna-server] ..> [notary-server]
+
+[notary-server] .left.> [notary-signer]
+[notary-server] ..> [ServerDB]
+[notary-signer] ..> [SignerDB]
+
+@enduml
+
+PlantUML version 1.2020.13(Sat Jun 13 14:26:38 CEST 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: NL
+--></g></svg>
