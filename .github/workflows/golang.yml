@@ -15,10 +15,10 @@ jobs:
       fail-fast: true
 
     steps:
-      - name: Set up Go ${{ matrix.node-version }}
+      - name: Set up Go ${{ matrix.go-version }}
         uses: actions/setup-go@v1
         with:
-          go-version: ${{ matrix.node-version }}
+          go-version: ${{ matrix.go-version }}
 
       - uses: volcano-coffee-company/setup-vault@v1
         with:
