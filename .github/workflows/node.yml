@@ -49,7 +49,7 @@ jobs:
         run: yarn test --coverage
 
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v1.0.7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./web/coverage/clover.xml
