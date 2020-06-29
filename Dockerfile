@@ -25,7 +25,7 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o dctna ./cmd
 
-# Collect certificates and api
+# Collect certificates and binary
 FROM alpine
 EXPOSE 8086 8443
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
