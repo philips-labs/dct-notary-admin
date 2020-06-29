@@ -6,7 +6,7 @@ services:
     ports:
       - "5000:80"
     environment:
-      DCT_API: https://dctna-server:8443
+      DCTNA_API: https://dctna-server:8443
     depends_on:
       - dctna-server
     networks:

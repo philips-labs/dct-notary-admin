@@ -23,7 +23,7 @@ server {
     }
 
     location /api {
-        proxy_pass ${DCT_API};
+        proxy_pass ${DCTNA_API};
     }
 
     #error_page  404              /404.html;
