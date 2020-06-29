@@ -127,20 +127,25 @@ certs: ## Creates selfsigned TLS certificates
 	openssl x509 -text -noout -in certs/server.crt
 
 clean-diagrams: ## Cleans plantuml.jar and generated diagrams
-		@rm -f plantuml.jar $(DIAGRAMS_PNG) $(DIAGRAMS_SVG)
+	@rm -f plantuml.jar $(DIAGRAMS_PNG) $(DIAGRAMS_SVG)
 
 diagrams: svg-diagrams png-diagrams ## Generate diagrams in SVG and PNG format
 svg-diagrams: plantuml.jar $(DIAGRAMS_SVG) ## Generate diagrams in SVG format
 png-diagrams: plantuml.jar $(DIAGRAMS_PNG) ## Generate diagrams in PNG format
 
 plantuml.jar:
-		@echo Downloading $@....
-		@curl -sSfL $(PLANTUML_JAR_URL) -o $@
+	@echo Downloading $@....
+	@curl -sSfL $(PLANTUML_JAR_URL) -o $@
 
 docs/diagrams/%.svg: docs/diagrams/%.plantuml
-		@echo Generating $@ from plantuml....
-		@java -jar plantuml.jar -tsvg $^
+	@echo Generating $@ from plantuml....
+	@java -jar plantuml.jar -tsvg $^
 
 docs/diagrams/%.png: docs/diagrams/%.plantuml
-		@echo Generating $@ from plantuml....
-		@java -jar plantuml.jar -tpng $^
+	@echo Generating $@ from plantuml....
+	@java -jar plantuml.jar -tpng $^
+
+dockerize: ## builds docker images
+	docker build -t dctna-web web
+	docker build -t dctna-server .
+	docker rmi $$(docker images -qf dangling=true)
