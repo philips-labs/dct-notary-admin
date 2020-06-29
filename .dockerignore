@@ -7,3 +7,4 @@ Makefile
 Dockerfile
 docker-compose.yml
 *.out
+vault/
