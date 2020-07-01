@@ -145,7 +145,12 @@ docs/diagrams/%.png: docs/diagrams/%.plantuml
 	@echo Generating $@ from plantuml....
 	@java -jar plantuml.jar -tpng $^
 
+.PHONY: dockerize
 dockerize: ## builds docker images
 	docker build -t dctna-web web
 	docker build -t dctna-server .
 	docker rmi $$(docker images -qf dangling=true)
+
+.PHONY: outdated
+outdated: ## Checks for outdated dependencies
+	go list -u -m -json all | go-mod-outdated -update
