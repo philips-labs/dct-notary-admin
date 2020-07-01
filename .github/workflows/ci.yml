@@ -149,6 +149,7 @@ jobs:
     name: Release artifacts
     needs: [golang, nodejs]
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') || contains(github.ref, 'master')
     steps:
       - name: Check out code
         uses: actions/checkout@v2
