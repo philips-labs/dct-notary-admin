@@ -137,5 +137,29 @@ dockerize: ## builds docker images
 	docker build --pull --force-rm -f server.Dockerfile -t dctna-server .
 	docker build --pull --force-rm -t dctna .
 
+docker-publish-hsdp: ## publishes the image to the hsdp registry
+ifndef HSDP_DOCKER_REGISTRY_USER
+	$(error HSDP_DOCKER_REGISTRY_USER is undefined)
+endif
+ifndef HSDP_DOCKER_REGISTRY_PASSWD
+	$(error HSDP_DOCKER_REGISTRY_PASSWD is undefined)
+endif
+ifndef HSDP_DOCKER_REGISTRY
+	$(error HSDP_DOCKER_REGISTRY is undefined)
+endif
+ifndef HSDP_DOCKER_REGISTRY_NS
+	$(error HSDP_DOCKER_REGISTRY_NS is undefined)
+endif
+	docker tag dctna-web:latest $(HSDP_DOCKER_REGISTRY)/$(HSDP_DOCKER_REGISTRY_NS)/dctna-web:latest
+	docker tag dctna-server:latest $(HSDP_DOCKER_REGISTRY)/$(HSDP_DOCKER_REGISTRY_NS)/dctna-server:latest
+	docker tag dctna:latest $(HSDP_DOCKER_REGISTRY)/$(HSDP_DOCKER_REGISTRY_NS)/dctna:latest
+	@echo $(HSDP_DOCKER_REGISTRY_PASSWD) > .pass
+	cat .pass | docker login $(HSDP_DOCKER_REGISTRY) -u $(HSDP_DOCKER_REGISTRY_USER) --password-stdin
+	@rm .pass
+	docker push $(HSDP_DOCKER_REGISTRY)/$(HSDP_DOCKER_REGISTRY_NS)/dctna-web:latest
+	docker push $(HSDP_DOCKER_REGISTRY)/$(HSDP_DOCKER_REGISTRY_NS)/dctna-server:latest
+	docker push $(HSDP_DOCKER_REGISTRY)/$(HSDP_DOCKER_REGISTRY_NS)/dctna:latest
+	docker logout $(HSDP_DOCKER_REGISTRY)
+
 outdated: ## Checks for outdated dependencies
 	go list -u -m -json all | go-mod-outdated -update
