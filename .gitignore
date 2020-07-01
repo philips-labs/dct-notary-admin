@@ -21,3 +21,4 @@ bin/
 vault/volumes/
 
 plantuml.jar
+.env
