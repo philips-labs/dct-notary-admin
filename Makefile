@@ -133,9 +133,9 @@ docs/diagrams/%.png: docs/diagrams/%.plantuml
 	@java -jar plantuml.jar -tpng $^
 
 dockerize: ## builds docker images
-	docker build -t dctna-web web
-	docker build -t dctna-server .
-	docker rmi $$(docker images -qf dangling=true)
+	docker build --pull --force-rm -t dctna-web web
+	docker build --pull --force-rm -f server.Dockerfile -t dctna-server .
+	docker build --pull --force-rm -t dctna .
 
 outdated: ## Checks for outdated dependencies
 	go list -u -m -json all | go-mod-outdated -update

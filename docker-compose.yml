@@ -13,7 +13,9 @@ services:
       - sig
   dctna-server:
     image: dctna-server
-    build: .
+    build:
+      context: .
+      dockerfile: server.Dockerfile
     networks:
       - sig
     ports:
