@@ -96,7 +96,7 @@ func (s *Service) CreateRepository(ctx context.Context, cmd CreateRepoCommand) e
 		rootKeyIDs = []string{}
 	}
 
-	if err = nRepo.InitializeWithCertificate(rootKeyIDs, rootCerts); err != nil {
+	if err = nRepo.InitializeWithCertificate(rootKeyIDs, rootCerts, data.CanonicalSnapshotRole); err != nil {
 		return err
 	}
 
