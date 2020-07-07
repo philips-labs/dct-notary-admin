@@ -4,6 +4,8 @@ NOTARY_REPO ?= $(CURDIR)/notary
 SANDBOX_COMPOSE ?= $(NOTARY_REPO)/docker-compose.sandbox.yml
 SANDBOX_HEALTH ?= https://localhost:4443/_notary_server/health
 
+VAULT_COMPOSE ?= $(CURDIR)/vault/docker-compose.dev.yml
+
 VERSION := 0.0.0-dev
 GITCOMMIT := $(shell git rev-parse --short HEAD)
 GITUNTRACKEDCHANGES := $(shell git status --porcelain --untracked-files=no)
@@ -36,13 +38,19 @@ clean-dangling-images: ## Clean dangling Docker images
 	@docker rmi $$(docker images -qf dangling=true)
 
 run-sandbox: ## Run notary sandbox in Docker
-	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml up -d
+	@docker-compose -f $(SANDBOX_COMPOSE) up -d
 	@echo
 	@echo Too get logs:
 	@echo "  make sandbox-logs"
 	@echo
 	@echo Too enter the sandbox:
-	@echo "  docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml exec sandbox sh"
+	@echo "  docker-compose -f $(SANDBOX_COMPOSE) exec sandbox sh"
+
+run-vault: ## Run hashicorp vault
+	@vault/prepare.sh dev
+
+run-dctna: run-sandbox run-vault ## Run dctna server including dependencies
+	@docker-compose up -d
 
 check-sandbox: ## Check if the notary sandbox is up and running
 	@while [[ "$$(curl --insecure -sLSo /dev/null -w ''%{http_code}'' $(SANDBOX_HEALTH))" != "200" ]]; \
@@ -53,19 +61,29 @@ check-sandbox: ## Check if the notary sandbox is up and running
 
 bootstrap-sandbox: ## Bootstrap the notary sandbox with some certificates for content trust
 	@docker cp bootstrap-sandbox.sh notary_sandbox_1:/root/
-	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml exec sandbox ./bootstrap-sandbox.sh
+	@docker-compose -f $(SANDBOX_COMPOSE) exec sandbox ./bootstrap-sandbox.sh
 
-sandbox-logs: ## Tail the Docker logs
-	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml logs -f
+sandbox-logs: ## Tail the sandbox Docker logs
+	@docker-compose -f $(SANDBOX_COMPOSE) logs -f
 
-stop-sandbox: ## Stop the vault notary sandbox environment
-	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml down
-
-reset-sandbox: ## Reset the Notary sandbox
+stop-sandbox: ## Stop the notary sandbox environment
 	@echo Shutting down sandbox
-	@docker-compose -f $(SANDBOX_COMPOSE) down &> /dev/null
+	@docker-compose -f $(SANDBOX_COMPOSE) down
+
+stop-vault: ## Stop hashicorp vault
+	@echo Shutting down vault
+	@docker-compose -f $(VAULT_COMPOSE) down
+
+stop-dctna: ## Stop hashicorp vault
+	@echo Shutting down dctna
+	@docker-compose down
+
+stop-all: stop-dctna stop-vault stop-sandbox ## Stop all docker containers
+
+reset-sandbox: stop-sandbox ## Reset the Notary sandbox
 	@echo Cleaning volumes
 	@docker volume rm $$(docker-compose -f $(SANDBOX_COMPOSE) config --volumes | sed 's/^/notary_/g') 2> /dev/null || true
+	@docker volume rm $$(docker-compose config --volumes | sed 's/^/dct-notary-admin_/g') 2> /dev/null || true
 
 download: ## Download go dependencies
 	@echo Downloading dependencies
