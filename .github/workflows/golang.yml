@@ -53,7 +53,7 @@ jobs:
           [ -n "$result" ] && exit 1 || exit 0
 
       - name: Build
-        run: go build -v .
+        run: make build
 
       - name: Build sandbox
         run: |
