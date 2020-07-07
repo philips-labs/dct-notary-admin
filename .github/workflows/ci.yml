@@ -1,12 +1,11 @@
-name: Go CI
+name: Continuous Integration
 
 on: [push]
 
 jobs:
-  build:
+  golang:
+    name: Go CI
     runs-on: ubuntu-latest
-
-    name: CI  Backend
 
     strategy:
       matrix:
@@ -87,3 +86,86 @@ jobs:
 
       - name: Shutdown sandbox
         run: docker-compose -f notary/docker-compose.sandbox.yml down
+
+  nodejs:
+    name: NodeJS CI
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 12.x]
+
+      fail-fast: true
+
+    env:
+      CI: true
+
+    steps:
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2.1.0
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install Dependencies
+        working-directory: web
+        run: yarn
+
+      - name: Build local packages
+        working-directory: web
+        run: yarn build
+
+      - name: Test and coverage
+        working-directory: web
+        run: yarn test --coverage
+
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v1.0.7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./web/coverage/clover.xml
+          flags: unittests
+          name: codecov-umbrella
+          yml: ./codecov.yml
+          fail_ci_if_error: true
+
+  release:
+    name: Release artifacts
+    needs: [golang, nodejs]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') || contains(github.ref, 'master')
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        run: |
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Build Docker images
+        run: make dockerize
+
+      - name: Publish Docker images
+        env:
+          HSDP_DOCKER_REGISTRY: ${{ secrets.HSDP_DOCKER_REGISTRY }}
+          HSDP_DOCKER_REGISTRY_NS: ${{ secrets.HSDP_DOCKER_REGISTRY_NS }}
+          HSDP_DOCKER_REGISTRY_USER: ${{ secrets.HSDP_DOCKER_REGISTRY_USER }}
+          HSDP_DOCKER_REGISTRY_PASSWD: ${{ secrets.HSDP_DOCKER_REGISTRY_PASSWD }}
+        run: make docker-publish-hsdp
