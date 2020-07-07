@@ -21,6 +21,8 @@ services:
     ports:
       - "8086:8086"
       - "8443:8443"
+    environment:
+      VAULT_ADDR: http://host.docker.internal:8200
     volumes:
       - dct_data:/root/.docker/trust
 

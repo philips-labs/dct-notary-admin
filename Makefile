@@ -36,6 +36,7 @@ clean-dangling-images: ## Clean dangling Docker images
 	@docker rmi $$(docker images -qf dangling=true)
 
 run-sandbox: ## Run notary sandbox in Docker
+	@vault/prepare.sh dev
 	@docker-compose -f docker-compose.yml -f $(SANDBOX_COMPOSE) up -d
 	@echo
 	@echo Too get logs:
