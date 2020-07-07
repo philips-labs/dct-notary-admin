@@ -81,7 +81,10 @@ func Run(c *cli.Context) error {
 	}
 	trustdir := filepath.Join(home, ".docker", "trust")
 	tufdir := filepath.Join(trustdir, "tuf")
-	fmt.Println("Saving metadata to: ", tufdir)
+
+	if len(meta) != 0 {
+		fmt.Println("Saving metadata to: ", tufdir)
+	}
 
 	return storeMetadata(tufdir, meta)
 }
