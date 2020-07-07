@@ -36,13 +36,13 @@ clean-dangling-images: ## Clean dangling Docker images
 	@docker rmi $$(docker images -qf dangling=true)
 
 run-sandbox: ## Run notary sandbox in Docker
-	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml up -d
+	@docker-compose -f docker-compose.yml -f $(SANDBOX_COMPOSE) up -d
 	@echo
 	@echo Too get logs:
 	@echo "  make sandbox-logs"
 	@echo
 	@echo Too enter the sandbox:
-	@echo "  docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml exec sandbox sh"
+	@echo "  docker-compose -f docker-compose.yml -f $(SANDBOX_COMPOSE) exec sandbox sh"
 
 check-sandbox: ## Check if the notary sandbox is up and running
 	@while [[ "$$(curl --insecure -sLSo /dev/null -w ''%{http_code}'' $(SANDBOX_HEALTH))" != "200" ]]; \
@@ -53,13 +53,13 @@ check-sandbox: ## Check if the notary sandbox is up and running
 
 bootstrap-sandbox: ## Bootstrap the notary sandbox with some certificates for content trust
 	@docker cp bootstrap-sandbox.sh notary_sandbox_1:/root/
-	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml exec sandbox ./bootstrap-sandbox.sh
+	@docker-compose -f docker-compose.yml -f $(SANDBOX_COMPOSE) exec sandbox ./bootstrap-sandbox.sh
 
 sandbox-logs: ## Tail the Docker logs
-	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml logs -f
+	@docker-compose -f docker-compose.yml -f $(SANDBOX_COMPOSE) logs -f
 
 stop-sandbox: ## Stop the vault notary sandbox environment
-	@docker-compose -f $(SANDBOX_COMPOSE) -f docker-compose.yml down
+	@docker-compose -f docker-compose.yml -f $(SANDBOX_COMPOSE) down
 
 reset-sandbox: ## Reset the Notary sandbox
 	@echo Shutting down sandbox
