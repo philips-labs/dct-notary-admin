@@ -54,19 +54,16 @@ database SignerDB <<notary>> [
 ]
 
 [dctna-web] <<dctna>>
-[dctna] <<dctna>>
 [dctna-server] <<dctna>>
 [notary-signer] <<notary>>
 [notary-server] <<notary>>
 
-CiJob .left.> [dctna] : fetch certs\nand metadata
 CiJob ..> [docker-cli] : sign docker image\nand push to registry
 [docker-cli] ..> [docker-registry] : push/pull\nimages
-[docker-cli] ..> [notary-server] : sign image
-[dctna] .left.> [dctna-server] : fetches TUF\nmetadata and\nsigning certificates
+[docker-cli] ..> [notary-server] : sign image /\nfetch tuf metadata
 Admin ..> [dctna-web] : administer docker repositories\nand delegations
 [dctna-web] ..> [dctna-server] : rest api
-[dctna-server] ..> [vault] : stores passphrases\nfor keys
+[dctna-server] .right.> [vault] : stores passphrases\nfor keys
 [dctna-server] ..> [notary-server]
 
 [notary-server] .left.> [notary-signer]
