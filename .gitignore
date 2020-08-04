@@ -22,3 +22,6 @@ vault/volumes/
 
 plantuml.jar
 .env
+
+# goreleaser
+dist/
