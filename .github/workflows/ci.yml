@@ -159,8 +159,10 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - name: Login to DockerHub Registry
-        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+      - name: Login to Docker Registries
+        run: |
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          echo "${{ secrets.HSDP_DOCKER_REGISTRY_PASSWD }}" | docker login ${{ secrets.HSDP_DOCKER_REGISTRY }} -u ${{ secrets.HSDP_DOCKER_REGISTRY_USER }} --password-stdin
 
       - name: release
         uses: goreleaser/goreleaser-action@v2
@@ -170,13 +172,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Logout from DockerHub Registry
-        run: docker logout
+      - name: Release Docker dctna-web
+        run: |
+          make dockerize-web
+          make docker-publish-web
 
-      - name: Publish Docker images
-        env:
-          HSDP_DOCKER_REGISTRY: ${{ secrets.HSDP_DOCKER_REGISTRY }}
-          HSDP_DOCKER_REGISTRY_NS: ${{ secrets.HSDP_DOCKER_REGISTRY_NS }}
-          HSDP_DOCKER_REGISTRY_USER: ${{ secrets.HSDP_DOCKER_REGISTRY_USER }}
-          HSDP_DOCKER_REGISTRY_PASSWD: ${{ secrets.HSDP_DOCKER_REGISTRY_PASSWD }}
-        run: make docker-publish-hsdp
+      - name: Logout from Docker Registries
+        run: |
+          docker logout
+          docker logout ${{ secrets.HSDP_DOCKER_REGISTRY }}

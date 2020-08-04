@@ -148,33 +148,14 @@ docs/diagrams/%.png: docs/diagrams/%.plantuml
 	@echo Generating $@ from plantuml....
 	@java -jar plantuml.jar -tpng $^
 
-dockerize: ## builds docker images
-	docker build -t dctna-web web
-	docker build -t dctna-server .
+dockerize-web: ## builds docker images
+	docker build -t philipssoftware/dctna-web web
 	docker rmi $$(docker images -qf dangling=true)
 
-docker-publish-hsdp: ## publishes the image to the hsdp registry
-ifndef HSDP_DOCKER_REGISTRY_USER
-	$(error HSDP_DOCKER_REGISTRY_USER is undefined)
-endif
-ifndef HSDP_DOCKER_REGISTRY_PASSWD
-	$(error HSDP_DOCKER_REGISTRY_PASSWD is undefined)
-endif
-ifndef HSDP_DOCKER_REGISTRY
-	$(error HSDP_DOCKER_REGISTRY is undefined)
-endif
-ifndef HSDP_DOCKER_REGISTRY_NS
-	$(error HSDP_DOCKER_REGISTRY_NS is undefined)
-endif
-	docker tag dctna-web:latest $(HSDP_DOCKER_REGISTRY)/$(HSDP_DOCKER_REGISTRY_NS)/dctna-web:latest
-	docker tag dctna-server:latest $(HSDP_DOCKER_REGISTRY)/$(HSDP_DOCKER_REGISTRY_NS)/dctna-server:latest
-	@echo $(HSDP_DOCKER_REGISTRY_PASSWD) > .pass
-	cat .pass | docker login $(HSDP_DOCKER_REGISTRY) -u $(HSDP_DOCKER_REGISTRY_USER) --password-stdin
-	@rm .pass
-	docker push $(HSDP_DOCKER_REGISTRY)/$(HSDP_DOCKER_REGISTRY_NS)/dctna-web:latest
-	docker push $(HSDP_DOCKER_REGISTRY)/$(HSDP_DOCKER_REGISTRY_NS)/dctna-server:latest
-	docker push $(HSDP_DOCKER_REGISTRY)/$(HSDP_DOCKER_REGISTRY_NS)/dctna:latest
-	docker logout $(HSDP_DOCKER_REGISTRY)
+docker-publish-web: ## publishes the image to the hsdp registry
+	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:latest
+	docker push philipssoftware/dctna-web:latest
+	docker push docker.eu1.hsdp.io/dctna/dctna-web:latest
 
 outdated: ## Checks for outdated dependencies
 	go list -u -m -json all | go-mod-outdated -update
