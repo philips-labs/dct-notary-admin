@@ -22,8 +22,13 @@ RUN go mod download
 # Build the image
 FROM base as builder
 COPY . .
+ARG VERSION=dev-docker
+ARG DATE=
+ARG COMMIT=
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o dctna-server ./cmd/dctna-server
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo \
+    -ldflags "-X 'main.version=${VERSION}' -X 'main.date=${DATE}' -X 'main.commit=${COMMIT}' -extldflags '-static'" \
+    -o dctna-server ./cmd/dctna-server
 
 # Collect certificates and binary
 FROM alpine
