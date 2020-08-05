@@ -6,7 +6,9 @@ SANDBOX_HEALTH ?= https://localhost:4443/_notary_server/health
 
 VAULT_COMPOSE ?= $(CURDIR)/vault/docker-compose.dev.yml
 
-VERSION := 0.0.0-dev
+VERSION ?= $(shell git describe --tags --abbrev 2> /dev/null || echo v0.0.0-dev)
+MAJOR ?= $(word 1,$(subst ., ,$(VERSION)))
+MINOR ?= $(word 2,$(subst ., ,$(VERSION)))
 GITCOMMIT := $(shell git rev-parse --short HEAD)
 GITUNTRACKEDCHANGES := $(shell git status --porcelain --untracked-files=no)
 ifneq ($(GITUNTRACKEDCHANGES),)
@@ -153,9 +155,21 @@ dockerize-web: ## builds docker images
 	docker rmi $$(docker images -qf dangling=true)
 
 docker-publish-web: ## publishes the image to the hsdp registry
+	docker tag philipssoftware/dctna-web:latest philipssoftware/dctna-web:$(VERSION)
+	docker tag philipssoftware/dctna-web:latest philipssoftware/dctna-web:$(MAJOR).$(MINOR)
+	docker tag philipssoftware/dctna-web:latest philipssoftware/dctna-web:$(MAJOR)
 	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:latest
+	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:$(VERSION)
+	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR).$(MINOR)
+	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR)
 	docker push philipssoftware/dctna-web:latest
+	docker push philipssoftware/dctna-web:$(VERSION)
+	docker push philipssoftware/dctna-web:$(MAJOR).$(MINOR)
+	docker push philipssoftware/dctna-web:$(MAJOR)
 	docker push docker.eu1.hsdp.io/dctna/dctna-web:latest
+	docker push docker.eu1.hsdp.io/dctna/dctna-web:$(VERSION)
+	docker push docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR).$(MINOR)
+	docker push docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR)
 
 outdated: ## Checks for outdated dependencies
 	go list -u -m -json all | go-mod-outdated -update
