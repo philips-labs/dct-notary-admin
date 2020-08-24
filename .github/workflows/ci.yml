@@ -19,7 +19,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - uses: innovationnorway/setup-vault@v1.0.0
+      - uses: innovationnorway/setup-vault@v1.0.2
         with:
           version: '1.5.2'
 
