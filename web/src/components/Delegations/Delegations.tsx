@@ -11,8 +11,12 @@ import { ApplicationContext } from '../Application';
 const byRole = (a: Delegation, b: Delegation): number =>
   a.role < b.role ? -1 : a.role > b.role ? 1 : 0;
 
+interface DelegationParams {
+  targetId: string;
+}
+
 export const Delegations: FC = () => {
-  const { targetId } = useParams();
+  const { targetId } = useParams<DelegationParams>();
   const { displayError, displayInfo } = useContext(ApplicationContext);
   const [data, setData] = useState<DelegationListData>({
     delegations: [],
