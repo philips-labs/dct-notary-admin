@@ -36,7 +36,7 @@ require (
 	github.com/pelletier/go-toml v1.7.0 // indirect
 	github.com/pierrec/lz4 v2.4.0+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/sethvargo/go-password v0.1.3
+	github.com/sethvargo/go-password v0.2.0
 	github.com/smartystreets/assertions v1.0.0 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
