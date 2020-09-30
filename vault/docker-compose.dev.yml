@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   vault:
-    image: vault:1.5.2
+    image: vault:1.5.4
     ports:
       - "8200:8200"
     restart: always
