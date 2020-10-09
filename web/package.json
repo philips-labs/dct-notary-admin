@@ -15,7 +15,7 @@
     "axios": "^0.20.0",
     "grommet": "^2.15.0",
     "grommet-icons": "^4.5.0",
-    "polished": "^4.0.1",
+    "polished": "^4.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
