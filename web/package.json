@@ -13,7 +13,7 @@
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.6",
     "axios": "^0.20.0",
-    "grommet": "^2.15.0",
+    "grommet": "^2.15.1",
     "grommet-icons": "^4.5.0",
     "polished": "^4.0.2",
     "react": "^16.13.1",
