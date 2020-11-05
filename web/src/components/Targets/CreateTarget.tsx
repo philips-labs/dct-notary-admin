@@ -4,11 +4,11 @@ import axios from 'axios';
 import { FormFieldLabel } from '..';
 import { TargetContext } from './TargetContext';
 
-type CreateTarget = { gun: string; errorMessage: string };
+type CreateTargetState = { gun: string; errorMessage: string };
 const defaultFormValue = { gun: '', errorMessage: '' };
 
 export const CreateTarget: FC = () => {
-  const [value, setValue] = useState<CreateTarget>(defaultFormValue);
+  const [value, setValue] = useState<CreateTargetState>(defaultFormValue);
   const { refresh } = useContext(TargetContext);
   const submitForm = async (event: FormEvent) => {
     event.preventDefault();
@@ -33,7 +33,7 @@ export const CreateTarget: FC = () => {
     <Form
       value={value}
       onChange={(event: any) => {
-        setValue(event as CreateTarget);
+        setValue(event as CreateTargetState);
       }}
       onSubmit={submitForm}
       validate="blur"
