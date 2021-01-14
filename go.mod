@@ -45,7 +45,7 @@ require (
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.7.1
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
 	github.com/theupdateframework/notary v0.6.1
 	go.uber.org/zap v1.16.0
 	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
