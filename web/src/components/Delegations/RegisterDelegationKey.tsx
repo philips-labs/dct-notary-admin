@@ -7,7 +7,7 @@ import { FormFieldLabel } from '../Form';
 interface TargetParams {
   targetId: string;
 }
-type RegisterDelegationKey = {
+type RegisterDelegationKeyState = {
   delegationName: string;
   delegationPublicKey: string;
   errorMessage: string;
@@ -20,7 +20,7 @@ const defaultFormValue = {
 };
 
 export const RegisterDelegationKey: FC<TargetParams> = ({ targetId }) => {
-  const [value, setValue] = useState<RegisterDelegationKey>(defaultFormValue);
+  const [value, setValue] = useState<RegisterDelegationKeyState>(defaultFormValue);
   const { refresh } = useContext(DelegationContext);
   const delegationNameMsg = 'may only contain a-z and _';
   const submitForm = async (event: FormEvent) => {
@@ -46,7 +46,7 @@ export const RegisterDelegationKey: FC<TargetParams> = ({ targetId }) => {
     <Form
       value={value}
       onChange={(event: any) => {
-        setValue(event as RegisterDelegationKey);
+        setValue(event as RegisterDelegationKeyState);
       }}
       onSubmit={submitForm}
       validate="blur"

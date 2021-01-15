@@ -10,7 +10,6 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/hashicorp/vault/command/agent/config"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -94,8 +93,8 @@ func unmarshalNotaryConfig() (*notary.Config, error) {
 	return &notaryCfg, nil
 }
 
-func unmarshalVaultConfig() (*config.Vault, error) {
-	var vaultCfg config.Vault
+func unmarshalVaultConfig() (*VaultConfig, error) {
+	var vaultCfg VaultConfig
 
 	vaultCfg.Address = viper.GetString("vault.addr")
 
