@@ -78,11 +78,12 @@ jobs:
         uses: codecov/codecov-action@v1.2.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.out
+          files: ./coverage.out
           flags: unittests
           name: codecov-umbrella
-          yml: ./codecov.yml
           fail_ci_if_error: true
+          path_to_write_report: ./codecov_report.txt
+          verbose: true
 
       - name: Shutdown sandbox
         run: docker-compose -f notary/docker-compose.sandbox.yml down
@@ -137,11 +138,12 @@ jobs:
         uses: codecov/codecov-action@v1.2.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./web/coverage/clover.xml
+          files: ./web/coverage/clover.xml
           flags: unittests
           name: codecov-umbrella
-          yml: ./codecov.yml
           fail_ci_if_error: true
+          path_to_write_report: ./web/coverage/codecov_report.txt
+          verbose: true
 
   release:
     name: Release artifacts
