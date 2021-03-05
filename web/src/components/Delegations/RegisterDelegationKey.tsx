@@ -1,5 +1,5 @@
 import { FC, FormEvent, useState, useContext } from 'react';
-import { Box, Text, Form, TextInput, TextArea, Button, Paragraph } from 'grommet';
+import { Form, TextInput, TextArea } from 'grommet';
 import axios from 'axios';
 import { DelegationContext } from './DelegationContext';
 import { FormFieldLabel } from '../Form';
@@ -51,7 +51,9 @@ export const RegisterDelegationKey: FC<TargetParams> = ({ targetId }) => {
       onSubmit={submitForm}
       validate="blur"
     >
-      <Paragraph fill>First ensure you have a signing key or create a signing key.</Paragraph>
+      <p className="text-gray-600 my-2">
+        First ensure you have a signing key or create a signing key.
+      </p>
       <FormFieldLabel
         label="Name"
         name="delegationName"
@@ -69,14 +71,15 @@ export const RegisterDelegationKey: FC<TargetParams> = ({ targetId }) => {
       >
         <TextArea name="delegationPublicKey" required />
       </FormFieldLabel>
-      {value.errorMessage && (
-        <Box pad={{ horizontal: 'small' }}>
-          <Text color="status-error">{value.errorMessage}</Text>
-        </Box>
-      )}
-      <Box direction="row" justify="end" margin={{ top: 'medium' }}>
-        <Button type="submit" label="Submit" primary />
-      </Box>
+      {value.errorMessage && <p className="text-sm text-red-500 p-1">{value.errorMessage}</p>}
+      <div className="flex flex-row-reverse">
+        <button
+          className="bg-blue-600 text-white p-2 px-5 hover:bg-blue-700 rounded-3xl font-semibold"
+          type="submit"
+        >
+          Submit
+        </button>
+      </div>
     </Form>
   );
 };

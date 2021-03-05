@@ -1,5 +1,5 @@
 import { FC, useState, useContext, FormEvent } from 'react';
-import { Box, Form, TextInput, Button, Text } from 'grommet';
+import { Form, TextInput } from 'grommet';
 import axios from 'axios';
 import { FormFieldLabel } from '..';
 import { TargetContext } from './TargetContext';
@@ -41,14 +41,15 @@ export const CreateTarget: FC = () => {
       <FormFieldLabel label="GUN" name="gun" required>
         <TextInput name="gun" placeholder="docker.io/philipssoftware/openjdk" required />
       </FormFieldLabel>
-      {value.errorMessage && (
-        <Box pad={{ horizontal: 'small' }}>
-          <Text color="status-error">{value.errorMessage}</Text>
-        </Box>
-      )}
-      <Box direction="row" justify="end" margin={{ top: 'medium' }}>
-        <Button type="submit" label="Submit" primary />
-      </Box>
+      {value.errorMessage && <p className="text-sm text-red-500 p-1">{value.errorMessage}</p>}
+      <div className="flex flex-row-reverse">
+        <button
+          className="bg-blue-600 text-white p-2 px-5 hover:bg-blue-700 rounded-3xl font-semibold"
+          type="submit"
+        >
+          Submit
+        </button>
+      </div>
     </Form>
   );
 };

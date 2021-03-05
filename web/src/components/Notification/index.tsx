@@ -1,6 +1,6 @@
 import { FC } from 'react';
-import { Box, Text } from 'grommet';
 import { Info, Alert } from 'grommet-icons';
+import cn from 'classnames';
 
 interface NotificationProps {
   type: 'unknown' | 'error' | 'info';
@@ -9,15 +9,16 @@ interface NotificationProps {
 
 export const Notification: FC<NotificationProps> = ({ type, message }) => {
   return (
-    <Box
-      background={type === 'error' ? 'status-error' : 'status-unknown'}
-      pad="small"
-      animation="fadeIn"
+    <div
+      className={cn('text-white p-5', {
+        'bg-red-500': type === 'error',
+        'bg-blue-500': type === 'info',
+      })}
     >
-      <Box direction="row" gap="small">
-        {type === 'error' ? <Alert /> : <Info />}
-        <Text>{message}</Text>
-      </Box>
-    </Box>
+      <div className="flex flex-row">
+        {type === 'error' ? <Alert className="text-white" /> : <Info />}
+        <p>{message}</p>
+      </div>
+    </div>
   );
 };

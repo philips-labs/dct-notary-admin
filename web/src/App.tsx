@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { Grommet, Main, Grid } from 'grommet';
+import { Grommet } from 'grommet';
 import logo from './logo.svg';
 import { customTheme } from './Theme';
 import { TargetsPage } from './pages';
@@ -27,27 +27,19 @@ function App() {
   return (
     <Grommet theme={customTheme} full>
       <Router>
-        <Grid
-          fill
-          rows={['auto']}
-          columns={['auto', 'flex']}
-          areas={[
-            { name: 'sidebar', start: [0, 0], end: [0, 0] },
-            { name: 'main', start: [1, 0], end: [1, 0] },
-          ]}
-        >
-          <ApplicationContext.Provider value={{ displayInfo, displayError }}>
-            <NavBar gridArea="sidebar" />
-            <Main gridArea="main" overflow="auto" pad="medium">
+        <ApplicationContext.Provider value={{ displayInfo, displayError }}>
+          <div className="flex flex-row">
+            <NavBar />
+            <main className="p-5">
               {error ? <Notification type="error" message={error} /> : null}
               {info ? <Notification type="info" message={info} /> : null}
               <Switch>
                 <Route exact path="/" component={Home} />
                 <Route path="/targets" component={TargetsPage} />
               </Switch>
-            </Main>
-          </ApplicationContext.Provider>
-        </Grid>
+            </main>
+          </div>
+        </ApplicationContext.Provider>
       </Router>
     </Grommet>
   );

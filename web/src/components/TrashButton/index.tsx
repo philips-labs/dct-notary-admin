@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { Button } from 'grommet';
 import { Trash } from 'grommet-icons';
 
 interface TrashButtonProps {
@@ -7,5 +6,9 @@ interface TrashButtonProps {
 }
 
 export const TrashButton: FC<TrashButtonProps> = ({ action }) => {
-  return <Button icon={<Trash color="red" />} onClick={() => action()} />;
+  return (
+    <button className="p-1" onClick={action}>
+      <Trash color="red" />
+    </button>
+  );
 };

@@ -1,7 +1,7 @@
 import { FC, useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { Route, useHistory } from 'react-router-dom';
-import { Box, List } from 'grommet';
+import { List } from 'grommet';
 import { TargetListData, Target } from '../../models';
 import { CreateTarget } from './CreateTarget';
 import { TargetContext } from './TargetContext';
@@ -37,12 +37,12 @@ export const Targets: FC = () => {
 
   return (
     <TargetContext.Provider value={{ refresh: fetchData }}>
-      <Box margin={{ bottom: 'medium' }} elevation="medium" pad="medium" flex={false}>
+      <div className="mb-5 p-5 flex-none shadow-lg">
         <Route path="/targets">
           <CreateTarget />
         </Route>
-      </Box>
-      <Box>
+      </div>
+      <div>
         {data.targets.length !== 0 ? (
           <List
             primaryKey="gun"
@@ -67,7 +67,7 @@ export const Targets: FC = () => {
         ) : (
           'Loading...'
         )}
-      </Box>
+      </div>
     </TargetContext.Provider>
   );
 };

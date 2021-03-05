@@ -1,15 +1,15 @@
 import { FC } from 'react';
-import { Box, FormField, FormFieldProps, Text } from 'grommet';
+import { FormField, FormFieldProps } from 'grommet';
 
 export const FormFieldLabel: FC<FormFieldProps> = ({ required, label, name, ...rest }) => (
   <FormField
     name={name}
     label={
       required ? (
-        <Box direction="row">
-          <Text>{label}</Text>
-          <Text color="status-critical">*</Text>
-        </Box>
+        <div className="flex flex-row">
+          <span>{label}</span>
+          <span className="text-red-500 ml-1">*</span>
+        </div>
       ) : (
         label
       )
