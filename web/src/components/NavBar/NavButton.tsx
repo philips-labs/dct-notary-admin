@@ -1,6 +1,6 @@
 import { FC, cloneElement, MouseEvent } from 'react';
 import { matchPath, useHistory, useLocation, useRouteMatch } from 'react-router';
-import { Box, Text, Button, ButtonProps } from 'grommet';
+import classNames from 'classnames';
 
 export interface IconButton {
   label: string;
@@ -11,13 +11,7 @@ export interface RoutedButtonProps {
   path: string;
 }
 
-export const NavButton: FC<RoutedButtonProps & ButtonProps & IconButton> = ({
-  active,
-  path,
-  label,
-  icon,
-  ...rest
-}) => {
+export const NavButton: FC<RoutedButtonProps & IconButton> = ({ path, label, icon }) => {
   const match = useRouteMatch(path);
   const location = useLocation();
   const history = useHistory();
@@ -26,23 +20,20 @@ export const NavButton: FC<RoutedButtonProps & ButtonProps & IconButton> = ({
     event.preventDefault();
     history.push(path);
   };
-
-  const pathMatch = matchPath(location.pathname, { exact: match?.isExact, path });
+  const pathMatch = matchPath(location.pathname, { exact: true, path });
 
   return (
-    <Button
-      active={active && !!pathMatch}
-      {...rest}
-      hoverIndicator={{ color: 'accent-1' }}
-      plain
+    <button
+      className={classNames('hover:bg-blue-300 hover:text-black', {
+        'bg-blue-300 text-black': !!pathMatch,
+        'bg-transparent text-white': !pathMatch,
+      })}
       onClick={onClick}
     >
-      {({ hover }: { hover: boolean }) => (
-        <Box pad={{ vertical: 'small' }} gap="xsmall" align="center" justify="center">
-          {cloneElement(icon, { color: hover ? 'black' : 'white' })}
-          <Text size="xsmall">{label}</Text>
-        </Box>
-      )}
-    </Button>
+      <div className="flex flex-col p-3 items-center space-y-1 justify-center">
+        {cloneElement(icon, { color: !!pathMatch ? 'black' : 'white' })}
+        <span className="text-xs">{label}</span>
+      </div>
+    </button>
   );
 };

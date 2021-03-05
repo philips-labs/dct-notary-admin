@@ -4,7 +4,7 @@ import { NavButton } from './NavButton';
 
 export const NavBar: FC<ClassAttributes<HTMLDivElement> & HTMLAttributes<HTMLDivElement>> = () => {
   return (
-    <div className="bg-blue-600 flex flex-col justify-between w-20 text-white font-semibold h-screen">
+    <nav className="bg-blue-600 flex flex-col justify-between w-20 text-white font-semibold h-screen">
       <div className="flex flex-col">
         <NavButton path="/" icon={<Home />} label="Home" />
         <NavButton path="/targets" icon={<Database />} label="Targets" />
@@ -16,6 +16,6 @@ export const NavBar: FC<ClassAttributes<HTMLDivElement> & HTMLAttributes<HTMLDiv
           </span>
         </div>
       </div>
-    </div>
+    </nav>
   );
 };
