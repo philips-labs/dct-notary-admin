@@ -1,4 +1,4 @@
-import React, { FC, cloneElement, MouseEvent } from 'react';
+import { FC, cloneElement, MouseEvent } from 'react';
 import { matchPath, useHistory, useLocation, useRouteMatch } from 'react-router';
 import { Box, Text, Button, ButtonProps } from 'grommet';
 

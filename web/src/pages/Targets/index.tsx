@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Route } from 'react-router-dom';
 import { Heading, Box, Grid } from 'grommet';
 import { Delegations, Targets } from '../../components';

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState, useContext } from 'react';
+import { FC, useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { Route, useHistory } from 'react-router-dom';
 import { Box, List } from 'grommet';

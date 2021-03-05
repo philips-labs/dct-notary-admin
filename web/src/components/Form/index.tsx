@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Box, FormField, FormFieldProps, Text } from 'grommet';
 
 export const FormFieldLabel: FC<FormFieldProps> = ({ required, label, name, ...rest }) => (

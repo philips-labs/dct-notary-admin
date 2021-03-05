@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useState, useContext } from 'react';
+import { FC, FormEvent, useState, useContext } from 'react';
 import { Box, Text, Form, TextInput, TextArea, Button, Paragraph } from 'grommet';
 import axios from 'axios';
 import { DelegationContext } from './DelegationContext';

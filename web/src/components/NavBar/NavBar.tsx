@@ -1,4 +1,4 @@
-import React, { FC, ClassAttributes, HTMLAttributes } from 'react';
+import { FC, ClassAttributes, HTMLAttributes } from 'react';
 import { BoxProps, Sidebar, Nav, Box, Avatar } from 'grommet';
 import { Home, Database } from 'grommet-icons';
 import { NavButton } from './NavButton';
