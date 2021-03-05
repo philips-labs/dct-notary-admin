@@ -30,7 +30,7 @@ help:
 all: build test ## Build and test
 
 run: build ## Run dctna server
-	@bin/dctna --config .notary/config.json
+	@bin/dctna-server --config .notary/config.json
 
 build-sandbox: ## build Docker images for notary sandbox
 	@(cd $(NOTARY_REPO) ; make cross ; docker-compose -f docker-compose.sandbox.yml build)
