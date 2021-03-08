@@ -1,5 +1,5 @@
 import { FC, cloneElement, MouseEvent } from 'react';
-import { matchPath, useHistory, useLocation, useRouteMatch } from 'react-router';
+import { matchPath, useHistory, useLocation } from 'react-router';
 import classNames from 'classnames';
 
 export interface IconButton {
@@ -12,7 +12,7 @@ export interface RoutedButtonProps {
 }
 
 export const NavButton: FC<RoutedButtonProps & IconButton> = ({ path, label, icon }) => {
-  const match = useRouteMatch(path);
+  // const match = useRouteMatch(path);
   const location = useLocation();
   const history = useHistory();
 
@@ -20,6 +20,7 @@ export const NavButton: FC<RoutedButtonProps & IconButton> = ({ path, label, ico
     event.preventDefault();
     history.push(path);
   };
+  // const pathMatch = matchPath(location.pathname, { exact: match?.isExact, path });
   const pathMatch = matchPath(location.pathname, { exact: true, path });
 
   return (
