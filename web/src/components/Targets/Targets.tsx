@@ -45,8 +45,9 @@ export const Targets: FC = () => {
         {data.targets.length !== 0 ? (
           <>
             <ul>
-              {data.targets.map((item) => (
+              {data.targets.map((item, i) => (
                 <li
+                  key={i}
                   className={cn('flex flex-row justify-between px-6 py-3 align-middle', {
                     'border-gray-300 border-t border-b hover:bg-gray-50': !history.location.pathname.endsWith(
                       item.id.substr(0, 7),

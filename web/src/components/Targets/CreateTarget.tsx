@@ -1,10 +1,9 @@
-import { FC, useState, useContext, FormEvent } from 'react';
-import { Form, TextInput } from 'grommet';
+import { FC, useState, useContext, FormEvent, ChangeEvent } from 'react';
 import axios from 'axios';
-import { FormFieldLabel } from '..';
 import { TargetContext } from './TargetContext';
+import { FormTextInput } from '../Form';
 
-type CreateTargetState = { gun: string; errorMessage: string };
+type CreateTargetState = { gun: string; errorMessage?: string };
 const defaultFormValue = { gun: '', errorMessage: '' };
 
 export const CreateTarget: FC = () => {
@@ -13,7 +12,8 @@ export const CreateTarget: FC = () => {
   const submitForm = async (event: FormEvent) => {
     event.preventDefault();
     try {
-      await axios.post(`/api/targets`, JSON.stringify(value), {
+      const { errorMessage, ...requestBody } = value;
+      await axios.post(`/api/targets`, JSON.stringify(requestBody), {
         headers: new Headers({
           'Content-Type': 'application/json',
           Accept: 'application/json',
@@ -30,17 +30,17 @@ export const CreateTarget: FC = () => {
   };
 
   return (
-    <Form
-      value={value}
-      onChange={(event: any) => {
-        setValue(event as CreateTargetState);
-      }}
-      onSubmit={submitForm}
-      validate="blur"
-    >
-      <FormFieldLabel label="GUN" name="gun" required>
-        <TextInput name="gun" placeholder="docker.io/philipssoftware/openjdk" required />
-      </FormFieldLabel>
+    <form onSubmit={submitForm} className="antialiased">
+      <FormTextInput
+        label="GUN"
+        name="gun"
+        placeholder="docker.io/philipssoftware/openjdk"
+        required
+        onChange={(event: ChangeEvent<HTMLInputElement>) => {
+          setValue({ gun: event.target.value });
+        }}
+        className="mb-2"
+      />
       {value.errorMessage && <p className="text-sm text-red-500 p-1">{value.errorMessage}</p>}
       <div className="flex flex-row-reverse">
         <button
@@ -50,6 +50,6 @@ export const CreateTarget: FC = () => {
           Submit
         </button>
       </div>
-    </Form>
+    </form>
   );
 };

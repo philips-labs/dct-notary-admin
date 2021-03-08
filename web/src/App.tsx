@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { Grommet } from 'grommet';
 import logo from './logo.svg';
-import { customTheme } from './Theme';
 import { TargetsPage } from './pages';
 import { NavBar, ApplicationContext, Notification } from './components';
 import { setTimeout } from 'timers';
@@ -25,23 +23,21 @@ function App() {
   };
 
   return (
-    <Grommet theme={customTheme} full>
-      <Router>
-        <ApplicationContext.Provider value={{ displayInfo, displayError }}>
-          <div className="flex flex-row">
-            <NavBar />
-            <main className="p-5">
-              {error ? <Notification type="error" message={error} /> : null}
-              {info ? <Notification type="info" message={info} /> : null}
-              <Switch>
-                <Route exact path="/" component={Home} />
-                <Route path="/targets" component={TargetsPage} />
-              </Switch>
-            </main>
-          </div>
-        </ApplicationContext.Provider>
-      </Router>
-    </Grommet>
+    <Router>
+      <ApplicationContext.Provider value={{ displayInfo, displayError }}>
+        <div className="flex flex-row">
+          <NavBar />
+          <main className="p-5">
+            {error ? <Notification type="error" message={error} /> : null}
+            {info ? <Notification type="info" message={info} /> : null}
+            <Switch>
+              <Route exact path="/" component={Home} />
+              <Route path="/targets" component={TargetsPage} />
+            </Switch>
+          </main>
+        </div>
+      </ApplicationContext.Provider>
+    </Router>
   );
 }
 
