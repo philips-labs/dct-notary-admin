@@ -24,7 +24,7 @@ export const NavButton: FC<RoutedButtonProps & IconButton> = ({ path, label, ico
 
   return (
     <button
-      className={classNames('hover:bg-blue-300 hover:text-black', {
+      className={classNames('hover:bg-blue-300 hover:text-black focus:outline-none', {
         'bg-blue-300 text-black': !!pathMatch,
         'bg-transparent text-white': !pathMatch,
       })}
