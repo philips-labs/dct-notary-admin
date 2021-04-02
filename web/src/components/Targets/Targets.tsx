@@ -43,29 +43,27 @@ export const Targets: FC = () => {
       </div>
       <div>
         {data.targets.length !== 0 ? (
-          <>
-            <ul>
-              {data.targets.map((item, i) => (
-                <li
-                  key={i}
-                  className={cn('flex flex-row justify-between px-6 py-3 align-middle', {
-                    'border-gray-300 border-t border-b hover:bg-gray-50': !history.location.pathname.endsWith(
-                      item.id.substr(0, 7),
-                    ),
-                    'bg-blue-200 border-blue-400 border-2': history.location.pathname.endsWith(
-                      item.id.substr(0, 7),
-                    ),
-                  })}
-                  onClick={() => {
-                    history.push(`/targets/${item.id.substr(0, 7)}`);
-                  }}
-                >
-                  <div className="font-bold align-middle">{item.gun}</div>
-                  <TrashButton action={() => remove(item.id.substr(0, 7))} />
-                </li>
-              ))}
-            </ul>
-          </>
+          <ul>
+            {data.targets.map((item, i) => (
+              <li
+                key={i}
+                className={cn('flex flex-row justify-between px-6 py-3 align-middle', {
+                  'border-gray-300 border-t border-b hover:bg-gray-50': !history.location.pathname.endsWith(
+                    item.id.substr(0, 7),
+                  ),
+                  'bg-blue-200 border-blue-400 border-2': history.location.pathname.endsWith(
+                    item.id.substr(0, 7),
+                  ),
+                })}
+                onClick={() => {
+                  history.push(`/targets/${item.id.substr(0, 7)}`);
+                }}
+              >
+                <div className="font-bold align-middle">{item.gun}</div>
+                <TrashButton action={() => remove(item.id.substr(0, 7))} />
+              </li>
+            ))}
+          </ul>
         ) : (
           'Loading...'
         )}
