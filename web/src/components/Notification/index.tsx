@@ -1,5 +1,6 @@
 import { FC } from 'react';
-import { Info, Alert } from 'grommet-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import cn from 'classnames';
 
 interface NotificationProps {
@@ -16,7 +17,11 @@ export const Notification: FC<NotificationProps> = ({ type, message }) => {
       })}
     >
       <div className="flex flex-row">
-        {type === 'error' ? <Alert className="text-white" /> : <Info />}
+        {type === 'error' ? (
+          <FontAwesomeIcon icon={faExclamationTriangle} className="text-white" />
+        ) : (
+          <FontAwesomeIcon icon={faInfoCircle} className="text-white" />
+        )}
         <p>{message}</p>
       </div>
     </div>

@@ -11,7 +11,7 @@ export const TargetsPage: FC = () => {
       </div>
       <div className="p-3">
         <h2 className="text-4xl tracking-tight font-bold leading-normal">Delegations</h2>
-        <Route path="/targets/:targetId">
+        <Route path="/:targetId">
           <Delegations />
         </Route>
       </div>

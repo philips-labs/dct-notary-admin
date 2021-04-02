@@ -37,7 +37,7 @@ export const Targets: FC = () => {
   return (
     <TargetContext.Provider value={{ refresh: fetchData }}>
       <div className="mb-5 p-5 flex-none shadow-lg">
-        <Route path="/targets">
+        <Route path="/">
           <CreateTarget />
         </Route>
       </div>
@@ -56,7 +56,7 @@ export const Targets: FC = () => {
                   ),
                 })}
                 onClick={() => {
-                  history.push(`/targets/${item.id.substr(0, 7)}`);
+                  history.push(`/${item.id.substr(0, 7)}`);
                 }}
               >
                 <div className="font-bold align-middle">{item.gun}</div>

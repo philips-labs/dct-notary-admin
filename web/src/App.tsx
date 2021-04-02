@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import logo from './logo.svg';
 import { TargetsPage } from './pages';
 import { NavBar, ApplicationContext, Notification } from './components';
 import { setTimeout } from 'timers';
@@ -31,27 +30,12 @@ function App() {
             {error ? <Notification type="error" message={error} /> : null}
             {info ? <Notification type="info" message={info} /> : null}
             <Switch>
-              <Route exact path="/" component={Home} />
-              <Route path="/targets" component={TargetsPage} />
+              <Route path="/" component={TargetsPage} />
             </Switch>
           </main>
         </div>
       </ApplicationContext.Provider>
     </Router>
-  );
-}
-
-function Home() {
-  return (
-    <>
-      <img src={logo} className="App-logo" alt="logo" />
-      <p>
-        Edit <code>src/App.tsx</code> and save to reload.
-      </p>
-      <a className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
-        Learn React
-      </a>
-    </>
   );
 }
 
