@@ -33,7 +33,7 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v2.1.4
         id: go-mod-cache
         with:
           path: ~/go/pkg/mod
@@ -75,14 +75,15 @@ jobs:
         run: go test -v -race -count=1 -covermode=atomic -coverprofile=coverage.out ./...
 
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@v1.2.1
+        uses: codecov/codecov-action@v1.3.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.out
+          files: ./coverage.out
           flags: unittests
           name: codecov-umbrella
-          yml: ./codecov.yml
           fail_ci_if_error: true
+          path_to_write_report: ./codecov_report.txt
+          verbose: true
 
       - name: Shutdown sandbox
         run: docker-compose -f notary/docker-compose.sandbox.yml down
@@ -102,7 +103,7 @@ jobs:
 
     steps:
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2.1.4
+        uses: actions/setup-node@v2.1.5
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -113,7 +114,7 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v2.1.4
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -134,14 +135,15 @@ jobs:
         run: yarn test --coverage
 
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@v1.2.1
+        uses: codecov/codecov-action@v1.3.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./web/coverage/clover.xml
+          files: ./web/coverage/clover.xml
           flags: unittests
           name: codecov-umbrella
-          yml: ./codecov.yml
           fail_ci_if_error: true
+          path_to_write_report: ./web/coverage/codecov_report.txt
+          verbose: true
 
   release:
     name: Release artifacts
