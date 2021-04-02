@@ -1,7 +1,6 @@
 import { FC, useEffect, useState, useCallback, useContext } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Box, List, Text } from 'grommet';
 import { DelegationContext } from './DelegationContext';
 import { RegisterDelegationKey } from './RegisterDelegationKey';
 import { Delegation, DelegationListData } from '../../models';
@@ -30,7 +29,10 @@ export const Delegations: FC = () => {
       const delegations = [...delegationsResult.data].sort(byRole);
       setData((prevState) => ({ ...prevState, delegations }));
     } catch (e) {
-      setData((prevState) => ({ ...prevState, delegations: [] }));
+      setData((prevState) => ({
+        ...prevState,
+        delegations: [],
+      }));
     }
   };
 
@@ -61,24 +63,20 @@ export const Delegations: FC = () => {
 
   return targetId ? (
     <DelegationContext.Provider value={{ refresh: fetchData }}>
-      <Box margin={{ bottom: 'medium' }} elevation="medium" pad="medium" flex={false}>
+      <div className="mb-5 p-5 flex-none shadow-lg">
         <RegisterDelegationKey targetId={targetId} />
-      </Box>
-      <Box>
-        <List
-          primaryKey="display"
-          secondaryKey={(item) => item.remove}
-          data={data.delegations.map((item) => ({
-            display: (
-              <Box gap="small" direction="row" align="center">
-                <Text>{item.role}</Text>
-                <Text size="x-small">({item.id.substr(0, 7)})</Text>
-              </Box>
-            ),
-            remove: <TrashButton action={() => remove(item)} />,
-          }))}
-        />
-      </Box>
+      </div>
+      <ul>
+        {data.delegations.map((item) => (
+          <li className="flex flex-row justify-between px-6 py-3 align-middle border-t border-b border-gray-300 hover:bg-gray-50">
+            <div>
+              <span className="font-bold align-middle">{item.role}</span>
+              <span className="ml-2 text-xs align-top italic">({item.id.substr(0, 7)})</span>
+            </div>
+            <TrashButton action={() => remove(item)} />
+          </li>
+        ))}
+      </ul>
     </DelegationContext.Provider>
   ) : null;
 };
