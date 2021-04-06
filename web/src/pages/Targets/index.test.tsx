@@ -10,7 +10,7 @@ describe('TargetPage', () => {
           <TargetsPage />
         </MemoryRouter>,
       );
-      expect(getByText('Loading...')).toBeInTheDocument();
+      expect(getByText('Loading…')).toBeInTheDocument();
     });
   });
 });

@@ -65,7 +65,7 @@ export const Targets: FC = () => {
             ))}
           </ul>
         ) : (
-          'Loading...'
+          'Loading…'
         )}
       </div>
     </TargetContext.Provider>
