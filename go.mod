@@ -37,10 +37,7 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.7.0
 	github.com/theupdateframework/notary v0.7.0
-	go.uber.org/zap v1.16.0
-	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
+	go.uber.org/zap v1.17.0
 	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa // indirect
-	golang.org/x/tools v0.0.0-20200107184032-11e9d9cc0042 // indirect
 	gopkg.in/ini.v1 v1.55.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20200603094226-e3079894b1e8 // indirect
 )
