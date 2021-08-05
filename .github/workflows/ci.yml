@@ -7,17 +7,11 @@ jobs:
     name: Go CI
     runs-on: ubuntu-20.04
 
-    strategy:
-      matrix:
-        go-version: [1.15]
-
-      fail-fast: true
-
     steps:
-      - name: Set up Go ${{ matrix.go-version }}
+      - name: Set up Go
         uses: actions/setup-go@v2.1.3
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: 1.16
 
       - uses: innovationnorway/setup-vault@v1.0.3
         with:
@@ -33,7 +27,7 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
-      - uses: actions/cache@v2.1.4
+      - uses: actions/cache@v2.1.6
         id: go-mod-cache
         with:
           path: ~/go/pkg/mod
@@ -46,6 +40,7 @@ jobs:
 
       - name: Lint
         run: |
+          go mod download golang.org/x/tools
           go install golang.org/x/tools/cmd/goimports
           result=$($(go env GOPATH)/bin/goimports -d -e -local github.com/philips-labs $(go list -f {{.Dir}} ./...))
           echo $result
@@ -75,7 +70,7 @@ jobs:
         run: go test -v -race -count=1 -covermode=atomic -coverprofile=coverage.out ./...
 
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@v1.3.1
+        uses: codecov/codecov-action@v2.0.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.out
@@ -90,11 +85,11 @@ jobs:
 
   nodejs:
     name: NodeJS CI
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.x]
 
       fail-fast: true
 
@@ -103,7 +98,7 @@ jobs:
 
     steps:
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.3.0
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -114,7 +109,7 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v2.1.4
+      - uses: actions/cache@v2.1.6
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -135,7 +130,7 @@ jobs:
         run: yarn test --coverage
 
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@v1.3.1
+        uses: codecov/codecov-action@v2.0.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./web/coverage/clover.xml
@@ -148,7 +143,7 @@ jobs:
   release:
     name: Release artifacts
     needs: [golang, nodejs]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Check out code
