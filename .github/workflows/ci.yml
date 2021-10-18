@@ -144,7 +144,6 @@ jobs:
     name: Release artifacts
     needs: [golang, nodejs]
     runs-on: ubuntu-20.04
-    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -157,24 +156,28 @@ jobs:
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
       - name: Login to Docker Registries
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           echo "${{ secrets.HSDP_DOCKER_REGISTRY_PASSWD }}" | docker login ${{ secrets.HSDP_DOCKER_REGISTRY }} -u ${{ secrets.HSDP_DOCKER_REGISTRY_USER }} --password-stdin
 
-      - name: release
+      - name: Release ${{ (!startsWith(github.ref, 'refs/tags/') && 'snapshot') || '' }}
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: release --rm-dist
+          args: release --rm-dist ${{ (!startsWith(github.ref, 'refs/tags/') && '--snapshot') || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release Docker dctna-web
         run: |
           make dockerize-web
-          make docker-publish-web
+          if [ "${{ startsWith(github.ref, 'refs/tags/') }}" == 'true' ] ; then
+            make docker-publish-web
+          fi
 
       - name: Logout from Docker Registries
+        if: ${{ always() }}
         run: |
           docker logout
           docker logout ${{ secrets.HSDP_DOCKER_REGISTRY }}
