@@ -22,7 +22,7 @@ builds:
     goarm:
       - 8
     ldflags:
-      - -s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}}
+      - -s -w -X main.version={{ .Version }} -X main.commit={{ .ShortCommit }} -X main.date={{ .Date }}
     env:
       - CGO_ENABLED=0
 
@@ -56,13 +56,15 @@ dockers:
       - "ghcr.io/philips-labs/{{ .ProjectName }}:latest"
     build_flag_templates:
       - "--pull"
-      - "--label=com.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--build-arg=VERSION={{.Version}}"
-      - "--build-arg=DATE={{.Date}}"
-      - "--build-arg=COMMIT={{.ShortCommit}}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.licenses=MIT"
+      - "--label=org.opencontainers.image.vendor=Koninklijke Philips N.V."
+      - "--build-arg=VERSION={{ .Version }}"
+      - "--build-arg=DATE={{ .Date }}"
+      - "--build-arg=COMMIT={{ .ShortCommit }}"
     extra_files:
       - "go.mod"
       - "go.sum"
