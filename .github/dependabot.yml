@@ -8,31 +8,31 @@ updates:
   - package-ecosystem: "gomod" # See documentation for possible values
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
 
   - package-ecosystem: "npm"
     directory: "/web"
     schedule:
-      interval: "daily"
+      interval: "monthly"
 
   - package-ecosystem: "github-actions"
     # Workflow files stored in the
     # default location of `.github/workflows`
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
 
   - package-ecosystem: "gitsubmodule"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
 
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
 
   - package-ecosystem: "docker"
     directory: "/web"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
