@@ -1,6 +1,6 @@
 module github.com/philips-labs/dct-notary-admin
 
-go 1.15
+go 1.17
 
 require (
 	github.com/Shopify/logrus-bugsnag v0.0.0-20171204204709-577dee27f20d // indirect
