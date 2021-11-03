@@ -43,7 +43,6 @@ jobs:
 
       - name: Lint
         run: |
-          go mod download golang.org/x/tools
           go install golang.org/x/tools/cmd/goimports
           result=$($(go env GOPATH)/bin/goimports -d -e -local github.com/philips-labs $(go list -f {{.Dir}} ./...))
           echo $result
