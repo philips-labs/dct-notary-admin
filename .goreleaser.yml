@@ -50,6 +50,10 @@ dockers:
       - "docker.eu1.hsdp.io/dctna/{{ .ProjectName }}:v{{ .Major }}"
       - "docker.eu1.hsdp.io/dctna/{{ .ProjectName }}:v{{ .Major }}.{{ .Minor }}"
       - "docker.eu1.hsdp.io/dctna/{{ .ProjectName }}:latest"
+      - "ghcr.io/philips-labs/{{ .ProjectName }}:{{ .Tag }}"
+      - "ghcr.io/philips-labs/{{ .ProjectName }}:v{{ .Major }}"
+      - "ghcr.io/philips-labs/{{ .ProjectName }}:v{{ .Major }}.{{ .Minor }}"
+      - "ghcr.io/philips-labs/{{ .ProjectName }}:latest"
     build_flag_templates:
       - "--pull"
       - "--label=com.opencontainers.image.created={{.Date}}"
