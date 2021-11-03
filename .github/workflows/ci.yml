@@ -70,7 +70,7 @@ jobs:
         run: go test -v -race -count=1 -covermode=atomic -coverprofile=coverage.out ./...
 
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@v2.0.2
+        uses: codecov/codecov-action@v2.1.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.out
@@ -130,7 +130,7 @@ jobs:
         run: yarn test --coverage
 
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@v2.0.2
+        uses: codecov/codecov-action@v2.1.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./web/coverage/clover.xml
