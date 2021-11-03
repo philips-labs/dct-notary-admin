@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -70,7 +69,7 @@ func importRootCert(certFilePath string) ([]data.PublicKey, error) {
 	}
 
 	// read certificate from file
-	certPEM, err := ioutil.ReadFile(certFilePath)
+	certPEM, err := os.ReadFile(certFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("error reading certificate file: %v", err)
 	}
@@ -92,7 +91,7 @@ func importRootCert(certFilePath string) ([]data.PublicKey, error) {
 // Attempt to read a role key from a file, and return it as a data.PrivateKey
 // If key is for the Root role, it must be encrypted
 func readKey(role data.RoleName, keyFilename string, retriever notary.PassRetriever) (data.PrivateKey, error) {
-	pemBytes, err := ioutil.ReadFile(keyFilename)
+	pemBytes, err := os.ReadFile(keyFilename)
 	if err != nil {
 		return nil, fmt.Errorf("Error reading input root key file: %v", err)
 	}

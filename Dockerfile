@@ -2,7 +2,7 @@
 FROM alpine AS certs
 RUN apk --update add ca-certificates
 
-FROM golang:1.16.6-alpine AS base
+FROM golang:1.17.2-alpine AS base
 
 # To fix go get and build with cgo
 RUN apk add --no-cache --virtual .build-deps \
@@ -31,7 +31,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo \
     -o dctna-server ./cmd/dctna-server
 
 # Collect certificates and binary
-FROM alpine
+FROM gcr.io/distroless/base-debian11
 EXPOSE 8086 8443
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 # root user required as the volumes mount as root
