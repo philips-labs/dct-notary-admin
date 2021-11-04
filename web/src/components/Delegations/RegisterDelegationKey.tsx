@@ -27,10 +27,10 @@ export const RegisterDelegationKey: FC<TargetParams> = ({ targetId }) => {
     try {
       const { errorMessage, ...requestBody } = value;
       await axios.post(`/api/targets/${targetId}/delegations`, JSON.stringify(requestBody), {
-        headers: new Headers({
+        headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-        }),
+        },
       });
       setValue(defaultFormValue);
       refresh();
