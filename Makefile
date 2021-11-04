@@ -91,6 +91,14 @@ download: ## Download go dependencies
 	@echo Downloading dependencies
 	@go mod download
 
+$(GO_PATH)/bin/goimports:
+	go install golang.org/x/tools/cmd/goimports@latest
+
+.PHONY: lint
+lint: $(GO_PATH)/bin/goimports ## runs linting
+	@echo Linting imports
+	@goimports -d -e -local github.com/philips-labs/dct-notary-admin $(shell go list -f '{{ .Dir }}' ./...)
+
 test: reset-sandbox ## Run the tests
 	@echo Testing
 	@docker-compose -f $(SANDBOX_COMPOSE) up -d
