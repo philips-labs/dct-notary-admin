@@ -37,7 +37,7 @@
         "react-scripts": "^4.0.3"
     },
     "devDependencies": {
-        "@craco/craco": "^6.2.0",
+        "@craco/craco": "^6.4.0",
         "@tailwindcss/forms": "^0.3.3",
         "@tailwindcss/postcss7-compat": "^2.2.4",
         "@testing-library/jest-dom": "^5.14.1",
