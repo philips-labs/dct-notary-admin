@@ -34,7 +34,7 @@ export const RegisterDelegationKey: FC<TargetParams> = ({ targetId }) => {
       });
       setValue(defaultFormValue);
       refresh();
-    } catch (e) {
+    } catch (e: any) {
       const response = e.response;
       const errorMessage = `${response.data.status} ${response.data.error}`;
       setValue({ ...value, errorMessage });

@@ -25,7 +25,7 @@ export const Targets: FC = () => {
     try {
       await axios.delete(`/api/targets/${targetId}`);
       fetchData();
-    } catch (e) {
+    } catch (e: any) {
       displayError(`${e.message}: ${e.response.data}`, true);
     }
   };
