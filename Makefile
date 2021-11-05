@@ -166,10 +166,6 @@ docker-publish-web: ## publishes the image to the hsdp registry
 	docker tag philipssoftware/dctna-web:latest philipssoftware/dctna-web:$(VERSION)
 	docker tag philipssoftware/dctna-web:latest philipssoftware/dctna-web:$(MAJOR).$(MINOR)
 	docker tag philipssoftware/dctna-web:latest philipssoftware/dctna-web:$(MAJOR)
-	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:latest
-	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:$(VERSION)
-	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR).$(MINOR)
-	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR)
 	docker tag philipssoftware/dctna-web:latest ghcr.io/philips-labs/dctna-web:latest
 	docker tag philipssoftware/dctna-web:latest ghcr.io/philips-labs/dctna-web:$(VERSION)
 	docker tag philipssoftware/dctna-web:latest ghcr.io/philips-labs/dctna-web:$(MAJOR).$(MINOR)
@@ -178,10 +174,6 @@ docker-publish-web: ## publishes the image to the hsdp registry
 	docker push philipssoftware/dctna-web:$(VERSION)
 	docker push philipssoftware/dctna-web:$(MAJOR).$(MINOR)
 	docker push philipssoftware/dctna-web:$(MAJOR)
-	docker push docker.eu1.hsdp.io/dctna/dctna-web:latest
-	docker push docker.eu1.hsdp.io/dctna/dctna-web:$(VERSION)
-	docker push docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR).$(MINOR)
-	docker push docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR)
 	docker push ghcr.io/philips-labs/dctna-web:latest
 	docker push ghcr.io/philips-labs/dctna-web:$(VERSION)
 	docker push ghcr.io/philips-labs/dctna-web:$(MAJOR).$(MINOR)
