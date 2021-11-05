@@ -91,6 +91,14 @@ download: ## Download go dependencies
 	@echo Downloading dependencies
 	@go mod download
 
+$(GO_PATH)/bin/goimports:
+	go install golang.org/x/tools/cmd/goimports@latest
+
+.PHONY: lint
+lint: $(GO_PATH)/bin/goimports ## runs linting
+	@echo Linting imports
+	@goimports -d -e -local github.com/philips-labs/dct-notary-admin $(shell go list -f '{{ .Dir }}' ./...)
+
 test: reset-sandbox ## Run the tests
 	@echo Testing
 	@docker-compose -f $(SANDBOX_COMPOSE) up -d
@@ -162,6 +170,10 @@ docker-publish-web: ## publishes the image to the hsdp registry
 	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:$(VERSION)
 	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR).$(MINOR)
 	docker tag philipssoftware/dctna-web:latest docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR)
+	docker tag philipssoftware/dctna-web:latest ghcr.io/philips-labs/dctna-web:latest
+	docker tag philipssoftware/dctna-web:latest ghcr.io/philips-labs/dctna-web:$(VERSION)
+	docker tag philipssoftware/dctna-web:latest ghcr.io/philips-labs/dctna-web:$(MAJOR).$(MINOR)
+	docker tag philipssoftware/dctna-web:latest ghcr.io/philips-labs/dctna-web:$(MAJOR)
 	docker push philipssoftware/dctna-web:latest
 	docker push philipssoftware/dctna-web:$(VERSION)
 	docker push philipssoftware/dctna-web:$(MAJOR).$(MINOR)
@@ -170,6 +182,10 @@ docker-publish-web: ## publishes the image to the hsdp registry
 	docker push docker.eu1.hsdp.io/dctna/dctna-web:$(VERSION)
 	docker push docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR).$(MINOR)
 	docker push docker.eu1.hsdp.io/dctna/dctna-web:$(MAJOR)
+	docker push ghcr.io/philips-labs/dctna-web:latest
+	docker push ghcr.io/philips-labs/dctna-web:$(VERSION)
+	docker push ghcr.io/philips-labs/dctna-web:$(MAJOR).$(MINOR)
+	docker push ghcr.io/philips-labs/dctna-web:$(MAJOR)
 
 outdated: ## Checks for outdated dependencies
 	go list -u -m -json all | go-mod-outdated -update

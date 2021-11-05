@@ -25,7 +25,7 @@ export const Targets: FC = () => {
     try {
       await axios.delete(`/api/targets/${targetId}`);
       fetchData();
-    } catch (e) {
+    } catch (e: any) {
       displayError(`${e.message}: ${e.response.data}`, true);
     }
   };
@@ -48,9 +48,8 @@ export const Targets: FC = () => {
               <li
                 key={i}
                 className={cn('flex flex-row justify-between px-6 py-3 align-middle', {
-                  'border-gray-300 border-t border-b hover:bg-gray-50': !history.location.pathname.endsWith(
-                    item.id.substr(0, 7),
-                  ),
+                  'border-gray-300 border-t border-b hover:bg-gray-50':
+                    !history.location.pathname.endsWith(item.id.substr(0, 7)),
                   'bg-blue-200 border-blue-400 border-2': history.location.pathname.endsWith(
                     item.id.substr(0, 7),
                   ),

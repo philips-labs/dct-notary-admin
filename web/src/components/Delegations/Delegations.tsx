@@ -28,7 +28,7 @@ export const Delegations: FC = () => {
       );
       const delegations = [...delegationsResult.data].sort(byRole);
       setData((prevState) => ({ ...prevState, delegations }));
-    } catch (e) {
+    } catch (e: any) {
       setData((prevState) => ({
         ...prevState,
         delegations: [],
@@ -51,7 +51,7 @@ export const Delegations: FC = () => {
         true,
       );
       fetchData();
-    } catch (e) {
+    } catch (e: any) {
       displayError(`${e.message}: ${e.response.data}`, true);
     }
   };

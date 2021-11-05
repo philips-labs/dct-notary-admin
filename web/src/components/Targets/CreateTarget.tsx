@@ -14,14 +14,14 @@ export const CreateTarget: FC = () => {
     try {
       const { errorMessage, ...requestBody } = value;
       await axios.post(`/api/targets`, JSON.stringify(requestBody), {
-        headers: new Headers({
+        headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-        }),
+        },
       });
       setValue(defaultFormValue);
       refresh();
-    } catch (e) {
+    } catch (e: any) {
       const response = e.response;
       const errorMessage = `${response.data.status} ${response.data.error}`;
       setValue({ ...value, errorMessage });

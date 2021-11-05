@@ -39,7 +39,6 @@ COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certifica
 # which are in this case root
 # TODO: find a way arround this.
 WORKDIR /root
-RUN mkdir -p .notary/certs && mkdir -p .docker/trust && mkdir -p certs
 VOLUME [ "/root/.notary", "/root/.docker/trust", "/root/certs" ]
 COPY certs/ /root/certs/
 COPY .notary/config.json /root/.notary/config.json
