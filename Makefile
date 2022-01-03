@@ -22,6 +22,11 @@ DIAGRAMS_SRC := $(wildcard docs/diagrams/*.plantuml)
 DIAGRAMS_PNG := $(addsuffix .png, $(basename $(DIAGRAMS_SRC)))
 DIAGRAMS_SVG := $(addsuffix .svg, $(basename $(DIAGRAMS_SRC)))
 
+DOCKER_HUB_REPO_WEB := philipssoftware/dctna-web
+GHCR_REPO_WEB := ghcr.io/philips-labs/dctna-web
+DOCKER_HUB_REPO_SERVER := philipssoftware/dctna-server
+GHCR_REPO_SERVER := ghcr.io/philips-labs/dctna-server
+
 .PHONY: help all run build-sandbox clean-dangling-images run-sandbox check-sandbox bootstrap-sandbox sandbox-logs stop-sandbox reset-sandbox download test coverage coverage-out coverage-html build build-static certs dockerize outdated
 
 help:
@@ -159,25 +164,40 @@ docs/diagrams/%.png: docs/diagrams/%.plantuml
 	@java -jar plantuml.jar -tpng $^
 
 dockerize-web: ## builds docker images
-	docker build -t philipssoftware/dctna-web web
+	docker build -t $(DOCKER_HUB_REPO_WEB) web
 	docker rmi $$(docker images -qf dangling=true)
 
 docker-publish-web: ## publishes the image to the hsdp registry
-	docker tag philipssoftware/dctna-web:latest philipssoftware/dctna-web:$(VERSION)
-	docker tag philipssoftware/dctna-web:latest philipssoftware/dctna-web:$(MAJOR).$(MINOR)
-	docker tag philipssoftware/dctna-web:latest philipssoftware/dctna-web:$(MAJOR)
-	docker tag philipssoftware/dctna-web:latest ghcr.io/philips-labs/dctna-web:latest
-	docker tag philipssoftware/dctna-web:latest ghcr.io/philips-labs/dctna-web:$(VERSION)
-	docker tag philipssoftware/dctna-web:latest ghcr.io/philips-labs/dctna-web:$(MAJOR).$(MINOR)
-	docker tag philipssoftware/dctna-web:latest ghcr.io/philips-labs/dctna-web:$(MAJOR)
-	docker push philipssoftware/dctna-web:latest
-	docker push philipssoftware/dctna-web:$(VERSION)
-	docker push philipssoftware/dctna-web:$(MAJOR).$(MINOR)
-	docker push philipssoftware/dctna-web:$(MAJOR)
-	docker push ghcr.io/philips-labs/dctna-web:latest
-	docker push ghcr.io/philips-labs/dctna-web:$(VERSION)
-	docker push ghcr.io/philips-labs/dctna-web:$(MAJOR).$(MINOR)
-	docker push ghcr.io/philips-labs/dctna-web:$(MAJOR)
+	docker tag $(DOCKER_HUB_REPO_WEB):latest $(DOCKER_HUB_REPO_WEB):$(VERSION)
+	docker tag $(DOCKER_HUB_REPO_WEB):latest $(DOCKER_HUB_REPO_WEB):$(MAJOR).$(MINOR)
+	docker tag $(DOCKER_HUB_REPO_WEB):latest $(DOCKER_HUB_REPO_WEB):$(MAJOR)
+	docker tag $(DOCKER_HUB_REPO_WEB):latest $(GHCR_REPO_WEB):latest
+	docker tag $(DOCKER_HUB_REPO_WEB):latest $(GHCR_REPO_WEB):$(VERSION)
+	docker tag $(DOCKER_HUB_REPO_WEB):latest $(GHCR_REPO_WEB):$(MAJOR).$(MINOR)
+	docker tag $(DOCKER_HUB_REPO_WEB):latest $(GHCR_REPO_WEB):$(MAJOR)
+	docker push $(DOCKER_HUB_REPO_WEB):latest
+	docker push $(DOCKER_HUB_REPO_WEB):$(VERSION)
+	docker push $(DOCKER_HUB_REPO_WEB):$(MAJOR).$(MINOR)
+	docker push $(DOCKER_HUB_REPO_WEB):$(MAJOR)
+	docker push $(GHCR_REPO_WEB):latest
+	docker push $(GHCR_REPO_WEB):$(VERSION)
+	docker push $(GHCR_REPO_WEB):$(MAJOR).$(MINOR)
+	docker push $(GHCR_REPO_WEB):$(MAJOR)
+
+.PHONY: container-digest
+container-digest: ## retrieves the container digest from the given tag
+	@:$(call check_defined, GITHUB_REF)
+	@docker inspect $(GHCR_REPO_WEB):$(subst refs/tags/,,$(GITHUB_REF)) --format '{{ index .RepoDigests 0 }}' | cut -d '@' -f 2
+
+.PHONY: container-tags
+container-tags: ## retrieves the container tags applied to the image with a given digest
+	@:$(call check_defined, CONTAINER_DIGEST)
+	@docker inspect $(GHCR_REPO_WEB)@$(CONTAINER_DIGEST) --format '{{ join .RepoTags "\n" }}' | sed 's/.*://' | awk '!_[$$0]++'
+
+.PHONY: container-repos
+container-repos: ## retrieves the container tags applied to the image with a given digest
+	@:$(call check_defined, CONTAINER_DIGEST)
+	@docker inspect $(GHCR_REPO_WEB)@$(CONTAINER_DIGEST) --format '{{ join .RepoTags "\n" }}' | sed 's/:.*//' | awk '!_[$$0]++'
 
 outdated: ## Checks for outdated dependencies
 	go list -u -m -json all | go-mod-outdated -update
