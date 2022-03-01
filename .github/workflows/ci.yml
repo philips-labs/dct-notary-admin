@@ -185,7 +185,7 @@ jobs:
 
     steps:
       - name: Generate provenance for release
-        uses: philips-labs/slsa-provenance-action@v0.6.0
+        uses: philips-labs/slsa-provenance-action@v0.7.2
         with:
           command: generate
           subcommand: github-release
