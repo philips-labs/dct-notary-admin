@@ -6,7 +6,7 @@ require (
 	github.com/docker/distribution v2.8.1+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/go-chi/chi v4.1.2+incompatible
-	github.com/go-chi/render v1.0.1
+	github.com/go-chi/render v1.0.2
 	github.com/hashicorp/vault/api v1.7.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/sethvargo/go-password v0.2.0
@@ -18,6 +18,7 @@ require (
 )
 
 require (
+	github.com/ajg/form v1.5.1 // indirect
 	github.com/armon/go-metrics v0.3.10 // indirect
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
