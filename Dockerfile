@@ -2,7 +2,7 @@
 FROM alpine AS certs
 RUN apk --update add ca-certificates
 
-FROM golang:1.19.5-alpine AS base
+FROM golang:1.20.1-alpine AS base
 
 # To fix go get and build with cgo
 RUN apk add --no-cache --virtual .build-deps \
