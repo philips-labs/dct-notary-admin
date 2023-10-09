@@ -3,7 +3,7 @@ module github.com/philips-labs/dct-notary-admin
 go 1.17
 
 require (
-	github.com/docker/distribution v2.8.2+incompatible
+	github.com/docker/distribution v2.8.3+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/render v1.0.3
@@ -23,6 +23,7 @@ require (
 	github.com/cenkalti/backoff/v3 v3.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/distribution/reference v0.5.0 // indirect
 	github.com/docker/go v1.5.1-1.0.20160303222718-d30aec9fd63c // indirect
 	github.com/docker/go-metrics v0.0.0-20180209012529-399ea8c73916 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
@@ -44,7 +45,7 @@ require (
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/miekg/pkcs11 v1.0.2 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/opencontainers/go-digest v0.0.0-20170106003457-a6d0ee40d420 // indirect
+	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
