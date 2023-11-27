@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/vault/api v1.9.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/sethvargo/go-password v0.2.0
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
 	github.com/stretchr/testify v1.8.4
 	github.com/theupdateframework/notary v0.7.0
