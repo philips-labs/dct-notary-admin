@@ -7,7 +7,7 @@ require (
 	github.com/docker/go-connections v0.4.0
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/render v1.0.3
-	github.com/hashicorp/vault/api v1.9.2
+	github.com/hashicorp/vault/api v1.13.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/sethvargo/go-password v0.2.0
 	github.com/spf13/cobra v1.7.0
@@ -27,7 +27,7 @@ require (
 	github.com/docker/go v1.5.1-1.0.20160303222718-d30aec9fd63c // indirect
 	github.com/docker/go-metrics v0.0.0-20180209012529-399ea8c73916 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
-	github.com/go-jose/go-jose/v3 v3.0.1 // indirect
+	github.com/go-jose/go-jose/v4 v4.0.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/gorilla/mux v1.7.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
