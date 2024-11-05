@@ -1,6 +1,6 @@
 module github.com/philips-labs/dct-notary-admin
 
-go 1.17
+go 1.23
 
 require (
 	github.com/docker/distribution v2.8.3+incompatible
