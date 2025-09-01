@@ -25,7 +25,7 @@ jobs:
         with:
           submodules: recursive
 
-      - uses: actions/cache@v4.2.3
+      - uses: actions/cache@v4.2.4
         id: go-mod-cache
         with:
           path: ~/go/pkg/mod
@@ -104,7 +104,7 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v4.2.3
+      - uses: actions/cache@v4.2.4
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
