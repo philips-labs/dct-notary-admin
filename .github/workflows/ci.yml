@@ -21,7 +21,7 @@ jobs:
           version: '1.5.5'
 
       - name: Check out code
-        uses: actions/checkout@v6.0.0
+        uses: actions/checkout@v6.0.1
         with:
           submodules: recursive
 
@@ -98,7 +98,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Check out code
-        uses: actions/checkout@v6.0.0
+        uses: actions/checkout@v6.0.1
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -140,7 +140,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out code
-        uses: actions/checkout@v6.0.0
+        uses: actions/checkout@v6.0.1
         with:
           fetch-depth: 0
           submodules: recursive
