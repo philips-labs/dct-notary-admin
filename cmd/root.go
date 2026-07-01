@@ -117,7 +117,7 @@ func initConfig() {
 	)
 }
 
-func setDefaultAndFlagBinding(key, flag string, value interface{}) {
+func setDefaultAndFlagBinding(key, flag string, value any) {
 	viper.SetDefault(key, value)
 	viper.BindPFlag(key, rootCmd.PersistentFlags().Lookup(flag))
 }

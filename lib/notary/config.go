@@ -18,7 +18,7 @@ type RemoteServerConfig struct {
 
 // TrustPinningConfig notary trust pinning configuration
 type TrustPinningConfig struct {
-	DisableTofu bool                   `json:"disable_tofu" mapstructure:"disable_tofu"`
-	CA          map[string]string      `json:"ca" mapstructure:"ca"`
-	Certs       map[string]interface{} `json:"certs" mapstructure:"certs"`
+	DisableTofu bool              `json:"disable_tofu" mapstructure:"disable_tofu"`
+	CA          map[string]string `json:"ca" mapstructure:"ca"`
+	Certs       map[string]any    `json:"certs" mapstructure:"certs"`
 }

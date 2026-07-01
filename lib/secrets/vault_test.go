@@ -21,9 +21,9 @@ func init() {
 	if err != nil {
 		panic(fmt.Errorf("failed to boot vault instance: %w", err))
 	}
-	lines := strings.Split(string(out), "\n")
+	lines := strings.SplitSeq(string(out), "\n")
 
-	for _, line := range lines {
+	for line := range lines {
 		if strings.HasPrefix(line, "VAULT_") {
 			kv := strings.Split(line, "=")
 			os.Setenv(kv[0], kv[1])
@@ -32,8 +32,9 @@ func init() {
 	}
 }
 
+//go:fix inline
 func uintPtr(value uint) *uint {
-	return &value
+	return new(value)
 }
 
 func TestVaultPasswordGenerator(t *testing.T) {
@@ -53,14 +54,14 @@ func TestVaultPasswordGenerator(t *testing.T) {
 		{
 			name: "all explicit", expLen: 12, exp: regexp.MustCompile("^[a-z]+$"),
 			options: VaultPasswordOptions{
-				Len: uintPtr(12), Digits: uintPtr(0), Symbols: uintPtr(0), AllowUppercase: boolPtr(false), AllowRepeat: boolPtr(true),
+				Len: uintPtr(12), Digits: uintPtr(0), Symbols: uintPtr(0), AllowUppercase: new(false), AllowRepeat: new(true),
 			},
 		},
 		{name: "defaults", expLen: 64, exp: nil},
 		{
 			name: "lowercase alpha numeric only", expLen: 64, exp: regexp.MustCompile("^[a-z]+$"),
 			options: VaultPasswordOptions{
-				AllowUppercase: boolPtr(false), Digits: uintPtr(0), Symbols: uintPtr(0),
+				AllowUppercase: new(false), Digits: uintPtr(0), Symbols: uintPtr(0),
 			},
 		},
 		{

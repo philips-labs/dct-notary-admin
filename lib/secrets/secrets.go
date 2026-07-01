@@ -20,28 +20,31 @@ type DefaultPasswordGenerator struct {
 	options DefaultPasswordOptions
 }
 
+//go:fix inline
 func intPtr(v int) *int {
-	return &v
+	return new(v)
 }
+
+//go:fix inline
 func boolPtr(v bool) *bool {
-	return &v
+	return new(v)
 }
 
 func NewDefaultPasswordGenerator(options DefaultPasswordOptions) *DefaultPasswordGenerator {
 	if options.Len == nil {
-		options.Len = intPtr(64)
+		options.Len = new(64)
 	}
 	if options.Digits == nil {
-		options.Digits = intPtr(10)
+		options.Digits = new(10)
 	}
 	if options.Symbols == nil {
-		options.Symbols = intPtr(10)
+		options.Symbols = new(10)
 	}
 	if options.AllowUppercase == nil {
-		options.AllowUppercase = boolPtr(true)
+		options.AllowUppercase = new(true)
 	}
 	if options.AllowRepeat == nil {
-		options.AllowRepeat = boolPtr(true)
+		options.AllowRepeat = new(true)
 	}
 
 	return &DefaultPasswordGenerator{

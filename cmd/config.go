@@ -39,13 +39,13 @@ func sprintConfig() string {
 	return sb.String()
 }
 
-func writeSettings(w io.Writer, settings map[string]interface{}) {
+func writeSettings(w io.Writer, settings map[string]any) {
 	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
 	writeRecurseSetting(tw, "", settings)
 	tw.Flush()
 }
 
-func writeRecurseSetting(w io.Writer, prefix string, settings map[string]interface{}) {
+func writeRecurseSetting(w io.Writer, prefix string, settings map[string]any) {
 	// maps can not guarantee same order, below is a trick to always print settings in same order.
 	keys := make([]string, 0, len(settings))
 	for k := range settings {
@@ -65,7 +65,7 @@ func writeRecurseSetting(w io.Writer, prefix string, settings map[string]interfa
 		}
 
 		if t.Kind() == reflect.Map {
-			writeRecurseSetting(w, key, v.(map[string]interface{}))
+			writeRecurseSetting(w, key, v.(map[string]any))
 		} else {
 			if t.Kind() == reflect.Slice || t.Kind() == reflect.Array {
 				slice := strings.Replace(fmt.Sprintf("%q", v), "\" \"", "\", \"", -1)
