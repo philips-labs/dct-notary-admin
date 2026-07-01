@@ -295,8 +295,8 @@ func getTrustPinning(config *Config) (trustpinning.TrustPinConfig, error) {
 	certMap := config.TrustPinning.Certs
 	resultCertMap := make(map[string][]string)
 	for gun, certSlice := range certMap {
-		var castedCertSlice []interface{}
-		if castedCertSlice, ok = certSlice.([]interface{}); !ok {
+		var castedCertSlice []any
+		if castedCertSlice, ok = certSlice.([]any); !ok {
 			return trustpinning.TrustPinConfig{}, fmt.Errorf("invalid format for trust_pinning.certs")
 		}
 		certsForGun := make([]string, len(castedCertSlice))

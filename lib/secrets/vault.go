@@ -33,7 +33,7 @@ type VaultKeyPassword struct {
 }
 
 type VaultSecret struct {
-	Data interface{} `json:"data, omitempty"`
+	Data any `json:"data, omitempty"`
 }
 
 func NewAuthenticatedVaultClient(username, password string) (*api.Client, error) {
@@ -50,7 +50,7 @@ func NewAuthenticatedVaultClient(username, password string) (*api.Client, error)
 }
 
 func userpassLogin(client *api.Client, username, password string) (string, error) {
-	options := map[string]interface{}{
+	options := map[string]any{
 		"password": password,
 	}
 	path := path.Join("auth", "userpass", "login", username)
@@ -170,7 +170,7 @@ func (v *VaultCredentialsManager) ReadPassword(key string) (*VaultKeyPassword, e
 	if secret == nil {
 		return nil, fmt.Errorf("%s: %w", path, ErrNotFound)
 	}
-	if secretData, ok := secret.Data["data"].(map[string]interface{}); ok {
+	if secretData, ok := secret.Data["data"].(map[string]any); ok {
 		if passwd, ok := secretData["password"].(string); ok {
 			if alias, ok := secretData["alias"].(string); ok {
 				return &VaultKeyPassword{Password: passwd, Alias: alias}, nil

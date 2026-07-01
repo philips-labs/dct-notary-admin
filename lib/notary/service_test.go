@@ -50,8 +50,7 @@ func init() {
 
 func TestListRootKeys(t *testing.T) {
 	assert := assert.New(t)
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	rootKeys, err := service.ListRootKeys(ctx)
 	assert.NoError(err)
@@ -64,8 +63,7 @@ func TestListRootKeys(t *testing.T) {
 func TestListTargets(t *testing.T) {
 	assert := assert.New(t)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	targets, err := service.ListTargets(ctx)
 	assert.NoError(err)
@@ -75,8 +73,7 @@ func TestListTargets(t *testing.T) {
 
 func TestGetTarget(t *testing.T) {
 	assert := assert.New(t)
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	target, err := service.GetKeyByID(ctx, "4ea1fec36392486d4bd99795ffc70f3ffa4a76185b39c8c2ab1d9cf5054dbbc9")
 	assert.NoError(err)
@@ -89,8 +86,7 @@ func TestGetTarget(t *testing.T) {
 func TestCreateRepositoryInvalidGUN(t *testing.T) {
 	assert := assert.New(t)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	cmd := CreateRepoCommand{TargetCommand: TargetCommand{GUN: data.GUN("\t ")}, AutoPublish: false}
 	err := service.CreateRepository(ctx, cmd)
@@ -100,8 +96,7 @@ func TestCreateRepositoryInvalidGUN(t *testing.T) {
 func TestCreateAndRemoveRepository(t *testing.T) {
 	assert := assert.New(t)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	gun := randomGUN()
 	createCmd := CreateRepoCommand{TargetCommand: TargetCommand{GUN: gun}, AutoPublish: true}
@@ -131,8 +126,7 @@ func TestCreateAndRemoveRepository(t *testing.T) {
 func TestAddDelegateWithoutPublicKeyAndPath(t *testing.T) {
 	assert := assert.New(t)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	gun := randomGUN()
 	cmd := AddDelegationCommand{TargetCommand: TargetCommand{GUN: gun}}
@@ -143,8 +137,7 @@ func TestAddDelegateWithoutPublicKeyAndPath(t *testing.T) {
 func TestAddDelegateInvalidGUN(t *testing.T) {
 	assert := assert.New(t)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	cmd := AddDelegationCommand{TargetCommand: TargetCommand{GUN: data.GUN("\t \t")}}
 	err := service.AddDelegation(ctx, cmd)
@@ -154,8 +147,7 @@ func TestAddDelegateInvalidGUN(t *testing.T) {
 func TestAddDelegation(t *testing.T) {
 	assert := assert.New(t)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	role := data.RoleName(randomString(8))
 	gun := randomGUN()
@@ -197,8 +189,7 @@ func TestAddDelegation(t *testing.T) {
 func TestRemoveDelegation(t *testing.T) {
 	assert := assert.New(t)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	role := data.RoleName(randomString(8))
 	gun := randomGUN()
@@ -247,8 +238,7 @@ func TestRemoveDelegation(t *testing.T) {
 func TestDeleteRepositoryInvalidGUN(t *testing.T) {
 	assert := assert.New(t)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	cmd := DeleteRepositoryCommand{TargetCommand: TargetCommand{GUN: data.GUN(" ")}, DeleteRemote: false}
 	err := service.DeleteRepository(ctx, cmd)
@@ -256,8 +246,7 @@ func TestDeleteRepositoryInvalidGUN(t *testing.T) {
 }
 
 func TestListDelegates(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	assert := assert.New(t)
 

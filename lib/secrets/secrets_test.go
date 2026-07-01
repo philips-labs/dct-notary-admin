@@ -19,32 +19,32 @@ func TestDefaultPasswordGenerator(t *testing.T) {
 		{
 			name: "all explicit", expLen: 12, exp: regexp.MustCompile("^[a-z]+$"),
 			options: DefaultPasswordOptions{
-				Len: intPtr(12), Digits: intPtr(0), Symbols: intPtr(0), AllowUppercase: boolPtr(false), AllowRepeat: boolPtr(true),
+				Len: new(12), Digits: new(0), Symbols: new(0), AllowUppercase: new(false), AllowRepeat: new(true),
 			},
 		},
 		{name: "defaults", expLen: 64, exp: nil},
 		{
 			name: "lowercase alpha numeric only", expLen: 64, exp: regexp.MustCompile("^[a-z]+$"),
 			options: DefaultPasswordOptions{
-				AllowUppercase: boolPtr(false), Digits: intPtr(0), Symbols: intPtr(0),
+				AllowUppercase: new(false), Digits: new(0), Symbols: new(0),
 			},
 		},
 		{
 			name: "alpha numeric only", expLen: 64, exp: regexp.MustCompile("^[A-Za-z]+$"),
 			options: DefaultPasswordOptions{
-				Digits: intPtr(0), Symbols: intPtr(0),
+				Digits: new(0), Symbols: new(0),
 			},
 		},
 		{
 			name: "alpha numeric and digits only", expLen: 64, exp: regexp.MustCompile("^[A-Za-z\\d]+$"),
 			options: DefaultPasswordOptions{
-				Digits: intPtr(5), Symbols: intPtr(0),
+				Digits: new(5), Symbols: new(0),
 			},
 		},
 		{
 			name: "alpha numeric only shorter Length", expLen: 32, exp: regexp.MustCompile("^[a-zA-Z]+$"),
 			options: DefaultPasswordOptions{
-				Len: intPtr(32), Digits: intPtr(0), Symbols: intPtr(0),
+				Len: new(32), Digits: new(0), Symbols: new(0),
 			},
 		},
 	}

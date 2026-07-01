@@ -142,8 +142,7 @@ func TestGetTargetWithInvalidID(t *testing.T) {
 }
 
 func TestCreateTarget(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	assert := assert.New(t)
 
@@ -168,8 +167,7 @@ func TestCreateTarget(t *testing.T) {
 }
 
 func TestAddDelegation(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	assert := assert.New(t)
 
@@ -206,8 +204,7 @@ func TestAddDelegation(t *testing.T) {
 }
 
 func TestListTargetDelegates(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	assert := assert.New(t)
 
@@ -239,8 +236,7 @@ func TestListTargetDelegates(t *testing.T) {
 }
 
 func TestRemoveDelegation(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	assert := assert.New(t)
 
