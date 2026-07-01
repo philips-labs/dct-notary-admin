@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { Delegations, Targets } from '../../components';
 
 export const TargetsPage: FC = () => {
@@ -11,9 +11,9 @@ export const TargetsPage: FC = () => {
       </div>
       <div className="p-3">
         <h2 className="text-4xl tracking-tight font-bold leading-normal">Delegations</h2>
-        <Route path="/:targetId">
-          <Delegations />
-        </Route>
+        <Routes>
+          <Route path=":targetId" element={<Delegations />} />
+        </Routes>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { FC, cloneElement, MouseEvent } from 'react';
-import { matchPath, useHistory, useLocation } from 'react-router';
+import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
 export interface IconButton {
@@ -12,16 +12,14 @@ export interface RoutedButtonProps {
 }
 
 export const NavButton: FC<RoutedButtonProps & IconButton> = ({ path, label, icon }) => {
-  // const match = useRouteMatch(path);
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const onClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    history.push(path);
+    navigate(path);
   };
-  // const pathMatch = matchPath(location.pathname, { exact: match?.isExact, path });
-  const pathMatch = matchPath(location.pathname, { exact: true, path });
+  const pathMatch = matchPath({ path, end: true }, location.pathname);
 
   return (
     <button
