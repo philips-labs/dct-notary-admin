@@ -19,6 +19,7 @@ bin/
 ./dct-notary-admin
 
 vault/volumes/
+.pnpm-store/
 
 plantuml.jar
 .env

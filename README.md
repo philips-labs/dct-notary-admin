@@ -160,7 +160,9 @@ make run
 
 ```bash
 cd web
-yarn install && yarn start
+corepack enable
+pnpm install
+pnpm start
 ```
 
 ## Testing end to end

@@ -1,16 +1,25 @@
-import { act, render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import axios from 'axios';
 import { MemoryRouter } from 'react-router-dom';
+import { beforeEach, vi } from 'vitest';
 import { TargetsPage } from '.';
 
+vi.mock('axios');
+
+const mockedAxios = vi.mocked(axios, true);
+
 describe('TargetPage', () => {
+  beforeEach(() => {
+    mockedAxios.get.mockResolvedValue({ data: [] });
+  });
+
   it('should render a loading state', async () => {
-    await act(async () => {
-      const { getByText } = render(
-        <MemoryRouter>
-          <TargetsPage />
-        </MemoryRouter>,
-      );
-      expect(getByText('Loading…')).toBeInTheDocument();
-    });
+    render(
+      <MemoryRouter>
+        <TargetsPage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText('Loading…')).toBeInTheDocument();
   });
 });

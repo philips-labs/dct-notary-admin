@@ -1,6 +1,6 @@
 import { FC, useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { Route, useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { TargetListData, Target } from '../../models';
 import { CreateTarget } from './CreateTarget';
 import { TargetContext } from './TargetContext';
@@ -11,7 +11,8 @@ import cn from 'classnames';
 const byGun = (a: Target, b: Target): number => (a.gun < b.gun ? -1 : a.gun > b.gun ? 1 : 0);
 
 export const Targets: FC = () => {
-  const history = useHistory();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { displayError } = useContext(ApplicationContext);
   const [data, setData] = useState<TargetListData>({ targets: [] });
 
@@ -37,9 +38,7 @@ export const Targets: FC = () => {
   return (
     <TargetContext.Provider value={{ refresh: fetchData }}>
       <div className="mb-5 p-5 flex-none shadow-lg">
-        <Route path="/">
-          <CreateTarget />
-        </Route>
+        <CreateTarget />
       </div>
       <div>
         {data.targets.length !== 0 ? (
@@ -49,13 +48,13 @@ export const Targets: FC = () => {
                 key={i}
                 className={cn('flex flex-row justify-between px-6 py-3 align-middle', {
                   'border-gray-300 border-t border-b hover:bg-gray-50':
-                    !history.location.pathname.endsWith(item.id.substr(0, 7)),
-                  'bg-blue-200 border-blue-400 border-2': history.location.pathname.endsWith(
+                    !location.pathname.endsWith(item.id.substr(0, 7)),
+                  'bg-blue-200 border-blue-400 border-2': location.pathname.endsWith(
                     item.id.substr(0, 7),
                   ),
                 })}
                 onClick={() => {
-                  history.push(`/${item.id.substr(0, 7)}`);
+                  navigate(`/${item.id.substr(0, 7)}`);
                 }}
               >
                 <div className="font-bold align-middle">{item.gun}</div>

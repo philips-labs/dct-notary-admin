@@ -84,7 +84,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [24.x]
 
       fail-fast: true
 
@@ -92,37 +92,40 @@ jobs:
       CI: true
 
     steps:
+      - name: Check out code
+        uses: actions/checkout@v7.0.0
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Check out code
-        uses: actions/checkout@v7.0.0
+      - name: Enable Corepack
+        run: corepack enable
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Get pnpm store directory
+        id: pnpm-cache-dir
+        run: echo "dir=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache@v6.1.0
-        id: yarn-cache
+        id: pnpm-cache
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ${{ steps.pnpm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('web/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-pnpm-
 
       - name: Install Dependencies
         working-directory: web
-        run: yarn
+        run: pnpm install --frozen-lockfile
 
       - name: Build local packages
         working-directory: web
-        run: yarn build
+        run: pnpm build
 
       - name: Test and coverage
         working-directory: web
-        run: yarn test --coverage
+        run: pnpm test
 
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v7.0.0

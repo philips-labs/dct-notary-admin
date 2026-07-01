@@ -10,18 +10,18 @@ import { ApplicationContext } from '../Application';
 const byRole = (a: Delegation, b: Delegation): number =>
   a.role < b.role ? -1 : a.role > b.role ? 1 : 0;
 
-interface DelegationParams {
-  targetId: string;
-}
-
 export const Delegations: FC = () => {
-  const { targetId } = useParams<DelegationParams>();
+  const { targetId } = useParams<'targetId'>();
   const { displayError, displayInfo } = useContext(ApplicationContext);
   const [data, setData] = useState<DelegationListData>({
     delegations: [],
   });
 
   const fetchData = async () => {
+    if (!targetId) {
+      return;
+    }
+
     try {
       const delegationsResult = await axios.get<Delegation[]>(
         `/api/targets/${targetId}/delegations`,
@@ -37,6 +37,10 @@ export const Delegations: FC = () => {
   };
 
   const remove = async (delegation: Delegation) => {
+    if (!targetId) {
+      return;
+    }
+
     try {
       const response = await axios.delete(
         `/api/targets/${targetId}/delegations/${delegation.id.substr(0, 7)}`,
@@ -68,7 +72,10 @@ export const Delegations: FC = () => {
       </div>
       <ul>
         {data.delegations.map((item) => (
-          <li className="flex flex-row justify-between px-6 py-3 align-middle border-t border-b border-gray-300 hover:bg-gray-50">
+          <li
+            key={item.id}
+            className="flex flex-row justify-between px-6 py-3 align-middle border-t border-b border-gray-300 hover:bg-gray-50"
+          >
             <div>
               <span className="font-bold align-middle">{item.role}</span>
               <span className="ml-2 text-xs align-top italic">({item.id.substr(0, 7)})</span>

@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { TargetsPage } from './pages';
 import { NavBar, ApplicationContext, Notification } from './components';
-import { setTimeout } from 'timers';
 
 function App() {
   const [error, setError] = useState('');
@@ -29,9 +28,9 @@ function App() {
           <main className="p-5">
             {error ? <Notification type="error" message={error} /> : null}
             {info ? <Notification type="info" message={info} /> : null}
-            <Switch>
-              <Route path="/" component={TargetsPage} />
-            </Switch>
+            <Routes>
+              <Route path="/*" element={<TargetsPage />} />
+            </Routes>
           </main>
         </div>
       </ApplicationContext.Provider>
