@@ -11,19 +11,15 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: .
-
-      - uses: innovationnorway/setup-vault@v1.0.3
-        with:
-          version: "1.5.5"
-
       - name: Check out code
         uses: actions/checkout@v7.0.0
         with:
           submodules: recursive
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
 
       - uses: actions/cache@v6.1.0
         id: go-mod-cache
@@ -32,6 +28,16 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+
+      - name: Set up OpenBao CLI
+        env:
+          OPENBAO_VERSION: 2.5.5
+        run: |
+          curl -sSfL "https://github.com/openbao/openbao/releases/download/v${OPENBAO_VERSION}/bao_${OPENBAO_VERSION}_Linux_x86_64.tar.gz" -o openbao.tar.gz
+          tar -xzf openbao.tar.gz bao
+          sudo install bao /usr/local/bin/bao
+          sudo ln -sf /usr/local/bin/bao /usr/local/bin/vault
+          vault version
 
       - name: Get dependencies
         run: go mod download
