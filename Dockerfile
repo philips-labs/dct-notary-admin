@@ -31,7 +31,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo \
     -o dctna-server ./cmd/dctna-server
 
 # Collect certificates and binary
-FROM gcr.io/distroless/base-debian11
+FROM gcr.io/distroless/static-debian12
 EXPOSE 8086 8443
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 # root user required as the volumes mount as root
