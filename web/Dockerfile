@@ -9,7 +9,7 @@ COPY public public
 COPY src src
 RUN pnpm build
 
-FROM nginx:1.31.2-alpine
+FROM nginx:1.31.3-alpine
 ENV DCTNA_API https://host.docker.internal:8443
 COPY nginx/templates /etc/nginx/templates/
 COPY --from=build /app/dist /usr/share/nginx/html
