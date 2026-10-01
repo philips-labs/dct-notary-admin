@@ -38,7 +38,7 @@ importers:
     devDependencies:
       '@tailwindcss/forms':
         specifier: ^0.5.11
-        version: 0.5.11(tailwindcss@4.3.2)
+        version: 0.5.11(tailwindcss@4.3.3)
       '@tailwindcss/vite':
         specifier: ^4.3.2
         version: 4.3.2(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0))
@@ -76,8 +76,8 @@ importers:
         specifier: ^3.9.4
         version: 3.9.4
       tailwindcss:
-        specifier: ^4.3.2
-        version: 4.3.2
+        specifier: ^4.3.3
+        version: 4.3.3
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -1245,6 +1245,9 @@ packages:
   tailwindcss@4.3.2:
     resolution: {integrity: sha512-WtctNNSH8A9jlMIqxzuYumOHU5uGZyRv0Q5svQl+oEPy5w84YpBxdb7MdqyiSPQge5jTJ6zFQLq0PFygdccSBA==}
 
+  tailwindcss@4.3.3:
+    resolution: {integrity: sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==}
+
   tapable@2.3.3:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
     engines: {node: '>=6'}
@@ -1571,10 +1574,10 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@tailwindcss/forms@0.5.11(tailwindcss@4.3.2)':
+  '@tailwindcss/forms@0.5.11(tailwindcss@4.3.3)':
     dependencies:
       mini-svg-data-uri: 1.2.3
-      tailwindcss: 4.3.2
+      tailwindcss: 4.3.3
 
   '@tailwindcss/node@4.3.2':
     dependencies:
@@ -2328,6 +2331,8 @@ snapshots:
   symbol-tree@3.2.4: {}
 
   tailwindcss@4.3.2: {}
+
+  tailwindcss@4.3.3: {}
 
   tapable@2.3.3: {}
 
