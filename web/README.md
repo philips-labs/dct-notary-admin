@@ -9,6 +9,8 @@ Install dependencies with `pnpm install --frozen-lockfile`, matching CI.
 Keep `@fortawesome/fontawesome-svg-core` and `@fortawesome/free-solid-svg-icons`
 pinned to the same patch version and update the lockfile together; different
 versions can introduce incompatible `IconName` types.
+Keep `vitest` and `@vitest/coverage-v8` pinned to the same exact version and
+update them together. Mixed versions use incompatible coverage payload formats.
 
 ## Available Scripts
 
