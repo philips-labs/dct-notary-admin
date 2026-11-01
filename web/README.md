@@ -1,5 +1,15 @@
 # DCT Notary Admin Web
 
+## Dependencies
+
+Use Node.js 24 and the pnpm version declared in `package.json`.
+The Docker build uses `node:24-alpine`, which includes Corepack; keep its Node
+major aligned with `engines.node` and CI.
+Install dependencies with `pnpm install --frozen-lockfile`, matching CI.
+Keep `@fortawesome/fontawesome-svg-core` and `@fortawesome/free-solid-svg-icons`
+pinned to the same patch version and update the lockfile together; different
+versions can introduce incompatible `IconName` types.
+
 ## Available Scripts
 
 In the project directory, run:

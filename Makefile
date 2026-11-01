@@ -23,6 +23,7 @@ DIAGRAMS_PNG := $(addsuffix .png, $(basename $(DIAGRAMS_SRC)))
 DIAGRAMS_SVG := $(addsuffix .svg, $(basename $(DIAGRAMS_SRC)))
 
 .PHONY: help all run build-sandbox clean-dangling-images run-sandbox check-sandbox bootstrap-sandbox sandbox-logs stop-sandbox reset-sandbox download test coverage coverage-out coverage-html build build-static certs dockerize outdated
+.PHONY: build-sandbox-cli
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
@@ -32,8 +33,11 @@ all: build test ## Build and test
 run: build ## Run dctna server
 	@bin/dctna-server --config .notary/config.json
 
-build-sandbox: ## build Docker images for notary sandbox
-	@(cd $(NOTARY_REPO) ; make cross ; docker-compose -f docker-compose.sandbox.yml build)
+build-sandbox-cli: ## Build the Linux Notary CLI required by the sandbox image
+	@cd $(NOTARY_REPO) && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=vendor -tags netgo -o cross/linux/amd64/notary ./cmd/notary
+
+build-sandbox: build-sandbox-cli ## build Docker images for notary sandbox
+	@docker-compose -f $(SANDBOX_COMPOSE) build
 	@docker-compose build
 
 clean-dangling-images: ## Clean dangling Docker images

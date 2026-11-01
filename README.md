@@ -50,7 +50,9 @@ Initializing the notary git submodule.
 git submodule update --init --recursive
 ```
 
-Build the sandbox
+Build the sandbox (requires Go and Docker). This compiles only the statically
+linked Linux/amd64 Notary CLI needed by the sandbox image, using the vendored
+dependencies. It does not use Notary's legacy cross-build Docker image.
 
 ```bash
 make build-sandbox

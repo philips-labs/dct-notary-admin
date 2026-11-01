@@ -46,14 +46,16 @@ jobs:
         run: |
           result=$(make lint)
           echo "$result"
-          [ -n "$(echo "$result" | grep 'diff -u')" ] && exit 1 || exit 0
+          if echo "$result" | grep -q 'diff -u'; then
+            exit 1
+          fi
 
       - name: Build
         run: make build
 
       - name: Build sandbox
         run: |
-          (cd notary ; make cross)
+          make build-sandbox-cli
           docker-compose -f notary/docker-compose.sandbox.yml build
 
       - name: Run sandbox
@@ -62,7 +64,7 @@ jobs:
       - name: Wait for notary server to be ready
         run: |
           health_check=https://localhost:4443/_notary_server/health
-          while [[ "$(curl --insecure -sLSo /dev/null -w ''%{http_code}'' ${health_check})" != "200" ]]; \
+          while [[ "$(curl --insecure -sLSo /dev/null -w '%{http_code}' "${health_check}")" != "200" ]]; \
           do echo "Waiting for ${health_check}" && sleep 1; \
           done
           echo 'OK!'
