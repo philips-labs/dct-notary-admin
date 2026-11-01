@@ -23,7 +23,7 @@ DIAGRAMS_PNG := $(addsuffix .png, $(basename $(DIAGRAMS_SRC)))
 DIAGRAMS_SVG := $(addsuffix .svg, $(basename $(DIAGRAMS_SRC)))
 
 .PHONY: help all run build-sandbox clean-dangling-images run-sandbox check-sandbox bootstrap-sandbox sandbox-logs stop-sandbox reset-sandbox download test coverage coverage-out coverage-html build build-static certs dockerize outdated
-.PHONY: build-sandbox-cli
+.PHONY: build-sandbox-cli build-sandbox-certs
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
@@ -36,7 +36,10 @@ run: build ## Run dctna server
 build-sandbox-cli: ## Build the Linux Notary CLI required by the sandbox image
 	@cd $(NOTARY_REPO) && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=vendor -tags netgo -o cross/linux/amd64/notary ./cmd/notary
 
-build-sandbox: build-sandbox-cli ## build Docker images for notary sandbox
+build-sandbox-certs: ## Generate fresh development TLS certificates for Notary
+	@bash "$(CURDIR)/generate-sandbox-certs.sh" "$(NOTARY_REPO)/fixtures"
+
+build-sandbox: build-sandbox-cli build-sandbox-certs ## build Docker images for notary sandbox
 	@docker compose -f $(SANDBOX_COMPOSE) build
 	@docker compose build
 

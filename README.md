@@ -50,14 +50,23 @@ Initializing the notary git submodule.
 git submodule update --init --recursive
 ```
 
-Build the sandbox (requires Go and Docker). This compiles only the statically
-linked Linux/amd64 Notary CLI needed by the sandbox image, using the vendored
-dependencies. It does not use Notary's legacy cross-build Docker image.
+Build the sandbox (requires Go, OpenSSL, and Docker). This compiles only the
+statically linked Linux/amd64 Notary CLI needed by the sandbox image, using the
+vendored dependencies. It does not use Notary's legacy cross-build Docker image.
 Local commands and CI require the Docker Compose plugin (`docker compose`).
 
 ```bash
 make build-sandbox
 ```
+
+Each build generates fresh development TLS certificates for the Notary server
+and signer before building their images. The upstream fixture certificates have
+expired; without replacement, server-to-signer TLS fails even when the HTTP
+health endpoint succeeds. `make build-sandbox-certs` can regenerate them
+separately. It replaces `root-ca.crt`, `notary-server.crt`, and `notary-signer.crt`
+under `notary/fixtures`, retaining the service keys. These are local, generated
+submodule changes, not production certificates; do not commit them upstream.
+Rebuild and recreate the sandbox services together so they use the same CA.
 
 Run the sandbox
 

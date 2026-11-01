@@ -55,7 +55,7 @@ jobs:
 
       - name: Build sandbox
         run: |
-          make build-sandbox-cli
+          make build-sandbox-cli build-sandbox-certs
           docker compose -f notary/docker-compose.sandbox.yml build
 
       - name: Run sandbox
