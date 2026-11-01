@@ -56,10 +56,10 @@ jobs:
       - name: Build sandbox
         run: |
           make build-sandbox-cli
-          docker-compose -f notary/docker-compose.sandbox.yml build
+          docker compose -f notary/docker-compose.sandbox.yml build
 
       - name: Run sandbox
-        run: docker-compose -f notary/docker-compose.sandbox.yml up -d
+        run: docker compose -f notary/docker-compose.sandbox.yml up -d
 
       - name: Wait for notary server to be ready
         run: |
@@ -84,7 +84,7 @@ jobs:
           verbose: true
 
       - name: Shutdown sandbox
-        run: docker-compose -f notary/docker-compose.sandbox.yml down
+        run: docker compose -f notary/docker-compose.sandbox.yml down
 
   nodejs:
     name: NodeJS CI

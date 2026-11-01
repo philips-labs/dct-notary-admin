@@ -37,26 +37,26 @@ build-sandbox-cli: ## Build the Linux Notary CLI required by the sandbox image
 	@cd $(NOTARY_REPO) && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=vendor -tags netgo -o cross/linux/amd64/notary ./cmd/notary
 
 build-sandbox: build-sandbox-cli ## build Docker images for notary sandbox
-	@docker-compose -f $(SANDBOX_COMPOSE) build
-	@docker-compose build
+	@docker compose -f $(SANDBOX_COMPOSE) build
+	@docker compose build
 
 clean-dangling-images: ## Clean dangling Docker images
 	@docker rmi $$(docker images -qf dangling=true)
 
 run-sandbox: ## Run notary sandbox in Docker
-	@docker-compose -f $(SANDBOX_COMPOSE) up -d
+	@docker compose -f $(SANDBOX_COMPOSE) up -d
 	@echo
 	@echo Too get logs:
 	@echo "  make sandbox-logs"
 	@echo
 	@echo Too enter the sandbox:
-	@echo "  docker-compose -f $(SANDBOX_COMPOSE) exec sandbox sh"
+	@echo "  docker compose -f $(SANDBOX_COMPOSE) exec sandbox sh"
 
 run-vault: ## Run hashicorp vault
 	@vault/prepare.sh dev
 
 run-dctna: run-sandbox run-vault ## Run dctna server including dependencies
-	@docker-compose up -d
+	@docker compose up -d
 
 check-sandbox: ## Check if the notary sandbox is up and running
 	@while [[ "$$(curl --insecure -sLSo /dev/null -w ''%{http_code}'' $(SANDBOX_HEALTH))" != "200" ]]; \
@@ -66,30 +66,30 @@ check-sandbox: ## Check if the notary sandbox is up and running
 	@curl -X GET -IL --insecure ${SANDBOX_HEALTH}
 
 bootstrap-sandbox: ## Bootstrap the notary sandbox with some certificates for content trust
-	@docker cp bootstrap-sandbox.sh notary_sandbox_1:/root/
-	@docker-compose -f $(SANDBOX_COMPOSE) exec sandbox ./bootstrap-sandbox.sh
+	@docker compose -f $(SANDBOX_COMPOSE) cp bootstrap-sandbox.sh sandbox:/root/
+	@docker compose -f $(SANDBOX_COMPOSE) exec sandbox ./bootstrap-sandbox.sh
 
 sandbox-logs: ## Tail the sandbox Docker logs
-	@docker-compose -f $(SANDBOX_COMPOSE) logs -f
+	@docker compose -f $(SANDBOX_COMPOSE) logs -f
 
 stop-sandbox: ## Stop the notary sandbox environment
 	@echo Shutting down sandbox
-	@docker-compose -f $(SANDBOX_COMPOSE) down
+	@docker compose -f $(SANDBOX_COMPOSE) down
 
 stop-vault: ## Stop hashicorp vault
 	@echo Shutting down vault
-	@docker-compose -f $(VAULT_COMPOSE) down
+	@docker compose -f $(VAULT_COMPOSE) down
 
 stop-dctna: ## Stop hashicorp vault
 	@echo Shutting down dctna
-	@docker-compose down
+	@docker compose down
 
 stop-all: stop-dctna stop-vault stop-sandbox ## Stop all docker containers
 
 reset-sandbox: stop-sandbox ## Reset the Notary sandbox
 	@echo Cleaning volumes
-	@docker volume rm $$(docker-compose -f $(SANDBOX_COMPOSE) config --volumes | sed 's/^/notary_/g') 2> /dev/null || true
-	@docker volume rm $$(docker-compose config --volumes | sed 's/^/dct-notary-admin_/g') 2> /dev/null || true
+	@docker volume rm $$(docker compose -f $(SANDBOX_COMPOSE) config --volumes | sed 's/^/notary_/g') 2> /dev/null || true
+	@docker volume rm $$(docker compose config --volumes | sed 's/^/dct-notary-admin_/g') 2> /dev/null || true
 
 download: ## Download go dependencies
 	@echo Downloading dependencies
@@ -105,13 +105,13 @@ lint: $(GO_PATH)/bin/goimports ## runs linting
 
 test: reset-sandbox ## Run the tests
 	@echo Testing
-	@docker-compose -f $(SANDBOX_COMPOSE) up -d
+	@docker compose -f $(SANDBOX_COMPOSE) up -d
 	@make check-sandbox
 	@go test -race -v -count=1 ./...
 
 coverage: reset-sandbox ## Run the tests with coverage
 	@echo Testing with code coverage
-	@docker-compose -f $(SANDBOX_COMPOSE) up -d
+	@docker compose -f $(SANDBOX_COMPOSE) up -d
 	@make check-sandbox
 	@go test -race -v -count=1 -covermode=atomic -coverprofile=coverage.out ./...
 

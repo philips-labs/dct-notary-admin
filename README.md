@@ -42,7 +42,7 @@ To only allow for the current certificate that is blocked type `thisisunsafe` wi
 
 ## Run the sandbox
 
-To run in an isolated environment to do some testing you should run the sandbox. The sandbox connects to a notary server and registry in the docker-compose setup.
+To run in an isolated environment to do some testing you should run the sandbox. The sandbox connects to a notary server and registry in the Docker Compose setup.
 
 Initializing the notary git submodule.
 
@@ -53,6 +53,7 @@ git submodule update --init --recursive
 Build the sandbox (requires Go and Docker). This compiles only the statically
 linked Linux/amd64 Notary CLI needed by the sandbox image, using the vendored
 dependencies. It does not use Notary's legacy cross-build Docker image.
+Local commands and CI require the Docker Compose plugin (`docker compose`).
 
 ```bash
 make build-sandbox
@@ -73,7 +74,7 @@ make bootstrap-sandbox
 To play with the notary and docker trust cli you can open the shell for the sandbox. [Signing docker images using docker content trust](https://marcofranssen.nl/signing-docker-images-using-docker-content-trust/)
 
 ```bash
-docker-compose -f notary/docker-compose.sandbox.yml -f docker-compose.yml exec sandbox sh
+docker compose -f notary/docker-compose.sandbox.yml -f docker-compose.yml exec sandbox sh
 ```
 
 To shutdown the sandbox you can run the `stop-sandbox` make target.
@@ -87,7 +88,7 @@ make stop-sandbox
 To boot the [Hashicorp Vault](https://www.vaultproject.io/) development server run the following. Requires vault installed, (e.g. `brew install vault`).
 
 ```bash
-docker-compose -f vault/docker-compose.dev.yml up -d
+docker compose -f vault/docker-compose.dev.yml up -d
 vault/prepare.sh dev
 ```
 
@@ -98,7 +99,7 @@ The vault admin dashboard is available at [http://localhost:8200].
 The token can be found in the server logs.
 
 ```bash
-docker-compose -f vault/docker-compose.dev.yml logs | grep "Root Token"
+docker compose -f vault/docker-compose.dev.yml logs | grep "Root Token"
 ```
 
 ## Build binary (api)
